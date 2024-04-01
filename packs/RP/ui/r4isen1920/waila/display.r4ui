@@ -1,0 +1,424 @@
+{
+  /* created by r4isen1920 | MIT License */
+
+
+  "namespace": "r4isen1920_waila_display",
+
+
+  "label": {
+    "type": "label",
+
+    "size": [ "default", "default" ],
+
+    "font_scale_factor": 1.0,
+    "localize": false,
+    "shadow": true,
+
+    "layer": "($layer + 1)"
+	},
+
+
+  "image": {
+    "type": "image",
+
+    "force_texture_reload": true,
+    "allow_debug_missing_texture": false,
+
+    "layer": "($layer + 1)"
+  },
+
+
+  "heart_renderer@common.empty_panel": {
+    "size": [ "100%c - 0.5px", "100%c - 0.5px" ],
+
+    "controls": [
+      {
+        "heart@image": {
+          "texture": "('textures/r4isen1920/waila/icons/' + $texture)",
+          "ignored": "($texture = 'y')",
+
+          "size": [ 9, 9 ],
+          "uv_size": [ 9, 9 ],
+
+          "layer": 101
+        }
+      }
+    ]
+  },
+
+
+  "item_aux_renderer": {
+    "type": "custom",
+    "renderer": "inventory_item_renderer",
+
+    "layer": "($layer + 1)",
+
+    "property_bag": {
+      "#item_id_aux": "$item_aux"
+    }
+
+  },
+
+
+  "entity_portrait_renderer": {
+    "type": "custom",
+    "renderer": "live_horse_renderer",
+
+    "offset": "$offset",
+    "layer": "($layer + 1)",
+
+    "property_bag": {
+      "#entity_id": "$var_subtitle_text"
+    },
+
+    "variables": [
+      {
+        "requires": "(($var_title_text - '__r4ui:player.') = $var_title_text)",
+        "$offset": [ 0, "75%y + 2.5px" ]
+      },
+      {
+        "requires": "(not (($var_title_text - '__r4ui:player.') = $var_title_text))",
+        "$offset": [ 0, -5 ]
+      }
+    ]
+
+  },
+
+
+  "disp@common.empty_panel": {
+    "size": [ "100%cm", "100%cm" ],
+
+    /* Set on top of everything else */
+    "$layer": 100,
+    "layer": "$layer",
+
+    /* Init variables */
+    "$var_title_text": "$title_text",
+    "$var_subtitle_text": "$subtitle_text",
+
+    "controls": [
+      {
+        "bg": {
+          "type": "image",
+          "texture": "textures/ui/purpleBorder",
+
+          "keep_ratio": false,
+          "bilinear": false,
+          "alpha": 0.9,
+
+          "size": [ "100%c + 12px", "100%c + 10px" ],
+          "layer": "($layer + 1)",
+
+          "controls": [
+            {
+              "hori": {
+                "type": "stack_panel",
+                "orientation": "horizontal",
+
+                "size": [ "100%c", "100%cm" ],
+                "min_size": [ "100%c", 20 ],
+                "use_child_anchors": true,
+
+                "$tooltip_renderer_type": "('%.2s' * ($var_title_text - ('%.6s' * $var_title_text)))",
+
+                "controls": [
+                  {
+                    "icon_panel": {
+                      "type": "stack_panel",
+                      "orientation": "horizontal",
+
+                      "size": [ "100%c", "100%cm" ],
+                      "use_child_anchors": true,
+
+                      "$set_ignored|default": false,
+
+                      "$ignore_block_icon|default": false,
+                      "$ignore_entity_icon|default": false,
+
+                      "variables": [
+                        {
+                          "requires": "(('%.10s' * ($var_title_text - ('%.7s' * $var_title_text))) = ':-00000NaN')",
+                          "$ignore_block_icon": true
+                        },
+                        {
+                          "requires": "($var_subtitle_text = '0000000000000')",
+                          "$ignore_entity_icon": true
+                        },
+
+                        /* Handle ignored cases -- hide when icons are invalid */
+                        {
+                          "requires": "($ignore_block_icon and ($tooltip_renderer_type = 'A:'))",
+                          "$set_ignored": true
+                        },
+                        {
+                          "requires": "($ignore_entity_icon and not ($tooltip_renderer_type = 'A:'))",
+                          "$set_ignored": true
+                        }
+                      ],
+
+                      "controls": [
+                        {
+                          "left_padding@common.empty_panel": {
+                            "size": [ 0.75, 1 ],
+
+                            /* Only visible for entity image textures */
+                            "visible": "(not ($tooltip_renderer_type = 'A:'))",
+                            "ignored": "$ignore_entity_icon"
+                          }
+                        },
+                        {
+                          "renderer@common.empty_panel": {
+                            "size": [ 20, 20 ],
+                            "ignored": "$set_ignored",
+
+                            "controls": [
+                              {
+                                "block@r4isen1920_waila_display.item_aux_renderer": {
+                                  "$item_aux": "((('%.10s' * ($var_title_text - ('%.7s' * $var_title_text))) - ':') * 1)",
+                                  "size": [ "100%", "100%" ],
+
+                                  "visible": "($tooltip_renderer_type = 'A:')",
+                                  "ignored": "$ignore_block_icon"
+                                }
+                              },
+                              {
+                                "entity@r4isen1920_waila_display.entity_portrait_renderer": {
+                                  "size": [ "100% - 5px", "100%x" ],
+
+                                  "visible": "(not ($tooltip_renderer_type = 'A:'))",
+                                  "ignored": "$ignore_entity_icon"
+                                }
+                              }
+                            ]
+                          }
+                        },
+                        {
+                          "right_padding@common.empty_panel": {
+                            "size": [ 5.25, 1 ],
+                            "ignored": "$set_ignored"
+                          }
+                        },
+
+                        {
+                          /* Add dummy element to avoid internal errors and keep this stack panel filled */
+                          "empty@common.empty_panel": {
+                            "size": [ 1, 1 ],
+                            "ignored": "(not $set_ignored)"
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "information_panel@common.empty_panel": {
+                      "anchor_from": "top_left",
+                      "anchor_to": "top_left",
+                      "size": [ "100%cm", "100%c" ],
+
+                      "controls": [
+
+                        //* _r4ui:A:-00000NaN:z;z:
+                        //* _r4ui:B:yyyyyyyyyyyyyyyyyyyy:z;z:
+
+                        {
+                          "name_and_icons": {
+                            "type": "stack_panel",
+                            "orientation": "horizontal",
+
+                            "anchor_from": "top_left",
+                            "anchor_to": "top_left",
+                            "size": [ "100%c", "100%cm" ],
+
+                            "controls": [
+                              {
+                                "hover_name_and_namespace@r4isen1920_waila_display.label": {
+                                  "text": "$text",
+
+                                  "variables": [
+                                    {
+                                      "requires": "($tooltip_renderer_type = 'A:')",
+                                      "$text": "('' + ($var_title_text - ('%.22s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
+                                    },
+                                    {
+                                      "requires": "(not ($tooltip_renderer_type = 'A:'))",
+                                      "$text": "('' + ($var_title_text - ('%.33s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
+                                    }
+                                  ]
+                                }
+                              },
+
+                              {
+                                "padding@common.empty_panel": {
+                                  "size": [ 1.5, 1 ]
+                                }
+                              },
+
+                              {
+                                "icons_panel": {
+                                  "type": "stack_panel",
+                                  "orientation": "horizontal",
+
+                                  "size": [ "100%c", 11 ],
+
+                                  /* Set default placeholder icon */
+                                  "$texture|default": "pack_icon",
+
+                                  "controls": [
+                                    {
+                                      "icon_0@r4isen1920_waila_display.image": {
+                                        "texture": "$texture",
+                                        "size": [ "100%y", "100%" ],
+                                        "bilinear": true,
+
+                                        "variables": [
+                                          {
+                                            "requires": "($tooltip_renderer_type = 'A:')",
+                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))) - ':')"
+                                          },
+                                          {
+                                            "requires": "(not ($tooltip_renderer_type = 'A:'))",
+                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.29s' * $var_title_text)))) - ':')"
+                                          }
+                                        ],
+
+                                        "ignored": "(not (($var_title_text - ':z;') = $var_title_text))"
+                                      }
+                                    },
+                                    {
+                                      "icon_1@r4isen1920_waila_display.image": {
+                                        "texture": "$texture",
+                                        "size": [ "100%y", "100%" ],
+                                        "bilinear": true,
+
+                                        "variables": [
+                                          {
+                                            "requires": "($tooltip_renderer_type = 'A:')",
+                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.20s' * $var_title_text)))) - ':')"
+                                          },
+                                          {
+                                            "requires": "(not ($tooltip_renderer_type = 'A:'))",
+                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.31s' * $var_title_text)))) - ':')"
+                                          }
+                                        ],
+
+                                        "ignored": "(not (($var_title_text - ';z') = $var_title_text))"
+                                      }
+                                    }
+                                  ],
+
+                                  "ignored": "(not (($var_title_text - ':z;z') = $var_title_text))"
+                                }
+                              }
+
+                            ]
+                          }
+                        },
+
+                        //* _r4ui:B:yyyyyyyyyyyyyyyyyyyy
+
+                        {
+                          "entity_health_renderer_panel@common.empty_panel": {
+                            "anchor_from": "top_left",
+                            "anchor_to": "top_left",
+                            "size": "$size",
+                            "offset": [ 0, 11 ],
+
+                            /* Ignore if not rendering an entity */
+                            "ignored": "($tooltip_renderer_type = 'A:')",
+
+                            "$size|default": [ "100%c", "100%c - 18px" ],
+                            "variables": {
+                              "requires": "(('' + ('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))) = 'y')",
+                              "$size": [ "100%c", "100%c - 9px" ]
+                            },
+
+                            "controls": [
+                              {
+                                "verti": {
+                                  "type": "stack_panel",
+                                  "orientation": "vertical",
+
+                                  "anchor_from": "top_left",
+                                  "anchor_to": "top_left",
+                                  "size": [ "100%cm", "100%c" ],
+
+                                  "controls": [
+                                    {
+                                      "top_padding@common.empty_panel": {
+                                        "size": [ 1, 0.5 ]
+                                      }
+                                    },
+                                    {
+                                      "entity_health_renderer_0": {
+                                        "type": "stack_panel",
+                                        "orientation": "horizontal",
+
+                                        "size": [ "100%c", "100%cm" ],
+
+                                        "controls": [
+                                          { "heart_0@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))" } },
+                                          { "heart_1@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.9s' * $var_title_text)))" } },
+                                          { "heart_2@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.10s' * $var_title_text)))" } },
+                                          { "heart_3@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.11s' * $var_title_text)))" } },
+                                          { "heart_4@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.12s' * $var_title_text)))" } },
+                                          { "heart_5@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.13s' * $var_title_text)))" } },
+                                          { "heart_6@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.14s' * $var_title_text)))" } },
+                                          { "heart_7@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.15s' * $var_title_text)))" } },
+                                          { "heart_8@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.16s' * $var_title_text)))" } },
+                                          { "heart_9@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.17s' * $var_title_text)))" } }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "entity_health_renderer_1": {
+                                        "type": "stack_panel",
+                                        "orientation": "horizontal",
+
+                                        "size": [ "100%c", "100%cm" ],
+
+                                        "controls": [
+                                          { "heart_10@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))" } },
+                                          { "heart_11@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.19s' * $var_title_text)))" } },
+                                          { "heart_12@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.20s' * $var_title_text)))" } },
+                                          { "heart_13@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.21s' * $var_title_text)))" } },
+                                          { "heart_14@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.22s' * $var_title_text)))" } },
+                                          { "heart_15@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.23s' * $var_title_text)))" } },
+                                          { "heart_16@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.24s' * $var_title_text)))" } },
+                                          { "heart_17@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.25s' * $var_title_text)))" } },
+                                          { "heart_18@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.26s' * $var_title_text)))" } },
+                                          { "heart_19@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.27s' * $var_title_text)))" } }
+                                        ],
+
+                                        "ignored": "(('' + ('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))) = 'y')"
+                                      }
+                                    },
+                                    {
+                                      "bottom_padding@common.empty_panel": {
+                                        "size": [ 1, 0.5 ]
+                                      }
+                                    }
+                                  ],
+
+                                  "ignored": "(('' + ('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))) = 'y')"
+                                }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  }
+                ]
+              }
+            }
+          ],
+
+          "visible": "(not ('%.10s' * $var_title_text = '_r4ui:hide'))",
+          "ignored": "(not ('%.6s' * $var_title_text = '_r4ui:'))"
+
+        }
+      }
+    ]
+  }
+
+}
