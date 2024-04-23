@@ -69,13 +69,12 @@ function iterAllPlayers() {
  * Parses the item AUX value of
  * the block or item
  * 
- * @param { import('@minecraft/server').Block | import('@minecraft/server').ItemStack } type
+ * @param { import('@minecraft/server').ItemStack } type
  * 
  * @returns { number | undefined }
  */
 function getItemAux(type) {
 
-  /* NOTICE: `Block.typeId` requires experimental -- but we will use it for now anyway since there's not much choice */
   let _a = blockIds.get(type?.typeId) * 65536;
 
   if (_a == undefined) return NaN;

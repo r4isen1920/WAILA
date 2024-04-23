@@ -25,7 +25,7 @@
 						"filter": "gametests",
 						"settings": {
 							"modules": [
-								"@minecraft/server@1.10.0-beta",
+								"@minecraft/server@1.10.0",
 								"@minecraft/server-ui@1.1.0",
                 "@minecraft/common@1.2.0"
 							],
@@ -34,7 +34,7 @@
 									"data/gametests/src/index.ts"
 								],
 								"bundle": true,
-								"minify": false,
+								"minify": true,
 								"format": "esm",
 								"target": "es2020"
 							},
