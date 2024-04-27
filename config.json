@@ -25,9 +25,7 @@
 						"filter": "gametests",
 						"settings": {
 							"modules": [
-								"@minecraft/server@1.10.0",
-								"@minecraft/server-ui@1.1.0",
-                "@minecraft/common@1.2.0"
+								"@minecraft/server@1.10.0"
 							],
 							"buildOptions": {
 								"entryPoints": [
