@@ -1,47 +1,115 @@
 {
-	"$schema": "https://raw.githubusercontent.com/Bedrock-OSS/regolith-schemas/main/config/v1.2.json",
-	"author": "r4isen1920",
-	"name": "WAILA",
-	"packs": {
-		"behaviorPack": "./packs/BP",
-		"resourcePack": "./packs/RP"
-	},
-	"regolith": {
-		"dataPath": "./packs/data",
-		"filterDefinitions": {
-			"gametests": {
-				"url": "github.com/Bedrock-OSS/regolith-filters",
-				"version": "1.5.3"
-			}
-		},
-		"profiles": {
-			"default": {
-				"export": {
-					"readOnly": false,
-					"target": "development"
-				},
-				"filters": [
+  "$schema": "https://raw.githubusercontent.com/Bedrock-OSS/regolith-schemas/main/config/v1.2.json",
+  "author": "r4isen1920",
+  "name": "WAILA",
+  "packs": {
+    "behaviorPack": "./packs/BP",
+    "resourcePack": "./packs/RP"
+  },
+  "regolith": {
+    "dataPath": "./packs/data",
+    "filterDefinitions": {
+      "gametests": {
+        "url": "github.com/Bedrock-OSS/regolith-filters",
+        "version": "1.5.3"
+      },
+      "packer": {
+        "url": "github.com/MCDevKit/regolith-library",
+        "version": "1.0.3"
+      }
+    },
+    "profiles": {
+      "default": {
+        "export": {
+          "readOnly": false,
+          "target": "development"
+        },
+        "filters": [
           {
-						"filter": "gametests",
-						"settings": {
-							"modules": [
-								"@minecraft/server@1.10.0"
-							],
-							"buildOptions": {
-								"entryPoints": [
-									"data/gametests/src/index.ts"
-								],
-								"bundle": true,
-								"minify": true,
-								"format": "esm",
-								"target": "es2020"
-							},
-							"outdir": "BP/scripts/r4isen1920/waila",
-							"outfile": "BP/scripts/r4isen1920/waila/main.js"
-						}
-					}
+            "filter": "gametests",
+            "settings": {
+              "buildOptions": {
+                "bundle": true,
+                "entryPoints": [
+                  "data/gametests/src/index.ts"
+                ],
+                "format": "esm",
+                "minify": true,
+                "target": "es2020"
+              },
+              "modules": [
+                "@minecraft/server@1.10.0"
+              ],
+              "outdir": "BP/scripts/r4isen1920/waila",
+              "outfile": "BP/scripts/r4isen1920/waila/main.js"
+            }
+          }
         ]
-			}
-		}
-	}
+      },
+      "raw": {
+        "export": {
+          "readOnly": false,
+          "target": "development"
+        },
+        "filters": [
+          {
+            "filter": "gametests",
+            "settings": {
+              "buildOptions": {
+                "bundle": false,
+                "entryPoints": [
+                  "data/gametests/src/*.js",
+                  "data/gametests/src/**/*.js",
+                  "data/gametests/src/index.ts"
+                ],
+                "format": "esm",
+                "minify": false,
+                "target": "es2020"
+              },
+              "modules": [
+                "@minecraft/server@1.10.0"
+              ],
+              "outdir": "BP/scripts/r4isen1920/waila",
+              "outfile": "BP/scripts/r4isen1920/waila/main.js"
+            }
+          }
+        ]
+      },
+      "ci": {
+        "export": {
+          "readOnly": false,
+          "target": "local"
+        },
+        "filters": [
+          {
+            "filter": "gametests",
+            "settings": {
+              "buildOptions": {
+                "bundle": true,
+                "entryPoints": [
+                  "data/gametests/src/index.ts"
+                ],
+                "format": "esm",
+                "minify": true,
+                "target": "es2020"
+              },
+              "modules": [
+                "@minecraft/server@1.10.0"
+              ],
+              "outdir": "BP/scripts/r4isen1920/waila",
+              "outfile": "BP/scripts/r4isen1920/waila/main.js"
+            }
+          },
+          {
+            "filter": "packer",
+            "settings": {
+              "output": "WAILA-${git.tag ?? 'test'}${git.tagCommit !== git.commit ? '-' + git.commit.substr(0, 6) : ''}.mcworld",
+              "worldName": "WAILA-${git.tag ?? 'test'}",
+              "worldPath": "../../world"
+            }
+          }
+        ]
+      }
+    }
+  }
 }
