@@ -29,12 +29,12 @@
             "filter": "gametests",
             "settings": {
               "buildOptions": {
-                "bundle": true,
                 "entryPoints": [
                   "data/gametests/src/index.ts"
                 ],
                 "format": "esm",
-                "minify": true,
+                "bundle": true,
+                "minify": false,
                 "target": "es2020"
               },
               "modules": [
@@ -56,13 +56,13 @@
             "filter": "gametests",
             "settings": {
               "buildOptions": {
-                "bundle": false,
                 "entryPoints": [
                   "data/gametests/src/*.js",
                   "data/gametests/src/**/*.js",
                   "data/gametests/src/index.ts"
                 ],
                 "format": "esm",
+                "bundle": false,
                 "minify": false,
                 "target": "es2020"
               },
@@ -85,11 +85,12 @@
             "filter": "gametests",
             "settings": {
               "buildOptions": {
-                "bundle": true,
+                "dropLabels": [ "LOGGING" ],
                 "entryPoints": [
                   "data/gametests/src/index.ts"
                 ],
                 "format": "esm",
+                "bundle": true,
                 "minify": true,
                 "target": "es2020"
               },

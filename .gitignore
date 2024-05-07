@@ -1,2 +1,13 @@
 /build
+/publish
 /.regolith
+
+/.vscode
+node_modules/
+
+*.txt
+*.py
+*.ase
+*.aseprj
+*.mcworld
+*.mcpack
