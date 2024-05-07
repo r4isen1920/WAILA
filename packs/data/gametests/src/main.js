@@ -10,12 +10,12 @@
  * 
  */
 
-import { LocationOutOfWorldBoundariesError, system, world } from '@minecraft/server';
+import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, world } from '@minecraft/server';
 import { toTitle, zFill, prettyCaps } from './utils';
 
+import { armor } from './data/armor';
 import { blockIds } from './data/blockIds';
 import { blockTools } from './data/blockTools';
-import { entityPortraits } from './data/entityPortraits';
 import { nameAliases } from './data/nameAliases';
 
 import { Logger } from '@bedrock-oss/bedrock-boost';
@@ -45,7 +45,7 @@ const log = new Logger('WAILA')
  * @property { string } healthRenderer - The rendered string of health icons.
  * @property { number } hp - The current health points of the entity.
  * @property { number } maxHp - The maximum health points of the entity.
- * @property { string } entityPortrait - The file path or identifier for the entity's portrait image.
+ * @property { string } armor - The rendered string of armor icons.
  * @property { string } entityId - The unique identifier for the entity.
  * @property { string[] } tool - The tools applicable for interacting with the object.
  */
@@ -108,61 +108,6 @@ function getItemAux(type) {
 /**
  * 
  * @param { import('@minecraft/server').Entity } entity 
- * @param { string } componentName 
- * 
- * @remarks
- * Returns the value of the
- * defined component from the entity
- * 
- * @returns { import('@minecraft/server').EntityComponent | '0' | undefined }
- * 
- * @legacy
- */
-function getComponentValue(entity, componentName) {
-  const component = entity.getComponent(componentName);
-  return component !== undefined ? component.value : '0';
-}
-
-
-/**
- * 
- * Parses the portrait of the entity
- * from variant and mark variant values
- * 
- * @param { import('@minecraft/server').Entity } entity 
- * 
- * @returns { string | undefined }
- * 
- * @legacy
- */
-function getEntityPortrait(entity) {
-
-  if (!entity?.isValid()) return;
-
-  const variant = getComponentValue(entity, 'variant');
-  const markVariant = getComponentValue(entity, 'mark_variant');
-
-  const baseKey = entity.typeId;
-  let keys = [
-    `${baseKey}:${variant}:${markVariant}`,
-    `${baseKey}:${variant}:0`,
-    `${baseKey}:0:${markVariant}`,
-    `${baseKey}:0:0`
-  ];
-
-  //* Checks if any of the keys format match from the dictionary
-  for (let key of keys) {
-    if (entityPortraits[key] !== undefined) {
-      return entityPortraits[key];
-    }
-  }
-  return '000';
-}
-
-
-/**
- * 
- * @param { import('@minecraft/server').Entity } entity 
  * 
  * @returns { string }
  */
@@ -209,63 +154,6 @@ function parseBlockTools(blockId) {
 
 /**
  * 
- * Fetches what block or entity the
- * specified player is looking at
- * 
- * @param { import('@minecraft/server').Player } player 
- * The player to run the test against
- * @param { number } max_dist
- * Maximum range in blocks to check for
- * 
- * @returns { lookAtObject }
- */
-function fetchLookAt(player, max_dist) {
-
-  let _a = {};
-
-  try {
-
-    //* Fetch entity the player is looking at
-    const entityLookAt = player.getEntitiesFromViewDirection({
-      maxDistance: max_dist
-    })
-
-
-    if (entityLookAt.length > 0) {
-      _a.type = 'entity'
-      _a.rawHit = entityLookAt[0]?.entity
-      _a.hit = _a.rawHit.typeId
-      _a.hp = _a.rawHit.getComponent('health')?.currentValue || '0'
-      _a.maxHp = _a.rawHit.getComponent('health')?.effectiveMax || '0'
-    }
-
-    if (_a.hit) return _a;
-
-
-    //* Fetch block the player is looking at
-    const blockLookAt = player.getBlockFromViewDirection({
-      includeLiquidBlocks: false,
-      includePassableBlocks: true,
-      maxDistance: max_dist
-    })
-
-    if (blockLookAt) {
-      _a.type = 'tile'
-      _a.rawHit = blockLookAt?.block
-      _a.hit = _a.rawHit.getItemStack(1, true)?.typeId || _a.rawHit.typeId
-    }
-
-    return _a;
-
-  } catch (e) {
-    if (!(e instanceof LocationOutOfWorldBoundariesError)) log.warn(e);
-  }
-
-}
-
-
-/**
- * 
  * Draws the current health of
  * the entity in useable text
  * 
@@ -305,10 +193,100 @@ function healthRenderer(currentHealth, maxHealth) {
 
   healthString += healthIcons.padding.repeat(20 - MAX_HEARTS_DISPLAY);
 
-  log.info(`Render health: ${currentHealth} / ${maxHealth}\n${healthString}`);
-
   if (healthString) return healthString;
   else return `yyyyyyyyyyyyyyyyyyyy`
+
+}
+
+/**
+ * 
+ * Renders the armor of the player
+ * in useable text
+ * 
+ * @param { import('@minecraft/server').Player } player 
+ * @returns { string }
+ */
+function armorRenderer(player) {
+
+  log.info(player.typeId, player.getComponent(EntityComponentTypes.Equippable))
+
+  /**
+   * @type { import('@minecraft/server').EntityEquippableComponent }
+   */
+  const playerEquipment = player.getComponent(EntityComponentTypes.Equippable)
+  if (!playerEquipment) return
+
+  const totalArmor =
+    [ EquipmentSlot.Head, EquipmentSlot.Chest, EquipmentSlot.Legs, EquipmentSlot.Feet ]
+    .reduce((total, slot) => total + armor.get(playerEquipment.getEquipment(slot)?.typeId), 0) || 0;
+
+  log.info(player.name || player.typeId, totalArmor, [ playerEquipment.getEquipment(EquipmentSlot.Head), playerEquipment.getEquipment(EquipmentSlot.Chest), playerEquipment.getEquipment(EquipmentSlot.Legs), playerEquipment.getEquipment(EquipmentSlot.Feet) ])
+
+  const armorIcons = {
+    full: 'p',
+    half: 'o',
+    empty: 'n',
+    padding: 'y'
+  }
+
+  //* temp
+  return 'ppppppppppppppppppp'
+
+}
+
+/**
+ * 
+ * Fetches what block or entity the
+ * specified player is looking at
+ * 
+ * @param { import('@minecraft/server').Player } player 
+ * The player to run the test against
+ * @param { number } max_dist
+ * Maximum range in blocks to check for
+ * 
+ * @returns { lookAtObject }
+ */
+function fetchLookAt(player, max_dist) {
+
+  let _a = {};
+
+  try {
+
+    //* Fetch entity the player is looking at
+    const entityLookAt = player.getEntitiesFromViewDirection({
+      maxDistance: max_dist
+    })
+
+
+    if (entityLookAt.length > 0) {
+      _a.type = 'entity'
+      _a.rawHit = entityLookAt[0]?.entity
+      _a.hit = _a.rawHit.typeId
+      _a.hp = _a.rawHit.getComponent(EntityComponentTypes.Health)?.currentValue || '0'
+      _a.maxHp = _a.rawHit.getComponent(EntityComponentTypes.Health)?.effectiveMax || '0'
+    }
+
+    if (_a.hit) return _a;
+
+
+    //* Fetch block the player is looking at
+    const blockLookAt = player.getBlockFromViewDirection({
+      includeLiquidBlocks: false,
+      includePassableBlocks: true,
+      maxDistance: max_dist
+    })
+
+    if (blockLookAt) {
+      _a.type = 'tile'
+      _a.rawHit = blockLookAt?.block
+      _a.hit = _a.rawHit.getItemStack(1, true)?.typeId || _a.rawHit.typeId
+    }
+
+    return _a;
+
+  } catch (e) {
+    if (!(e instanceof LocationOutOfWorldBoundariesError)) log.warn(e);
+  }
 
 }
 
@@ -331,20 +309,24 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
   if (lookAtObject.type == 'entity') {
 
-    const entityHp = lookAtObject.rawHit.getComponent('health')
+    const entityHp = lookAtObject.rawHit.getComponent(EntityComponentTypes.Health)
 
     //* Set name depending on entity type that was hit
     switch (lookAtObject.hit) {
       case 'minecraft:player':
-        _a.hit = `__r4ui:player.${lookAtObject.rawHit.name}`; break
+        _a.hit = `__r4ui:player.${lookAtObject.rawHit.name}`
+        break
       case 'minecraft:item': 
-        const itemStackEntity = lookAtObject.rawHit.getComponent('item').itemStack;
+        const itemStackEntity = lookAtObject.rawHit.getComponent(EntityComponentTypes.Item).itemStack;
         _a.hitItem = itemStackEntity.typeId;
         _a.itemAux = getItemAux(itemStackEntity)
       default:
         if (hitNamespace === 'minecraft:') _a.hit = `entity.${lookAtObject.hit}.name`;
         else _a.hit = lookAtObject.hit;
     }
+
+    //* Set armor points (will be moved to player-only later)
+    _a.armor = armorRenderer(lookAtObject.rawHit)
 
     //* Set entity HP metadata
     _a.hideHealth =
@@ -355,9 +337,6 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
     if (!_a.hideHealth) _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax));
     else _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
-
-    //* Set entity portrait metadata
-    _a.entityPortrait = getEntityPortrait(lookAtObject.rawHit)
 
     //* Set entity ID metadata
     _a.entityId = transformEntityId(lookAtObject.rawHit)
@@ -489,12 +468,9 @@ function displayUI(player, lookAtObject=undefined) {
     ]
   }
 
-  // log.info(
-  //   'Render:',
-  //   JSON.stringify(object),
-  //   parseStr,
-  //   parseStrSubtitle
-  // )
+  log.info(
+    'Render:', object.hit
+  )
 
   //* Pass the information on the JSON UI
   player.onScreenDisplay.setTitle(parseStr, {
