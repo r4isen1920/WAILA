@@ -10,12 +10,7 @@
  * 
  */
 
-import {
-  LocationOutOfWorldBoundariesError,
-  TicksPerSecond,
-  system,
-  world
-} from '@minecraft/server';
+import { LocationOutOfWorldBoundariesError, TicksPerSecond, system, world } from '@minecraft/server';
 import { toTitle, zFill, prettyCaps } from './utils';
 
 import { blockIds } from './data/blockIds';
@@ -23,11 +18,20 @@ import { blockTools } from './data/blockTools';
 import { entityPortraits } from './data/entityPortraits';
 import { nameAliases } from './data/nameAliases';
 
+/**
+ * @typedef { object } lookAtObject
+ * 
+ * @property { string } type
+ * @property { import('@minecraft/server').Entity | import('@minecraft/server').Block } rawHit
+ * @property { string } hit
+ * @property { string } hp
+ * @property { string } maxHp
+ */
 
-// Run on the 2nd tick
+//* Run on the 2nd tick
 system.runTimeout(() => {
 
-  // Run every second tick
+  //* Run every second tick
   system.runInterval(iterAllPlayers, 2)
 
 }, TicksPerSecond * 2)
@@ -45,17 +49,19 @@ function iterAllPlayers() {
   world.getAllPlayers().forEach(
     player => {
 
-      // Obtain entity or block the player is looking at
+      /**
+       * @type { lookAtObject }
+       */
       let lookAtObject = fetchLookAt(player, MAX_DISTANCE);
 
-      // Reset UI when needed
+      //* Reset UI when needed
       if (player.hasTag('r4ui_reset')) { lookAtObject.hit = 'none'; player.removeTag('r4ui_reset'); }
 
-      // Inform UI that there is nothing on the screen the player is looking at
+      //* Inform UI that there is nothing on the screen the player is looking at
       if (!lookAtObject) return;
       if (lookAtObject.hit === undefined) lookAtObject.hit = 'none';
 
-      // Render the UI in the screen
+      //* Render the UI in the screen
       displayUI(player, lookAtObject);
 
     }
@@ -127,7 +133,7 @@ function getEntityPortrait(entity) {
     `${baseKey}:0:0`
   ];
 
-  // Checks if any of the keys format match from the dictionary
+  //* Checks if any of the keys format match from the dictionary
   for (let key of keys) {
     if (entityPortraits[key] !== undefined) {
       return entityPortraits[key];
@@ -194,7 +200,7 @@ function parseBlockTools(blockId) {
  * @param { number } max_dist
  * Maximum range in blocks to check for
  * 
- * @returns { object }
+ * @returns { lookAtObject }
  */
 function fetchLookAt(player, max_dist) {
 
@@ -202,7 +208,7 @@ function fetchLookAt(player, max_dist) {
 
   try {
 
-    // Fetch entity the player is looking at
+    //* Fetch entity the player is looking at
     const entityLookAt = player.getEntitiesFromViewDirection({
       maxDistance: max_dist
     })
@@ -219,7 +225,7 @@ function fetchLookAt(player, max_dist) {
     if (_a.hit) return _a;
 
 
-    // Fetch block the player is looking at
+    //* Fetch block the player is looking at
     const blockLookAt = player.getBlockFromViewDirection({
       includeLiquidBlocks: true,
       includePassableBlocks: true,
@@ -255,7 +261,7 @@ function healthRenderer(currentHealth, maxHealth) {
   /* The UI can render 40 HP at most -- adjust with caution */
   const MAX_LENGTH = 40;
 
-  // Normalize value to the specified max length if it exceeds the value
+  //* Normalize value to the specified max length if it exceeds the value
   if (maxHealth > MAX_LENGTH) {
     currentHealth = Math.round((currentHealth / maxHealth) * MAX_LENGTH);
     maxHealth = MAX_LENGTH;
@@ -268,13 +274,13 @@ function healthRenderer(currentHealth, maxHealth) {
     padding: 'y'
   }
 
-  // Count number of max, full, half-hearts and empty hearts beforehand
+  //* Count number of max, full, half-hearts and empty hearts beforehand
   const MAX_HEARTS_DISPLAY = Math.ceil(maxHealth / 2);
   let fullHearts = Math.floor(currentHealth / 2);
   let halfHearts = currentHealth % 2;
   let emptyHearts = MAX_HEARTS_DISPLAY - fullHearts - halfHearts;
 
-  // Append them all together in one giant string
+  //* Append them all together in one giant string
   let healthString = 
     healthIcons.full.repeat(fullHearts) + 
     healthIcons.half.repeat(halfHearts) + 
@@ -292,13 +298,16 @@ function healthRenderer(currentHealth, maxHealth) {
 
 /**
  * 
- * @param { object } lookAtObject 
+ * @param { lookAtObject } lookAtObject 
  * @param { string } hitNamespace 
  * 
  * @returns { object }
  */
 function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
+  /**
+   * @type { object }
+   */
   let _a = {};
 
   _a.type = lookAtObject.type;
@@ -307,7 +316,7 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
     const entityHp = lookAtObject.rawHit.getComponent('health')
 
-    // Set name depending on entity type that was hit
+    //* Set name depending on entity type that was hit
     switch (lookAtObject.hit) {
       case 'minecraft:player':
         _a.hit = `__r4ui:player.${lookAtObject.rawHit.name}`; break
@@ -320,35 +329,35 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
         else _a.hit = lookAtObject.hit;
     }
 
-    // Set entity family type
+    //* Set entity family type
     _a.isInanimate =
       lookAtObject.rawHit.matches({ families: ['inanimate'] }) ||
       entityHp?.effectiveMax >= 10000000;
 
-    // Set entity HP metadata
+    //* Set entity HP metadata
     if (!_a.isInanimate) {
       _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax));
       _a.maxHp = Math.floor(entityHp?.effectiveMax);
     } else _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
 
-    // Set entity portrait metadata
+    //* Set entity portrait metadata
     _a.entityPortrait = getEntityPortrait(lookAtObject.rawHit)
 
-    // Set entity ID metadata
+    //* Set entity ID metadata
     _a.entityId = transformEntityId(lookAtObject.rawHit)
 
   } else if (lookAtObject.type == 'tile') {
 
-    // Set default properties
+    //* Set default properties
     _a.hit = lookAtObject.hit;
 
-    // Fetch block tool
+    //* Fetch block tool
     _a.tool = parseBlockTools(lookAtObject.hit)
 
-    // Set block item AUX metadata
-    _a.itemAux = getItemAux(lookAtObject.rawHit.getItemStack())
+    //* Set block item AUX metadata
+    _a.itemAux = getItemAux(lookAtObject.rawHit.getItemStack(1))
 
-    // Set healthRenderer placeholder value
+    //* Set healthRenderer placeholder value
     _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
 
   }
@@ -377,7 +386,7 @@ function clearUI(player) {
 
   player.onScreenDisplay.setTitle(' ', _a)
 
-  // Reset title properties
+  //* Reset title properties
   player.runCommand(`title @s reset`)
 
 }
@@ -395,20 +404,20 @@ function clearUI(player) {
  */
 function displayUI(player, lookAtObject) {
 
-  // Fetch the namespace of the provided hit typeId
+  //* Fetch the namespace of the provided hit typeId
   const hitNamespace = lookAtObject.hit.replace(/(?<=:).+/g, '');
 
-  // Only send a UI update if the value has changed
+  //* Only send a UI update if the value has changed
   const _L = lookAtObject.type === 'entity' ? JSON.stringify(lookAtObject) : lookAtObject.hit
   if (player.getDynamicProperty('r4:oldLog') !== _L) player.setDynamicProperty('r4:oldLog', _L); else return;
 
-  // Remove information that was once displayed on screen
+  //* Remove information that was once displayed on screen
   if (lookAtObject.hit === 'none') { clearUI(player); return }
 
-  // Transform lookAtObject to a parsed object value with metadata included
+  //* Transform lookAtObject to a parsed object value with metadata included
   const object = fetchLookAtMetadata(lookAtObject, hitNamespace);
 
-  // Parse text string information using template literals
+  //* Parse text string information using template literals
   let parseStr = [];
   let parseStrSubtitle = [];
   const nameAlias = nameAliases.get(object.hit.replace(hitNamespace, ''));
@@ -426,7 +435,7 @@ function displayUI(player, lookAtObject) {
     'undefined': 'z',
   }
 
-  // Parse vanilla content
+  //* Parse vanilla content
   if (hitNamespace === 'minecraft:') {
 
     //* _r4ui:A:-00000NaN:z;z:
@@ -447,7 +456,7 @@ function displayUI(player, lookAtObject) {
       { text: object.entityId }
     ]
 
-  // Parse non-vanilla content
+  //* Parse non-vanilla content
   } else {
 
     parseStr = [
@@ -467,7 +476,7 @@ function displayUI(player, lookAtObject) {
   //* player.sendMessage(parseStr)
   //* player.sendMessage(parseStrSubtitle)
 
-  // Pass the information on the JSON UI
+  //* Pass the information on the JSON UI
   player.onScreenDisplay.setTitle(parseStr, {
     subtitle: parseStrSubtitle,
 
@@ -476,6 +485,6 @@ function displayUI(player, lookAtObject) {
     stayDuration: 0,
   });
 
-  // Reset title properties
+  //* Reset title properties
   player.runCommand(`title @s reset`)
 }
