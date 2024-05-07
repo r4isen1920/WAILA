@@ -18,6 +18,10 @@ import { blockTools } from './data/blockTools';
 import { entityPortraits } from './data/entityPortraits';
 import { nameAliases } from './data/nameAliases';
 
+import { Logger } from '@bedrock-oss/bedrock-boost';
+const log = new Logger('WAILA')
+
+
 /**
  * @typedef { object } lookAtObject
  * 
@@ -28,13 +32,8 @@ import { nameAliases } from './data/nameAliases';
  * @property { string } maxHp
  */
 
-//* Run on the 2nd tick
-system.runTimeout(() => {
 
-  //* Run every second tick
-  system.runInterval(iterAllPlayers, 2)
-
-}, TicksPerSecond * 2)
+system.runInterval(iterAllPlayers, 2)
 
 
 /**
@@ -235,13 +234,13 @@ function fetchLookAt(player, max_dist) {
     if (blockLookAt) {
       _a.type = 'tile'
       _a.rawHit = blockLookAt?.block
-      _a.hit = _a.rawHit.typeId
+      _a.hit = _a.rawHit.getItemStack(1, true)?.typeId || _a.rawHit.typeId
     }
 
     return _a;
 
   } catch (e) {
-    if (!(e instanceof LocationOutOfWorldBoundariesError)) throw e;
+    if (!(e instanceof LocationOutOfWorldBoundariesError)) log.warn(e);
   }
 
 }
@@ -288,7 +287,7 @@ function healthRenderer(currentHealth, maxHealth) {
 
   healthString += healthIcons.padding.repeat(20 - MAX_HEARTS_DISPLAY);
 
-  //* console.warn(`${currentHealth} / ${maxHealth}\n${healthString}`);
+  log.info(`Render health: ${currentHealth} / ${maxHealth}\n${healthString}`);
 
   if (healthString) return healthString;
   else return `yyyyyyyyyyyyyyyyyyyy`
@@ -355,7 +354,7 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     _a.tool = parseBlockTools(lookAtObject.hit)
 
     //* Set block item AUX metadata
-    _a.itemAux = getItemAux(lookAtObject.rawHit.getItemStack(1))
+    _a.itemAux = getItemAux(lookAtObject.rawHit.getItemStack(1, true))
 
     //* Set healthRenderer placeholder value
     _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
@@ -399,13 +398,14 @@ function clearUI(player) {
  * 
  * @param { import('@minecraft/server').Player } player 
  * The player to render the UI onto
- * @param { object } lookAtObject 
+ * @param { object | undefined } lookAtObject 
  * Type of object to render
  */
-function displayUI(player, lookAtObject) {
+function displayUI(player, lookAtObject=undefined) {
 
   //* Fetch the namespace of the provided hit typeId
-  const hitNamespace = lookAtObject.hit.replace(/(?<=:).+/g, '');
+  const hitNamespace = lookAtObject?.hit?.replace(/(?<=:).+/g, '')
+  if (!hitNamespace) return
 
   //* Only send a UI update if the value has changed
   const _L = lookAtObject.type === 'entity' ? JSON.stringify(lookAtObject) : lookAtObject.hit
@@ -472,9 +472,12 @@ function displayUI(player, lookAtObject) {
     ]
   }
 
-  //* console.warn(JSON.stringify(object))
-  //* player.sendMessage(parseStr)
-  //* player.sendMessage(parseStrSubtitle)
+  //* log.info(
+  //*   'Render:',
+  //*   JSON.stringify(object),
+  //*   parseStr,
+  //*   parseStrSubtitle
+  //* )
 
   //* Pass the information on the JSON UI
   player.onScreenDisplay.setTitle(parseStr, {
@@ -488,3 +491,4 @@ function displayUI(player, lookAtObject) {
   //* Reset title properties
   player.runCommand(`title @s reset`)
 }
+

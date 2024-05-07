@@ -262,7 +262,8 @@ export const nameAliases = new Map([
   ['warped_wall_sign', 'item.warped_sign'],
   ['frame', 'item.frame'],
   ['glow_frame', 'item.glow_frame'],
-  ['seagrass', 'seagrass.seagrass']
+  ['seagrass', 'seagrass.seagrass'],
+  ['powder_snow_bucket', 'powder_snow']
 
 
 ])
