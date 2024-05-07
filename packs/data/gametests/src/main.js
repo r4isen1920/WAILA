@@ -10,7 +10,7 @@
  * 
  */
 
-import { LocationOutOfWorldBoundariesError, TicksPerSecond, system, world } from '@minecraft/server';
+import { LocationOutOfWorldBoundariesError, system, world } from '@minecraft/server';
 import { toTitle, zFill, prettyCaps } from './utils';
 
 import { blockIds } from './data/blockIds';
@@ -24,12 +24,30 @@ const log = new Logger('WAILA')
 
 /**
  * @typedef { object } lookAtObject
+ * Represents the object a player is currently looking at in the game.
  * 
- * @property { string } type
- * @property { import('@minecraft/server').Entity | import('@minecraft/server').Block } rawHit
- * @property { string } hit
- * @property { string } hp
- * @property { string } maxHp
+ * @property { string } type - The type of the object (e.g., 'entity' or 'block').
+ * @property { import('@minecraft/server').Entity | import('@minecraft/server').Block } rawHit - The actual entity or block object that was hit.
+ * @property { string } hit - The identifier of the hit object.
+ * @property { string } hp - The current health points of the entity, if applicable.
+ * @property { string } maxHp - The maximum health points of the entity, if applicable.
+ */
+
+/**
+ * @typedef { object } lookAtObjectMetadata
+ * Contains metadata about the object a player is looking at, used for UI display.
+ * 
+ * @property { string } type - The type of the object (e.g., 'entity' or 'block').
+ * @property { string } hit - The identifier of the hit object.
+ * @property { string } hitItem - The identifier of the item associated with the hit object.
+ * @property { number } itemAux - Auxiliary data for the item used for rendering in the UI.
+ * @property { boolean } hideHealth - Whether to hide the health bar in the UI.
+ * @property { string } healthRenderer - The rendered string of health icons.
+ * @property { number } hp - The current health points of the entity.
+ * @property { number } maxHp - The maximum health points of the entity.
+ * @property { string } entityPortrait - The file path or identifier for the entity's portrait image.
+ * @property { string } entityId - The unique identifier for the entity.
+ * @property { string[] } tool - The tools applicable for interacting with the object.
  */
 
 
@@ -226,7 +244,7 @@ function fetchLookAt(player, max_dist) {
 
     //* Fetch block the player is looking at
     const blockLookAt = player.getBlockFromViewDirection({
-      includeLiquidBlocks: true,
+      includeLiquidBlocks: false,
       includePassableBlocks: true,
       maxDistance: max_dist
     })
@@ -300,12 +318,12 @@ function healthRenderer(currentHealth, maxHealth) {
  * @param { lookAtObject } lookAtObject 
  * @param { string } hitNamespace 
  * 
- * @returns { object }
+ * @returns { lookAtObjectMetadata }
  */
 function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
   /**
-   * @type { object }
+   * @type { lookAtObjectMetadata }
    */
   let _a = {};
 
@@ -328,16 +346,15 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
         else _a.hit = lookAtObject.hit;
     }
 
-    //* Set entity family type
-    _a.isInanimate =
-      lookAtObject.rawHit.matches({ families: ['inanimate'] }) ||
-      entityHp?.effectiveMax >= 10000000;
-
     //* Set entity HP metadata
-    if (!_a.isInanimate) {
-      _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax));
-      _a.maxHp = Math.floor(entityHp?.effectiveMax);
-    } else _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
+    _a.hideHealth =
+      lookAtObject.rawHit.matches({ families: ['inanimate'] }) ||
+      entityHp?.effectiveMax > 40;
+    _a.hp = Math.floor(entityHp?.currentValue);
+    _a.maxHp = Math.floor(entityHp?.effectiveMax);
+
+    if (!_a.hideHealth) _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax));
+    else _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
 
     //* Set entity portrait metadata
     _a.entityPortrait = getEntityPortrait(lookAtObject.rawHit)
@@ -450,7 +467,7 @@ function displayUI(player, lookAtObject=undefined) {
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
       { translate: `${object.type === 'tile' ? `${nameAlias?.startsWith('item.') ? '' : 'tile.'}${!nameAlias ? object.hit.replace(hitNamespace, '') : nameAlias}.name` : object.hit.replace(hitNamespace, '')}` },
       { text: `${(object.hitItem !== undefined ? `\n§7${object.hitItem}§r` : '')}` },
-      { text: `\n${(object.maxHp > 0 ? '\n' : '')}${(object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
+      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
     ]
     parseStrSubtitle = [
       { text: object.entityId }
@@ -465,19 +482,19 @@ function displayUI(player, lookAtObject=undefined) {
 
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
       { translate: `${object.type}.${object.hit}.name` },
-      { text: `\n${(object.maxHp > 0 ? '\n' : '')}${(object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
+      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp} / ${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
     ]
     parseStrSubtitle = [
       { text: object.entityId }
     ]
   }
 
-  //* log.info(
-  //*   'Render:',
-  //*   JSON.stringify(object),
-  //*   parseStr,
-  //*   parseStrSubtitle
-  //* )
+  // log.info(
+  //   'Render:',
+  //   JSON.stringify(object),
+  //   parseStr,
+  //   parseStrSubtitle
+  // )
 
   //* Pass the information on the JSON UI
   player.onScreenDisplay.setTitle(parseStr, {

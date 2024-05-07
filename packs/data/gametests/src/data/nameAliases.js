@@ -263,7 +263,14 @@ export const nameAliases = new Map([
   ['frame', 'item.frame'],
   ['glow_frame', 'item.glow_frame'],
   ['seagrass', 'seagrass.seagrass'],
-  ['powder_snow_bucket', 'powder_snow']
+  ['powder_snow_bucket', 'powder_snow'],
+  ['wheat_seeds', 'item.wheat_seeds'],
+  ['beetroot_seeds', 'beetroot'],
+  ['carrot', 'item.carrot'],
+  ['potato', 'potatoes'],
+  ['melon_seeds', 'item.melon_seeds'],
+  ['pumpkin_seeds', 'pumpkin'],
+  ['cornflower', 'red_flower.cornflower']
 
 
 ])

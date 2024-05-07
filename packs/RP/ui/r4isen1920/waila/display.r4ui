@@ -232,7 +232,8 @@
                             "controls": [
                               {
                                 "hover_name_and_namespace@r4isen1920_waila_display.label": {
-                                  "text": "$text",
+                                  "min_size": [ "default", 20 ],
+                                  "text": "$text", 
 
                                   "variables": [
                                     {

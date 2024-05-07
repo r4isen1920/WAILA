@@ -17,6 +17,7 @@ export const blockTools = [
       'root',
       'sprout',
       'vine',
+      'waterlily',
       'weed',
       'wool',
       'minecraft:seagrass'
@@ -28,7 +29,7 @@ export const blockTools = [
       'bubble',
       'lava',
       'powder_snow',
-      'water',
+      'water_bucket',
     ]
   },
   {
