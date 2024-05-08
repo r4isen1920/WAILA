@@ -31,7 +31,8 @@ export const blockTools = [
       'waterlily',
       'weed',
       'wool',
-      'minecraft:seagrass'
+      'minecraft:seagrass',
+      '!seed',
     ]
   },
   {
@@ -109,12 +110,14 @@ export const blockTools = [
       'minecraft:cocoa',
       'minecraft:melon_block',
       'minecraft:web',
+      '!seed',
     ]
   },
   {
     type: 'shovel',
     value: [
       'concrete_powder',
+      'farmland',
       'grass',
       'sand',
       'snow',
