@@ -270,7 +270,8 @@ export const nameAliases = new Map([
   ['potato', 'potatoes'],
   ['melon_seeds', 'item.melon_seeds'],
   ['pumpkin_seeds', 'pumpkin'],
-  ['cornflower', 'red_flower.cornflower']
+  ['cornflower', 'red_flower.cornflower'],
+  ['sea_lantern', 'seaLantern'],
 
 
 ])
