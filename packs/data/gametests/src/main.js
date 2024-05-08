@@ -43,9 +43,9 @@ const log = new Logger('WAILA')
  * @property { number } itemAux - Auxiliary data for the item used for rendering in the UI.
  * @property { boolean } hideHealth - Whether to hide the health bar in the UI.
  * @property { string } healthRenderer - The rendered string of health icons.
+ * @property { string } armorRenderer - The rendered string of armor icons.
  * @property { number } hp - The current health points of the entity.
  * @property { number } maxHp - The maximum health points of the entity.
- * @property { string } armor - The rendered string of armor icons.
  * @property { string } entityId - The unique identifier for the entity.
  * @property { string[] } tool - The tools applicable for interacting with the object.
  */
@@ -165,12 +165,11 @@ function parseBlockTools(blockId) {
  * 
  * @param { number } currentHealth 
  * @param { number } maxHealth 
+ * @param { number | undefined } MAX_LENGTH 
+ * 
  * @returns { string }
  */
-function healthRenderer(currentHealth, maxHealth) {
-
-  /* The UI can render 40 HP at most -- adjust with caution */
-  const MAX_LENGTH = 40;
+function healthRenderer(currentHealth, maxHealth, MAX_LENGTH=40) {
 
   //* Normalize value to the specified max length if it exceeds the value
   if (maxHealth > MAX_LENGTH) {
@@ -325,7 +324,7 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     switch (lookAtObject.hit) {
       case 'minecraft:player':
         _a.hit = `__r4ui:player.${lookAtObject.rawHit.name}`
-        _a.armor = armorRenderer(lookAtObject.rawHit)
+        _a.armorRenderer = armorRenderer(lookAtObject.rawHit)
         break
       case 'minecraft:item': 
         const itemStackEntity = lookAtObject.rawHit.getComponent(EntityComponentTypes.Item).itemStack;
@@ -338,12 +337,12 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
     //* Set entity HP metadata
     _a.hideHealth =
-      lookAtObject.rawHit.matches({ families: ['inanimate'] }) ||
-      entityHp?.effectiveMax > 40;
+      lookAtObject.rawHit.matches({ families: [ 'inanimate' ] }) ||
+      (entityHp?.effectiveMax > 40 && !lookAtObject.rawHit.matches({ type: 'minecraft:player' }));
     _a.hp = Math.floor(entityHp?.currentValue);
     _a.maxHp = Math.floor(entityHp?.effectiveMax);
 
-    if (!_a.hideHealth) _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax));
+    if (!_a.hideHealth) _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax), lookAtObject.rawHit.matches({ type: 'minecraft:player' }) ? 20 : 40);
     else _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
 
     //* Set entity ID metadata
@@ -363,10 +362,10 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     //* Set healthRenderer placeholder value
     _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
 
-    //* Set armorRenderer placeholder value
-    _a.armorRenderer = 'nnnnnnnnnn';
-
   }
+
+  //* Set armorRenderer placeholder value
+  _a.armorRenderer = 'nnnnnnnnnn';
 
   return _a;
 
@@ -446,13 +445,13 @@ function displayUI(player, lookAtObject=undefined) {
   if (hitNamespace === 'minecraft:') {
 
     //* _r4ui:A:-00000NaN:z;z:
-    //* _r4ui:B:yyyyyyyyyyyyyyyyyyyy:z;z:
+    //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:z;z:
 
     //** -605590388693
 
     parseStr = [
       { text: `_r4ui:${(object.type === 'tile' || object.hitItem) ? 'A' : 'B'}:` },
-      { text: `${(object.type === 'tile' || object.hitItem) ? `${object.itemAux > 0 ? '' : '-'}${zFill(Math.abs(object.itemAux), object.itemAux > 0 ? 9 : 8)}` : object.healthRenderer}` },
+      { text: `${(object.type === 'tile' || object.hitItem) ? `${object.itemAux > 0 ? '' : '-'}${zFill(Math.abs(object.itemAux), object.itemAux > 0 ? 9 : 8)}` : `${object.healthRenderer}${object.armorRenderer}`}` },
 
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
       { translate: `${object.type === 'tile' ? `${nameAlias?.startsWith('item.') ? '' : 'tile.'}${!nameAlias ? object.hit.replace(hitNamespace, '') : nameAlias}.name` : object.hit.replace(hitNamespace, '')}` },

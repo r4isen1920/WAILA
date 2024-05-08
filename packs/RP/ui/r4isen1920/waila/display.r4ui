@@ -28,7 +28,7 @@
   },
 
 
-  "heart_renderer@common.empty_panel": {
+  "icon_renderer@common.empty_panel": {
     "size": [ "100%c - 0.5px", "100%c - 0.5px" ],
 
     "controls": [
@@ -214,6 +214,7 @@
                       "anchor_from": "top_left",
                       "anchor_to": "top_left",
                       "size": [ "100%cm", "100%c" ],
+                      "offset": [ 1, 0 ],
 
                       "controls": [
 
@@ -242,7 +243,7 @@
                                     },
                                     {
                                       "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                      "$text": "('' + ($var_title_text - ('%.33s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
+                                      "$text": "('' + ($var_title_text - ('%.43s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
                                     }
                                   ]
                                 }
@@ -278,7 +279,7 @@
                                           },
                                           {
                                             "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.29s' * $var_title_text)))) - ':')"
+                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.39s' * $var_title_text)))) - ':')"
                                           }
                                         ],
 
@@ -298,7 +299,7 @@
                                           },
                                           {
                                             "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.31s' * $var_title_text)))) - ':')"
+                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.41s' * $var_title_text)))) - ':')"
                                           }
                                         ],
 
@@ -315,25 +316,19 @@
                           }
                         },
 
-                        //* _r4ui:B:yyyyyyyyyyyyyyyyyyyy
+                        //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn
 
                         {
-                          "entity_health_renderer_panel@common.empty_panel": {
+                          "entity_health_and_armor_renderer_panel@common.empty_panel": {
                             "anchor_from": "top_left",
                             "anchor_to": "top_left",
-                            "size": "$size",
+                            "size": [ "100%c", "100%c - 10px" ],
                             "offset": [ 0, 11 ],
 
                             /* Ignore if not rendering an entity */
                             "ignored": "($tooltip_renderer_type = 'A:')",
 
-                            "$size|default": [ "100%c", "100%c - 18px" ],
-                            "variables": {
-                              "requires": "(('' + ('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))) = 'y')",
-                              "$size": [ "100%c", "100%c - 9px" ]
-                            },
-
-                            "controls": [
+                            "controls": [ 
                               {
                                 "verti": {
                                   "type": "stack_panel",
@@ -350,47 +345,70 @@
                                       }
                                     },
                                     {
-                                      "entity_health_renderer_0": {
+                                      "stack_0": {
                                         "type": "stack_panel",
                                         "orientation": "horizontal",
 
                                         "size": [ "100%c", "100%cm" ],
 
                                         "controls": [
-                                          { "heart_0@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))" } },
-                                          { "heart_1@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.9s' * $var_title_text)))" } },
-                                          { "heart_2@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.10s' * $var_title_text)))" } },
-                                          { "heart_3@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.11s' * $var_title_text)))" } },
-                                          { "heart_4@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.12s' * $var_title_text)))" } },
-                                          { "heart_5@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.13s' * $var_title_text)))" } },
-                                          { "heart_6@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.14s' * $var_title_text)))" } },
-                                          { "heart_7@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.15s' * $var_title_text)))" } },
-                                          { "heart_8@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.16s' * $var_title_text)))" } },
-                                          { "heart_9@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.17s' * $var_title_text)))" } }
+                                          { "heart_0@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))" } },
+                                          { "heart_1@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.9s' * $var_title_text)))" } },
+                                          { "heart_2@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.10s' * $var_title_text)))" } },
+                                          { "heart_3@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.11s' * $var_title_text)))" } },
+                                          { "heart_4@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.12s' * $var_title_text)))" } },
+                                          { "heart_5@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.13s' * $var_title_text)))" } },
+                                          { "heart_6@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.14s' * $var_title_text)))" } },
+                                          { "heart_7@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.15s' * $var_title_text)))" } },
+                                          { "heart_8@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.16s' * $var_title_text)))" } },
+                                          { "heart_9@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.17s' * $var_title_text)))" } }
                                         ]
                                       }
                                     },
                                     {
-                                      "entity_health_renderer_1": {
+                                      "stack_1": {
                                         "type": "stack_panel",
                                         "orientation": "horizontal",
 
                                         "size": [ "100%c", "100%cm" ],
 
                                         "controls": [
-                                          { "heart_10@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))" } },
-                                          { "heart_11@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.19s' * $var_title_text)))" } },
-                                          { "heart_12@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.20s' * $var_title_text)))" } },
-                                          { "heart_13@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.21s' * $var_title_text)))" } },
-                                          { "heart_14@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.22s' * $var_title_text)))" } },
-                                          { "heart_15@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.23s' * $var_title_text)))" } },
-                                          { "heart_16@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.24s' * $var_title_text)))" } },
-                                          { "heart_17@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.25s' * $var_title_text)))" } },
-                                          { "heart_18@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.26s' * $var_title_text)))" } },
-                                          { "heart_19@r4isen1920_waila_display.heart_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.27s' * $var_title_text)))" } }
+                                          { "heart_10@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))" } },
+                                          { "heart_11@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.19s' * $var_title_text)))" } },
+                                          { "heart_12@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.20s' * $var_title_text)))" } },
+                                          { "heart_13@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.21s' * $var_title_text)))" } },
+                                          { "heart_14@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.22s' * $var_title_text)))" } },
+                                          { "heart_15@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.23s' * $var_title_text)))" } },
+                                          { "heart_16@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.24s' * $var_title_text)))" } },
+                                          { "heart_17@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.25s' * $var_title_text)))" } },
+                                          { "heart_18@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.26s' * $var_title_text)))" } },
+                                          { "heart_19@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.27s' * $var_title_text)))" } }
                                         ],
 
                                         "ignored": "(('' + ('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))) = 'y')"
+                                      }
+                                    },
+                                    {
+                                      "stack_2": {
+                                        "type": "stack_panel",
+                                        "orientation": "horizontal",
+
+                                        "size": [ "100%c", "100%cm" ],
+
+                                        "controls": [
+                                          { "armor_0@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.28s' * $var_title_text)))" } },
+                                          { "armor_1@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.29s' * $var_title_text)))" } },
+                                          { "armor_2@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.30s' * $var_title_text)))" } },
+                                          { "armor_3@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.31s' * $var_title_text)))" } },
+                                          { "armor_4@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.32s' * $var_title_text)))" } },
+                                          { "armor_5@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.33s' * $var_title_text)))" } },
+                                          { "armor_6@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.34s' * $var_title_text)))" } },
+                                          { "armor_7@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.35s' * $var_title_text)))" } },
+                                          { "armor_8@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.36s' * $var_title_text)))" } },
+                                          { "armor_9@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.37s' * $var_title_text)))" } }
+                                        ],
+
+                                        "ignored": "(('' + ('%.1s' * ($var_title_text - ('%.28s' * $var_title_text)))) = 'n')"
                                       }
                                     },
                                     {
