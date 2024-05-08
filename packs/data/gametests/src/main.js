@@ -10,7 +10,7 @@
  * 
  */
 
-import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, world } from '@minecraft/server';
+import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, TicksPerSecond, world } from '@minecraft/server';
 import { toTitle, zFill, prettyCaps } from './utils';
 
 import { armor } from './data/armor';
@@ -31,6 +31,7 @@ const log = new Logger('WAILA')
  * @property { string } hit - The identifier of the hit object.
  * @property { string } hp - The current health points of the entity, if applicable.
  * @property { string } maxHp - The maximum health points of the entity, if applicable.
+ * @property { import('@minecraft/server').Effect[] } effects - The status effects applied to the entity, if applicable.
  */
 
 /**
@@ -44,6 +45,7 @@ const log = new Logger('WAILA')
  * @property { boolean } hideHealth - Whether to hide the health bar in the UI.
  * @property { string } healthRenderer - The rendered string of health icons.
  * @property { string } armorRenderer - The rendered string of armor icons.
+ * @property { { effectString: string, effectsResolvedArray: string[] } } effectsRenderer - The rendered string of effects.
  * @property { number } hp - The current health points of the entity.
  * @property { number } maxHp - The maximum health points of the entity.
  * @property { string } entityId - The unique identifier for the entity.
@@ -51,7 +53,7 @@ const log = new Logger('WAILA')
  */
 
 
-system.runInterval(iterAllPlayers, 2)
+system.runInterval(iterAllPlayers, 3)
 
 
 /**
@@ -244,6 +246,97 @@ function armorRenderer(player) {
 
 }
 
+
+/**
+ * 
+ * Renders the effects of the entity
+ * in useable text
+ * 
+ * @param { import('@minecraft/server').Entity } entity 
+ * 
+ * @returns { { effectString: string, effectsResolvedArray: string[] } }
+ */
+function effectsRenderer(entity) {
+
+  const MAX_EFFECTS_TO_RESOLVE = 5
+
+  /**
+   * @type { Array<{ name: string, id: number, is_negative: boolean }> }
+   * 
+   * @property { string } name - The name of the effect
+   * @property { number } id - The ID of the effect
+   * @property { boolean } is_negative - Whether the effect is negative
+   */
+  const effectList = [
+    { name: 'speed', id: 1, is_negative: false },
+    { name: 'slowness', id: 2, is_negative: true },
+    { name: 'haste', id: 3, is_negative: false },
+    { name: 'mining_fatigue', id: 4, is_negative: true },
+    { name: 'strength', id: 5, is_negative: false },
+    { name: 'instant_health', id: 6, is_negative: false },
+    { name: 'instant_damage', id: 7, is_negative: true },
+    { name: 'jump_boost', id: 8, is_negative: false },
+    { name: 'nausea', id: 9, is_negative: true },
+    { name: 'regeneration', id: 10, is_negative: false },
+    { name: 'resistance', id: 11, is_negative: false },
+    { name: 'fire_resistance', id: 12, is_negative: false },
+    { name: 'water_breathing', id: 13, is_negative: false },
+    { name: 'invisibility', id: 14, is_negative: false },
+    { name: 'blindness', id: 15, is_negative: true },
+    { name: 'night_vision', id: 16, is_negative: false },
+    { name: 'hunger', id: 17, is_negative: true },
+    { name: 'weakness', id: 18, is_negative: true },
+    { name: 'poison', id: 19, is_negative: true },
+    { name: 'wither', id: 20, is_negative: true },
+    { name: 'health_boost', id: 21, is_negative: false },
+    { name: 'absorption', id: 22, is_negative: false },
+    { name: 'saturation', id: 23, is_negative: false },
+    { name: 'levitation', id: 24, is_negative: true },
+    { name: 'fatal_poison', id: 25, is_negative: true },
+    { name: 'slow_falling', id: 26, is_negative: false },
+    { name: 'conduit_power', id: 27, is_negative: false },
+    { name: 'bad_omen', id: 28, is_negative: true },
+    { name: 'village_hero', id: 29, is_negative: false },
+    { name: 'darkness', id: 30, is_negative: true },
+  ]
+
+  //* Array<'d00:00p0'>
+  //* Array<'min:sec.potency;'>
+
+  let effectString = ''
+  let effectsResolved = 0
+  let effectsResolvedArray = []
+
+  effectList.forEach(effect => {
+    let effectData = entity.getEffect(effect.name) || { duration: 0, amplifier: 0 }
+    let effectDuration = effectData.duration;
+    let effectAmplifier = effectData.amplifier;
+
+    if (effectsResolved >= MAX_EFFECTS_TO_RESOLVE) {
+      effectDuration = 0;
+      effectAmplifier = 0;
+    } else effectAmplifier = !effectData.typeId ? 0 : Math.min(effectAmplifier + 1, 8)
+    if (effectData.typeId) effectsResolved++
+
+    effectDuration /= TicksPerSecond;
+    const effectDurationMinutes = Math.min(99, Math.floor(effectDuration / 60));
+    const effectDurationSeconds = Math.floor(effectDuration % 60);
+
+    effectString +=
+      `d${effectDurationMinutes.toString().padStart(2, '0')}:${effectDurationSeconds.toString().padStart(2, '0')}` +
+      `p${effectAmplifier.toString().padStart(1, '0')}`
+    if (effectDuration > 0) effectsResolvedArray.push(effectData.typeId)
+  })
+
+  //* d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0
+  return {
+    effectString,
+    effectsResolvedArray
+  }
+
+}
+
+
 /**
  * 
  * Fetches what block or entity the
@@ -274,6 +367,11 @@ function fetchLookAt(player, max_dist) {
       _a.hit = _a.rawHit.typeId
       _a.hp = _a.rawHit.getComponent(EntityComponentTypes.Health)?.currentValue || '0'
       _a.maxHp = _a.rawHit.getComponent(EntityComponentTypes.Health)?.effectiveMax || '0'
+      _a.effects = _a.rawHit.getEffects().map(effect => ({
+        id: effect.typeId,
+        amplifier: effect.amplifier,
+        effectDuration: Math.floor(effect.duration / TicksPerSecond)
+      })) || []
     }
 
     if (_a.hit) return _a;
@@ -347,7 +445,10 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     else _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
 
     //* Set entity ID metadata
-    _a.entityId = transformEntityId(lookAtObject.rawHit)
+    _a.entityId = transformEntityId(lookAtObject.rawHit);
+
+    //* Set effectsRenderer metadata
+    _a.effectsRenderer = effectsRenderer(lookAtObject.rawHit);
 
   } else if (lookAtObject.type == 'tile') {
 
@@ -362,6 +463,12 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
     //* Set healthRenderer placeholder value
     _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
+
+    //* Set effectsRenderer placeholder value
+    _a.effectsRenderer = {
+      effectString: 'none',
+      effectsResolvedArray: []
+    }
 
   }
 
@@ -416,7 +523,7 @@ function displayUI(player, lookAtObject=undefined) {
 
   //* Only send a UI update if the value has changed
   const _L = lookAtObject.type === 'entity' ? JSON.stringify(lookAtObject) : lookAtObject.hit
-  if (player.getDynamicProperty('r4:oldLog') !== _L) player.setDynamicProperty('r4:oldLog', _L); else return;
+  if (player.getDynamicProperty('r4isen1920_waila:old_log') !== _L) player.setDynamicProperty('r4isen1920_waila:old_log', _L); else return;
 
   //* Remove information that was once displayed on screen
   if (lookAtObject.hit === 'none') { clearUI(player); return }
@@ -446,7 +553,7 @@ function displayUI(player, lookAtObject=undefined) {
   if (hitNamespace === 'minecraft:') {
 
     //* _r4ui:A:-00000NaN:z;z:
-    //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:z;z:
+    //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:z;z:d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0e00
 
     //** -605590388693
 
@@ -455,9 +562,12 @@ function displayUI(player, lookAtObject=undefined) {
       { text: `${(object.type === 'tile' || object.hitItem) ? `${object.itemAux > 0 ? '' : '-'}${zFill(Math.abs(object.itemAux), object.itemAux > 0 ? 9 : 8)}` : `${object.healthRenderer}${object.armorRenderer}`}` },
 
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
+      { text: `${object.type === 'entity' ? `${object.effectsRenderer.effectString}e${object.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, '0')}` : ''}` },
       { translate: `${object.type === 'tile' ? `${nameAlias?.startsWith('item.') ? '' : 'tile.'}${!nameAlias ? object.hit.replace(hitNamespace, '') : nameAlias}.name` : object.hit.replace(hitNamespace, '')}` },
       { text: `${(object.hitItem !== undefined ? `\n§7${object.hitItem}§r` : '')}` },
-      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
+      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
+      { text: '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) },
+      { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
     ]
     parseStrSubtitle = [
       { text: object.entityId }
@@ -468,11 +578,14 @@ function displayUI(player, lookAtObject=undefined) {
 
     parseStr = [
       { text: `_r4ui:${object.type === 'tile' ? 'A' : 'B'}:` },
-      { text: `${object.type === 'tile' ? '-00000NaN' : object.healthRenderer}` },
+      { text: `${object.type === 'tile' ? '-00000NaN' : `${object.healthRenderer}nnnnnnnnnn`}` },
 
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
+      { text: `${object.type === 'entity' ? `${object.effectsRenderer.effectString}e${object.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, '0')}` : ''}` },
       { translate: `${object.type}.${object.hit}.name` },
-      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp} / ${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
+      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
+      { text: '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) },
+      { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
     ]
     parseStrSubtitle = [
       { text: object.entityId }

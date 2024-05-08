@@ -51,7 +51,7 @@
               "factory": {
                 "name": "hud_title_text_factory",
                 "control_ids": {
-                  "hud_title_text": "disp@r4isen1920_waila_display.disp"
+                  "hud_title_text": "disp@r4isen1920_waila_display.main"
                 }
               },
   

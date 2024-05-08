@@ -1,5 +1,5 @@
 {
-  /* created by r4isen1920 | MIT License */
+  /* r4isen1920によって作成されました | MITライセンス */
 
 
   "namespace": "r4isen1920_waila_display",
@@ -47,6 +47,128 @@
   },
 
 
+  "status_effect_renderer@common.empty_panel": {
+    "size": [ "100%c", "100%c" ],
+
+    //* 使用するアイコン
+    "$data_a|default": "",
+
+    //* 使用するローカリゼーションキー
+    "$data_b|default": "",
+
+    //* エフェクトがネガティブな場合
+    "$data_c|default": false,
+
+    //* エフェクトの持続時間と増幅度を整形した文字列
+    "$data_d|default": "d00:00p0",
+
+    "controls":[
+
+      {
+        "icon_and_label_hori": {
+          "type": "stack_panel",
+          "orientation": "horizontal",
+
+          "size": [ "100%c", "50%c" ],
+
+          "ignored": "(('%.2s' * ($data_d - ('%.6s' * $data_d))) = 'p0')",
+
+          "controls": [
+            {
+              "icon_panel@common.empty_panel": {
+                "size": [ "100%c + 1px", "100%sm" ],
+
+                "controls": [
+                  {
+                    "icon@r4isen1920_waila_display.image": {
+                      "texture": "('textures/ui/' + $data_a + '_effect')",
+                      "keep_ratio": true,
+
+                      "size": [ "100%y", "100%" ]
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "label_panel": {
+                "type": "stack_panel",
+                "orientation": "vertical",
+
+                "size": [ "100%cm", "100%c" ],
+
+                "controls": [
+                  {
+                    "name_and_amplifier": {
+                      "type": "stack_panel",
+                      "orientation": "horizontal",
+
+                      "size": [ "100%c", "100%cm" ],
+
+                      "$data_e": "('%.2s' * ($data_d - ('%.6s' * $data_d)))",
+
+                      "controls": [
+                        {
+                          "name@r4isen1920_waila_display.label": {
+                            "text": "$data_b",
+                            "font_scale_factor": 0.88,
+                            "localize": true,
+                            "color": "$color",
+
+                            "variables": [
+                              { "requires": "$data_c", "$color": "$c_color_format" },
+                              { "requires": "(not $data_c)", "$color": "$f_color_format" }
+                            ]
+                          }
+                        },
+                        {
+                          "padding@common.empty_panel": {
+                            "size": [ 3.75, 1 ]
+                          }
+                        },
+                        {
+                          "amplifier@r4isen1920_waila_display.label": {
+                            "text": "$text",
+                            "font_scale_factor": 0.88,
+                            "color": "$color",
+
+                            "$text|default": " ",
+
+                            "variables": [
+                              { "requires": "$data_c", "$color": "$c_color_format" },
+                              { "requires": "(not $data_c)", "$color": "$f_color_format" },
+
+                              { "requires": "($data_e = 'p1')", "$text": " " },
+                              { "requires": "($data_e = 'p2')", "$text": "II" },
+                              { "requires": "($data_e = 'p3')", "$text": "III" },
+                              { "requires": "($data_e = 'p4')", "$text": "IV" },
+                              { "requires": "($data_e = 'p5')", "$text": "V" },
+                              { "requires": "($data_e = 'p6')", "$text": "VI" },
+                              { "requires": "($data_e = 'p7')", "$text": "VII" },
+                              { "requires": "($data_e = 'p8')", "$text": "VIII" },
+                              { "requires": "($data_e = 'p9')", "$text": "IX" }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  },
+                  {
+                    "duration@r4isen1920_waila_display.label": {
+                      "text": "('%.6s' * $data_d)",
+                      "color": "$7_color_format"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    ]
+  },
+
+
   "item_aux_renderer": {
     "type": "custom",
     "renderer": "inventory_item_renderer",
@@ -85,14 +207,14 @@
   },
 
 
-  "disp@common.empty_panel": {
+  "main@common.empty_panel": {
     "size": [ "100%cm", "100%cm" ],
 
-    /* Set on top of everything else */
+    /* 他のすべての上に設定 */
     "$layer": 100,
     "layer": "$layer",
 
-    /* Init variables */
+    /* 変数を初期化 */
     "$var_title_text": "$title_text",
     "$var_subtitle_text": "$subtitle_text",
 
@@ -127,7 +249,10 @@
                       "type": "stack_panel",
                       "orientation": "horizontal",
 
+                      "anchor_from": "top_left",
+                      "anchor_to": "top_left",
                       "size": [ "100%c", "100%cm" ],
+                      "offset": [ 0, 10 ],
                       "use_child_anchors": true,
 
                       "$set_ignored|default": false,
@@ -145,7 +270,7 @@
                           "$ignore_entity_icon": true
                         },
 
-                        /* Handle ignored cases -- hide when icons are invalid */
+                        /* 無視されるケースを処理 -- アイコンが無効な場合は非表示 */
                         {
                           "requires": "($ignore_block_icon and ($tooltip_renderer_type = 'A:'))",
                           "$set_ignored": true
@@ -161,7 +286,7 @@
                           "left_padding@common.empty_panel": {
                             "size": [ 0.75, 1 ],
 
-                            /* Only visible for entity image textures */
+                            /* エンティティ画像テクスチャにのみ表示 */
                             "visible": "(not ($tooltip_renderer_type = 'A:'))",
                             "ignored": "$ignore_entity_icon"
                           }
@@ -200,7 +325,7 @@
                         },
 
                         {
-                          /* Add dummy element to avoid internal errors and keep this stack panel filled */
+                          /* 内部エラーを避けるためにダミー要素を追加し、このスタックパネルを満たしたままにする */
                           "empty@common.empty_panel": {
                             "size": [ 1, 1 ],
                             "ignored": "(not $set_ignored)"
@@ -219,7 +344,7 @@
                       "controls": [
 
                         //* _r4ui:A:-00000NaN:z;z:
-                        //* _r4ui:B:yyyyyyyyyyyyyyyyyyyy:z;z:
+                        //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:z;z: ...
 
                         {
                           "name_and_icons": {
@@ -243,7 +368,7 @@
                                     },
                                     {
                                       "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                      "$text": "('' + ($var_title_text - ('%.43s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
+                                      "$text": "('' + ($var_title_text - ('%.286s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
                                     }
                                   ]
                                 }
@@ -262,7 +387,7 @@
 
                                   "size": [ "100%c", 11 ],
 
-                                  /* Set default placeholder icon */
+                                  /* デフォルトのプレースホルダーアイコンを設定 */
                                   "$texture|default": "pack_icon",
 
                                   "controls": [
@@ -319,13 +444,13 @@
                         //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn
 
                         {
-                          "entity_health_and_armor_renderer_panel@common.empty_panel": {
+                          "entity_metadatas@common.empty_panel": {
                             "anchor_from": "top_left",
                             "anchor_to": "top_left",
                             "size": [ "100%c", "100%c - 10px" ],
                             "offset": [ 0, 11 ],
 
-                            /* Ignore if not rendering an entity */
+                            /* エンティティをレンダリングしていない場合は無視 */
                             "ignored": "($tooltip_renderer_type = 'A:')",
 
                             "controls": [ 
@@ -344,8 +469,10 @@
                                         "size": [ 1, 0.5 ]
                                       }
                                     },
+
+
                                     {
-                                      "stack_0": {
+                                      "health_0": {
                                         "type": "stack_panel",
                                         "orientation": "horizontal",
 
@@ -366,7 +493,7 @@
                                       }
                                     },
                                     {
-                                      "stack_1": {
+                                      "health_1": {
                                         "type": "stack_panel",
                                         "orientation": "horizontal",
 
@@ -388,8 +515,10 @@
                                         "ignored": "(('' + ('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))) = 'y')"
                                       }
                                     },
+
+
                                     {
-                                      "stack_2": {
+                                      "armor": {
                                         "type": "stack_panel",
                                         "orientation": "horizontal",
 
@@ -411,6 +540,197 @@
                                         "ignored": "(('' + ('%.1s' * ($var_title_text - ('%.28s' * $var_title_text)))) = 'n')"
                                       }
                                     },
+
+
+                                    {
+                                      "effects_padding_top@common.empty_panel": {
+                                        "size": [ 1, 0.5 ],
+
+                                        "ignored": "(('%.8s' * ($var_title_text - ('%.283s' * $var_title_text))) = 'e00')"
+                                      }
+                                    },
+                                    {
+                                      "effects@common.empty_panel": {
+                                        "size": [ "100%c + 3px", "100%c + 1px" ],
+
+                                        "ignored": "(('%.8s' * ($var_title_text - ('%.283s' * $var_title_text))) = 'e00')",
+
+                                        "controls": [
+                                          {
+                                            "verti": {
+                                              "type": "stack_panel",
+                                              "orientation": "vertical",
+
+                                              "size": [ "100%cm", "100%c" ],
+
+                                              //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:z;z:d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0e00
+
+                                              "controls": [
+                                                {
+                                                  "speed@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "speed", "$data_b": "potion.moveSpeed", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.43s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "slowness@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "slowness", "$data_b": "potion.moveSlowdown", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.51s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "haste@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "haste", "$data_b": "potion.digSpeed", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.59s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "mining_fatigue@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "mining_fatigue", "$data_b": "potion.digSlowDown", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.67s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "strength@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "strength", "$data_b": "potion.damageBoost", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.75s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "instant_health@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "instant_health", "$data_b": "potion.heal", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.83s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "instant_damage@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "instant_damage", "$data_b": "potion.harm", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.91s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "jump_boost@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "jump_boost", "$data_b": "potion.jump", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.99s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "nausea@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "nausea", "$data_b": "potion.confusion", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.107s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "regeneration@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "regeneration", "$data_b": "potion.regeneration", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.115s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "resistance@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "resistance", "$data_b": "potion.resistance", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.123s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "fire_resistance@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "fire_resistance", "$data_b": "potion.fireResistance", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.131s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "water_breathing@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "water_breathing", "$data_b": "potion.waterBreathing", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.139s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "invisibility@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "invisibility", "$data_b": "potion.invisibility", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.147s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "blindness@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "blindness", "$data_b": "potion.blindness", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.155s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "night_vision@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "night_vision", "$data_b": "potion.nightVision", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.163s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "hunger@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "hunger", "$data_b": "potion.hunger", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.171s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "weakness@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "weakness", "$data_b": "potion.weakness", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.179s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "poison@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "poison", "$data_b": "potion.poison", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.187s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "wither@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "wither", "$data_b": "potion.wither", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.195s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "health_boost@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "health_boost", "$data_b": "potion.healthBoost", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.203s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "absorption@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "absorption", "$data_b": "potion.absorption", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.211s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "saturation@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "saturation", "$data_b": "potion.saturation", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.219s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "levitation@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "levitation", "$data_b": "potion.levitation", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.227s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "fatal_poison@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "fatal_poison", "$data_b": "potion.poison", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.235s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "slow_falling@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "slow_falling", "$data_b": "potion.slowFalling", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.243s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "conduit_power@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "conduit_power", "$data_b": "potion.conduitPower", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.251s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "bad_omen@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "bad_omen", "$data_b": "effect.badOmen", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.259s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "village_hero@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "village_hero", "$data_b": "effect.villageHero", "$data_c": false, "$data_d": "('%.8s' * ($var_title_text - ('%.267s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "darkness@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "darkness", "$data_b": "effect.darkness", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.275s' * $var_title_text)))"
+                                                  }
+                                                }
+                                              ]
+                                            }
+                                          }
+                                        ]
+                                      }
+                                    },
+                                    {
+                                      "effects_padding_bottom@common.empty_panel": {
+                                        "size": [ 1, 0.5 ],
+
+                                        "ignored": "(('%.8s' * ($var_title_text - ('%.283s' * $var_title_text))) = 'e00')"
+                                      }
+                                    },
+
+
                                     {
                                       "bottom_padding@common.empty_panel": {
                                         "size": [ 1, 0.5 ]
