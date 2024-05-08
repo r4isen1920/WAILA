@@ -185,13 +185,11 @@ function healthRenderer(currentHealth, maxHealth) {
     padding: 'y'
   }
 
-  //* Count number of max, full, half-hearts and empty hearts beforehand
   const MAX_HEARTS_DISPLAY = Math.ceil(maxHealth / 2);
   let fullHearts = Math.floor(currentHealth / 2);
   let halfHearts = currentHealth % 2;
   let emptyHearts = MAX_HEARTS_DISPLAY - fullHearts - halfHearts;
 
-  //* Append them all together in one giant string
   let healthString = 
     healthIcons.full.repeat(fullHearts) + 
     healthIcons.half.repeat(halfHearts) + 
@@ -214,29 +212,35 @@ function healthRenderer(currentHealth, maxHealth) {
  */
 function armorRenderer(player) {
 
-  log.info(player.typeId, player.getComponent(EntityComponentTypes.Equippable))
-
   /**
    * @type { import('@minecraft/server').EntityEquippableComponent }
    */
   const playerEquipment = player.getComponent(EntityComponentTypes.Equippable)
-  if (!playerEquipment) return
-
-  const totalArmor =
+  const currentArmor =
     [ EquipmentSlot.Head, EquipmentSlot.Chest, EquipmentSlot.Legs, EquipmentSlot.Feet ]
-    .reduce((total, slot) => total + armor.get(playerEquipment.getEquipment(slot)?.typeId), 0) || 0;
-
-  log.info(player.name || player.typeId, totalArmor, [ playerEquipment.getEquipment(EquipmentSlot.Head), playerEquipment.getEquipment(EquipmentSlot.Chest), playerEquipment.getEquipment(EquipmentSlot.Legs), playerEquipment.getEquipment(EquipmentSlot.Feet) ])
+    .reduce((total, slot) => total + armor.get(playerEquipment.getEquipment(slot)?.typeId), 0) || 0
+  const maxArmor = 20;
 
   const armorIcons = {
     full: 'p',
     half: 'o',
-    empty: 'n',
-    padding: 'y'
+    empty: 'n'
   }
 
-  //* temp
-  return 'ppppppppppppppppppp'
+  //* Count number of max, full, half-armor and empty armor beforehand
+  const MAX_ARMOR_DISPLAY = Math.ceil(maxArmor / 2);
+  let fullarmor = Math.floor(currentArmor / 2);
+  let halfarmor = currentArmor % 2;
+  let emptyarmor = MAX_ARMOR_DISPLAY - fullarmor - halfarmor;
+
+  //* Append them all together in one giant string
+  let armorString = 
+    armorIcons.full.repeat(fullarmor) + 
+    armorIcons.half.repeat(halfarmor) + 
+    armorIcons.empty.repeat(emptyarmor)
+
+  if (armorString) return armorString;
+  else return `nnnnnnnnnn`
 
 }
 
@@ -321,6 +325,7 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     switch (lookAtObject.hit) {
       case 'minecraft:player':
         _a.hit = `__r4ui:player.${lookAtObject.rawHit.name}`
+        _a.armor = armorRenderer(lookAtObject.rawHit)
         break
       case 'minecraft:item': 
         const itemStackEntity = lookAtObject.rawHit.getComponent(EntityComponentTypes.Item).itemStack;
@@ -330,9 +335,6 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
         if (hitNamespace === 'minecraft:') _a.hit = `entity.${lookAtObject.hit}.name`;
         else _a.hit = lookAtObject.hit;
     }
-
-    //* Set armor points (will be moved to player-only later)
-    _a.armor = armorRenderer(lookAtObject.rawHit)
 
     //* Set entity HP metadata
     _a.hideHealth =
@@ -360,6 +362,9 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
     //* Set healthRenderer placeholder value
     _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
+
+    //* Set armorRenderer placeholder value
+    _a.armorRenderer = 'nnnnnnnnnn';
 
   }
 
@@ -452,7 +457,7 @@ function displayUI(player, lookAtObject=undefined) {
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
       { translate: `${object.type === 'tile' ? `${nameAlias?.startsWith('item.') ? '' : 'tile.'}${!nameAlias ? object.hit.replace(hitNamespace, '') : nameAlias}.name` : object.hit.replace(hitNamespace, '')}` },
       { text: `${(object.hitItem !== undefined ? `\n§7${object.hitItem}§r` : '')}` },
-      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
+      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
     ]
     parseStrSubtitle = [
       { text: object.entityId }
@@ -467,7 +472,7 @@ function displayUI(player, lookAtObject=undefined) {
 
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
       { translate: `${object.type}.${object.hit}.name` },
-      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp} / ${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
+      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp} / ${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
     ]
     parseStrSubtitle = [
       { text: object.entityId }
