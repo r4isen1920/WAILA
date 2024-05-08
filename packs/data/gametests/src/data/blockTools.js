@@ -1,5 +1,14 @@
 
 /**
+ * @typedef { Object } blockTools
+ * 
+ * @property { String } type
+ * The type of tool this set will use
+ * @property { Array } value
+ * The blocks this tool can be used on
+ */
+
+/**
  * 
  * @author
  * r4isen1920
@@ -7,11 +16,13 @@
  * Lists all tools and the
  * correct blocks they can be
  * used on
+ * 
+ * @type { Array<blockTools> }
  */
 export const blockTools = [
   {
-    'type': 'shears',
-    'value': [
+    type: 'shears',
+    value: [
       'carpet',
       'leaves',
       'root',
@@ -24,8 +35,8 @@ export const blockTools = [
     ]
   },
   {
-    'type': 'bucket',
-    'value': [
+    type: 'bucket',
+    value: [
       'bubble',
       'lava',
       'powder_snow',
@@ -33,15 +44,15 @@ export const blockTools = [
     ]
   },
   {
-    'type': 'brush',
-    'value': [
+    type: 'brush',
+    value: [
       'minecraft:suspicious_sand',
       'minecraft:suspicious_gravel'
     ]
   },
   {
-    'type': 'hoe',
-    'value': [
+    type: 'hoe',
+    value: [
       'farmland',
       'leaves',
       'sculk',
@@ -55,8 +66,8 @@ export const blockTools = [
     ]
   },
   {
-    'type': 'axe',
-    'value': [
+    type: 'axe',
+    value: [
       'acacia',
       'bamboo',
       'bed',
@@ -92,8 +103,8 @@ export const blockTools = [
     ]
   },
   {
-    'type': 'sword',
-    'value': [
+    type: 'sword',
+    value: [
       'pumpkin',
       'minecraft:cocoa',
       'minecraft:melon_block',
@@ -101,8 +112,8 @@ export const blockTools = [
     ]
   },
   {
-    'type': 'shovel',
-    'value': [
+    type: 'shovel',
+    value: [
       'concrete_powder',
       'grass',
       'sand',
@@ -115,11 +126,13 @@ export const blockTools = [
       'minecraft:mycelium',
       'minecraft:podzol',
       'minecraft:soul_soil',
+      '!suspicious',
+      '!wall',
     ]
   },
   {
-    'type': 'pickaxe',
-    'value': [
+    type: 'pickaxe',
+    value: [
       'amethyst',
       'basalt',
       'blackstone',
@@ -176,11 +189,12 @@ export const blockTools = [
       'minecraft:smoker',
       'minecraft:tuff',
       'minecraft:undyed_shulker_box',
+      '!concrete_powder',
     ]
   },
   {
-    'type': 'crops',
-    'value': [
+    type: 'crops',
+    value: [
       'beetroot',
       'berries',
       'berry',

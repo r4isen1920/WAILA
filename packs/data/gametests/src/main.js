@@ -142,8 +142,14 @@ function transformEntityId(entity) {
  */
 function parseBlockTools(blockId) {
   const matches = blockTools.filter(tools => 
-    tools.value.some(block => blockId.replace(blockId.replace(/(?<=:).+/g, ''), '').toString().includes(block)) ||
-    tools.value.some(block => blockId.includes(block))
+    (tools.value.some(block => blockId.replace(blockId.replace(/(?<=:).+/g, ''), '').toString().includes(block)) ||
+    tools.value.some(block => blockId.includes(block))) &&
+
+    !tools.value.some(block =>
+      block.startsWith('!') &&
+      (blockId.replace(blockId.replace(/(?<=:).+/g, ''), '').toString().includes(block.replace('!', '')) ||
+      blockId.includes(block.replace('!', '')))
+    )
   )
 
   if (matches.length > 0) 
