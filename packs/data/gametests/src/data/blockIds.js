@@ -7,6 +7,12 @@
  * 
  * List of all numerical IDs
  * of the ItemStack.typeId
+ * 
+ * @remarks
+ * Requires intervention:
+ *  - concrete
+ *  - concrete_powder
+ *  - terracotta
  */
 export const blockIds = new Map([
 	['minecraft:dead_horn_coral_fan', -847],
@@ -1068,7 +1074,9 @@ export const blockIds = new Map([
 	['minecraft:red_glazed_terracotta', 234],
 	['minecraft:black_glazed_terracotta', 235],
 	['minecraft:concrete', 236],
+	['minecraft:white_concrete', 236],
 	['minecraft:concrete_powder', 237],
+	['minecraft:white_concrete_powder', 237],
 	['minecraft:chemistry_table', 238],
 	['minecraft:underwater_torch', 239],
 	['minecraft:chorus_plant', 240],
@@ -1543,8 +1551,9 @@ export const blockIds = new Map([
 	['minecraft:host_armor_trim_smithing_template', 711],
 	['minecraft:flow_armor_trim_smithing_template', 712],
 	['minecraft:bolt_armor_trim_smithing_template', 713],
-	['minecraft:music_disc_relic', 714],
-	['minecraft:terracotta', 715],
+	['minecraft:music_disc_relic', 715],
+	['minecraft:terracotta', 716],
+	['minecraft:white_terracotta', 716],
 	['minecraft:wool', 720],
 	['minecraft:carpet', 721],
 	['minecraft:log', 722],
