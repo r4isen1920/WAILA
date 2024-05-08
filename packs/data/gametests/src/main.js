@@ -120,6 +120,7 @@ function transformEntityId(entity) {
     'potion',
     'minecraft:boat',
     'minecraft:egg',
+    'minecraft:eye_of_ender_signal',
     'minecraft:item',
     'minecraft:tnt'
   ];
