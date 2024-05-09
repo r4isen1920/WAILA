@@ -338,7 +338,7 @@
                       "anchor_from": "top_left",
                       "anchor_to": "top_left",
                       "size": [ "100%c", "100%cm" ],
-                      "offset": [ 0, "50%cm" ],
+                      "offset": [ 0, "150%y" ],
                       "use_child_anchors": true,
 
                       "$set_ignored|default": false,
