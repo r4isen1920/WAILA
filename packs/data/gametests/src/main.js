@@ -291,7 +291,7 @@ function armorRenderer(player) {
   const playerEquipment = player.getComponent(EntityComponentTypes.Equippable)
   const currentArmor =
     [ EquipmentSlot.Head, EquipmentSlot.Chest, EquipmentSlot.Legs, EquipmentSlot.Feet ]
-    .reduce((total, slot) => total + armor.get(playerEquipment.getEquipment(slot)?.typeId), 0) || 0
+    .reduce((total, slot) => total + (armor.get(playerEquipment.getEquipment(slot)?.typeId) || 0), 0)
   const maxArmor = 20;
 
   const armorIcons = {
@@ -553,7 +553,7 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
   }
 
   //* Set armorRenderer placeholder value
-  _a.armorRenderer = 'dddddddddd';
+  if (!_a.armorRenderer) _a.armorRenderer = 'dddddddddd';
 
   return _a;
 
@@ -708,6 +708,9 @@ function displayUI(player, lookAtObject=undefined) {
       
       //* Append additional newlines for status effects' renderer padding
       { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.hideHealth && object.maxHp > 40) ? '\n' : '\n\n'}` },
+
+      //* Append additional newlines for armor renderer padding
+      { text: !object.armorRenderer.startsWith('dd') ? '\n' : '' },
 
       //* Define object namespace
       { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
