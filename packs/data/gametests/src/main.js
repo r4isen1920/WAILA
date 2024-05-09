@@ -120,12 +120,15 @@ function transformEntityId(entity) {
   /* Entity IDs that should not be displayed */
   const IGNORE_IDS = [
     'area_effect_cloud',
+    'fireball',
     'minecart',
     'potion',
+    'minecraft:arrow',
     'minecraft:boat',
     'minecraft:egg',
     'minecraft:eye_of_ender_signal',
     'minecraft:item',
+    'minecraft:snowball',
     'minecraft:tnt'
   ];
 
@@ -187,7 +190,7 @@ function getEntityTags(entityType) {
     !items.value.some(item =>
       item.startsWith('!') &&
       (entityType.typeId.replace(entityType.typeId.replace(/(?<=:).+/g, ''), '').toString().includes(item.replace('!', '')) ||
-      entityType.typeId.includes(block.replace('!', '')))
+      entityType.typeId.includes(entityType.typeId.replace('!', '')))
     )
   ).map(item => item.type)
   entityTags.push(...matches)
