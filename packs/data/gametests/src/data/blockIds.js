@@ -13,6 +13,8 @@
  *  - concrete
  *  - concrete_powder
  *  - terracotta
+ *  - stained_glass
+ *  - stained_glass_pane
  */
 export const blockIds = new Map([
 	['minecraft:dead_horn_coral_fan', -847],
@@ -1000,6 +1002,7 @@ export const blockIds = new Map([
 	['minecraft:oak_slab', 158],
 	['minecraft:stained_hardened_clay', 159],
 	['minecraft:stained_glass_pane', 160],
+	['minecraft:white_stained_glass_pane', 160],
 	['minecraft:acacia_leaves', 161],
 	['minecraft:acacia_log', 162],
 	['minecraft:acacia_stairs', 163],
@@ -1081,6 +1084,7 @@ export const blockIds = new Map([
 	['minecraft:underwater_torch', 239],
 	['minecraft:chorus_plant', 240],
 	['minecraft:stained_glass', 241],
+	['minecraft:white_stained_glass', 241],
 	['minecraft:camera', 242],
 	['minecraft:podzol', 243],
 	['minecraft:beetroot_plant', 244],

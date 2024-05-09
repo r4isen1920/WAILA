@@ -10,12 +10,13 @@
  * 
  */
 
-import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, TicksPerSecond, world } from '@minecraft/server';
+import { Entity, EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, TicksPerSecond, world } from '@minecraft/server';
 import { toTitle, zFill, prettyCaps } from './utils';
 
 import { armor } from './data/armor';
 import { blockIds } from './data/blockIds';
 import { blockTools } from './data/blockTools';
+import { entityInteractions } from './data/entityInteractions';
 import { nameAliases } from './data/nameAliases';
 
 import { Logger } from '@bedrock-oss/bedrock-boost';
@@ -50,6 +51,7 @@ const log = new Logger('WAILA')
  * @property { number } maxHp - The maximum health points of the entity.
  * @property { string } entityId - The unique identifier for the entity.
  * @property { string[] } tool - The tools applicable for interacting with the object.
+ * @property { string[] } tags - The tags of the entity.
  */
 
 
@@ -163,6 +165,72 @@ function parseBlockTools(blockId) {
 
 /**
  * 
+ * Fetches the properties and components of the
+ * entity and returns the appropriate valid
+ * tags for the entity
+ * 
+ * @param { import('@minecraft/server').Entity } entityType 
+ * 
+ * @returns { string[] }
+ */
+function getEntityTags(entityType) {
+
+  /**
+   * @type { Array<string> }
+   */
+  let entityTags = []
+
+  const matches = entityInteractions.filter(items => 
+    (items.value.some(item => entityType.typeId.replace(entityType.typeId.replace(/(?<=:).+/g, ''), '').toString().includes(item)) ||
+    items.value.some(item => entityType.typeId.includes(item))) &&
+
+    !items.value.some(item =>
+      item.startsWith('!') &&
+      (entityType.typeId.replace(entityType.typeId.replace(/(?<=:).+/g, ''), '').toString().includes(item.replace('!', '')) ||
+      entityType.typeId.includes(block.replace('!', '')))
+    )
+  ).map(item => item.type)
+  entityTags.push(...matches)
+
+  /**
+   * @param { import('@minecraft/server').Entity } entityType 
+   * @param { import('@minecraft/server').EntityComponentTypes } componentName 
+   * @returns 
+   */
+  const getComponentValue = (entityType, componentName) => {
+    return entityType.getComponent(componentName)
+  }
+  /**
+   * @type { Array<import('@minecraft/server').EntityComponentTypes> }
+   */
+  const componentList = [
+    EntityComponentTypes.CanFly,
+    EntityComponentTypes.CanPowerJump,
+    EntityComponentTypes.FireImmune,
+    EntityComponentTypes.IsBaby,
+    EntityComponentTypes.IsChested,
+    EntityComponentTypes.IsDyeable,
+    EntityComponentTypes.IsStunned,
+    EntityComponentTypes.IsTamed,
+    EntityComponentTypes.Projectile,
+    EntityComponentTypes.WantsJockey
+  ]
+  componentList.forEach(component => {
+    if (getComponentValue(entityType, component)) {
+      if (component == EntityComponentTypes.IsBaby) entityTags = entityTags.filter(tag => tag != 'is_rideable')
+      if (component == EntityComponentTypes.IsTamed) entityTags = entityTags.filter(tag => tag != 'tameable')
+      else entityTags.push(component.replace('minecraft:', ''))
+    }
+  })
+
+  if (entityTags.length > 0) 
+    return [...new Set(entityTags)].slice(0, 2)
+  else return ['undefined', 'undefined']
+}
+
+
+/**
+ * 
  * Draws the current health of
  * the entity in useable text
  * 
@@ -181,9 +249,9 @@ function healthRenderer(currentHealth, maxHealth, MAX_LENGTH=40) {
   }
 
   const healthIcons = {
-    full: 'j',
-    half: 'i',
-    empty: 'h',
+    empty: 'a',
+    half: 'b',
+    full: 'c',
     padding: 'y'
   }
 
@@ -224,9 +292,9 @@ function armorRenderer(player) {
   const maxArmor = 20;
 
   const armorIcons = {
-    full: 'p',
-    half: 'o',
-    empty: 'n'
+    empty: 'd',
+    half: 'e',
+    full: 'f',
   }
 
   //* Count number of max, full, half-armor and empty armor beforehand
@@ -453,6 +521,9 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     //* Set entity ID metadata
     _a.entityId = transformEntityId(lookAtObject.rawHit);
 
+    //* Fetch entity tags
+    _a.tags = getEntityTags(lookAtObject.rawHit)
+
     //* Set effectsRenderer metadata
     _a.effectsRenderer = effectsRenderer(lookAtObject.rawHit);
 
@@ -479,7 +550,7 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
   }
 
   //* Set armorRenderer placeholder value
-  _a.armorRenderer = 'nnnnnnnnnn';
+  _a.armorRenderer = 'dddddddddd';
 
   return _a;
 
@@ -537,22 +608,68 @@ function displayUI(player, lookAtObject=undefined) {
   //* Transform lookAtObject to a parsed object value with metadata included
   const object = fetchLookAtMetadata(lookAtObject, hitNamespace);
 
-  //* Parse text string information using template literals
+  /**
+   * @type { Array<import('@minecraft/server').RawMessage> }
+   */
   let parseStr = [];
+  /**
+   * @type { Array<import('@minecraft/server').RawMessage> }
+   */
   let parseStrSubtitle = [];
+  /**
+   * @type { string }
+   */
   const nameAlias = nameAliases.get(object.hit.replace(hitNamespace, ''));
+  /**
+   * @typedef { object } iconTypes
+   * @property { object } tile - Tile icon types
+   * @property { object } entity - Entity icon types
+   * 
+   * @type { iconTypes }
+   */
   const iconTypes = {
-    'sword': 'a',
-    'axe': 'b',
-    'pickaxe': 'c',
-    'shovel': 'd',
-    'hoe': 'e',
-    'armor': 'f',
-    'crops': 'g',
-    'shears': 'k',
-    'bucket': 'l',
-    'brush': 'm',
-    'undefined': 'z',
+    tile: {
+      sword: 'a',
+      axe: 'b',
+      pickaxe: 'c',
+      shovel: 'd',
+      hoe: 'e',
+      armor: 'f',
+      crops: 'g',
+      shears: 'h',
+      bucket: 'i',
+      brush: 'j',
+      commands: 'k',
+      undefined: 'z',
+    },
+    entity: {
+      can_climb: 'a',
+      can_fly: 'b',
+      can_power_jump: 'c',
+      fire_immune: 'd',
+      is_baby: 'e',
+      is_chested: 'f',
+      is_dyeable: 'g',
+      is_stunned: 'h',
+      is_rideable: 'i',
+      is_tradeable: 'j',
+      projectile: 'k',
+      wants_jockey: 'l',
+      tameable: 'm',
+      wheat: 'n',
+      potato: 'o',
+      hay_bale: 'p',
+      seeds: 'q',
+      golden_apple: 'r',
+      fish: 's',
+      flowers: 't',
+      fungi: 'u',
+      slimeball: 'v',
+      cactus: 'w',
+      torchflower: 'x',
+      spider_eye: 'y',
+      undefined: 'z',
+    }
   }
 
   //* Parse vanilla content
@@ -572,7 +689,7 @@ function displayUI(player, lookAtObject=undefined) {
       { text: `${(object.type === 'tile' || object.hitItem) ? `${object.itemAux > 0 ? '' : '-'}${zFill(Math.abs(object.itemAux), object.itemAux > 0 ? 9 : 8)}` : `${object.healthRenderer}${object.armorRenderer}`}` },
 
       //* Define block tags
-      { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
+      { text: `:${iconTypes[object.type][object.type === 'tile' ? object.tool[0] : object.tags[0] || 'undefined'] || 'z'};${iconTypes[object.type][object.type === 'tile' ? object.tool[1] : object.tags[1] || 'undefined'] || 'z'}:` },
 
       //* Resolve status effects the entity may have
       { text: `${(object.type === 'entity' && !object.hitItem) ? `${object.effectsRenderer.effectString}e${object.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, '0')}` : ''}` },
@@ -606,10 +723,10 @@ function displayUI(player, lookAtObject=undefined) {
       { text: `_r4ui:${object.type === 'tile' ? 'A' : 'B'}:` },
 
       //* Define health renderer | item AUX, and armor renderer values are placeholders to ensure the same character length
-      { text: `${object.type === 'tile' ? '-00000NaN' : `${object.healthRenderer}nnnnnnnnnn`}` },
+      { text: `${object.type === 'tile' ? '-00000NaN' : `${object.healthRenderer}dddddddddd`}` },
 
       //* Define block tags
-      { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
+      { text: `:${iconTypes[object.type][object.type === 'tile' ? object.tool[0] : object.tags[0] || 'undefined'] || 'z'};${iconTypes[object.type][object.type === 'tile' ? object.tool[1] : object.tags[1] || 'undefined'] || 'z'}:` },
 
       //* Resolve status effects the entity may have
       { text: `${(object.type === 'entity' && !object.hitItem) ? `${object.effectsRenderer.effectString}e${object.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, '0')}` : ''}` },

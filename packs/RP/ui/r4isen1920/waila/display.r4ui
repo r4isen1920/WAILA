@@ -35,7 +35,7 @@
       {
         "heart@image": {
           "texture": "('textures/r4isen1920/waila/icons/' + $texture)",
-          "ignored": "($texture = 'y')",
+          "ignored": "(($texture = 'x') or ($texture = 'y'))",
 
           "size": [ 9, 9 ],
           "uv_size": [ 9, 9 ],
@@ -85,7 +85,7 @@
           "controls": [
             {
               "icon_panel@common.empty_panel": {
-                "size": [ "100%c + 1px", "100%sm" ],
+                "size": [ "100%c + 4px", "100%sm" ],
 
                 "controls": [
                   {
@@ -93,7 +93,7 @@
                       "texture": "('textures/ui/' + $data_a + '_effect')",
                       "keep_ratio": true,
 
-                      "size": [ "100%y", "100%" ]
+                      "size": [ "100%y", 14 ]
                     }
                   }
                 ]
@@ -312,9 +312,9 @@
 
           "keep_ratio": false,
           "bilinear": false,
-          "alpha": 0.9,
+          "alpha": 0.75,
 
-          "size": [ "100%c + 12px", "100%c + 10px" ],
+          "size": [ "100%c + 10px", "100%c + 8px" ],
           "layer": "($layer + 1)",
 
           "controls": [
@@ -433,101 +433,27 @@
                         //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:z;z: ...
 
                         {
-                          "name_and_icons": {
-                            "type": "stack_panel",
-                            "orientation": "horizontal",
-
+                          "hover_name_and_namespace@r4isen1920_waila_display.label": {
                             "anchor_from": "top_left",
                             "anchor_to": "top_left",
-                            "size": [ "100%c", "100%cm" ],
+                            "min_size": [ "default", 20 ],
 
-                            "controls": [
+                            "text": "$text", 
+
+                            "variables": [
                               {
-                                "hover_name_and_namespace@r4isen1920_waila_display.label": {
-                                  "min_size": [ "default", 20 ],
-                                  "text": "$text", 
-
-                                  "variables": [
-                                    {
-                                      "requires": "($tooltip_renderer_type = 'A:')",
-                                      "$text": "('' + ($var_title_text - ('%.22s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
-                                    },
-                                    {
-                                      "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                      "$text": "('' + ($var_title_text - ('%.286s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
-                                    }
-                                  ]
-                                }
+                                "requires": "($tooltip_renderer_type = 'A:')",
+                                "$text": "('' + ($var_title_text - ('%.22s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
                               },
-
                               {
-                                "padding@common.empty_panel": {
-                                  "size": [ 1.5, 1 ]
-                                }
-                              },
-
-                              {
-                                "icons_panel": {
-                                  "type": "stack_panel",
-                                  "orientation": "horizontal",
-
-                                  "size": [ "100%c", 11 ],
-
-                                  /* デフォルトのプレースホルダーアイコンを設定 */
-                                  "$texture|default": "pack_icon",
-
-                                  "controls": [
-                                    {
-                                      "icon_0@r4isen1920_waila_display.image": {
-                                        "texture": "$texture",
-                                        "size": [ "100%y", "100%" ],
-                                        "bilinear": true,
-
-                                        "variables": [
-                                          {
-                                            "requires": "($tooltip_renderer_type = 'A:')",
-                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))) - ':')"
-                                          },
-                                          {
-                                            "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.39s' * $var_title_text)))) - ':')"
-                                          }
-                                        ],
-
-                                        "ignored": "(not (($var_title_text - ':z;') = $var_title_text))"
-                                      }
-                                    },
-                                    {
-                                      "icon_1@r4isen1920_waila_display.image": {
-                                        "texture": "$texture",
-                                        "size": [ "100%y", "100%" ],
-                                        "bilinear": true,
-
-                                        "variables": [
-                                          {
-                                            "requires": "($tooltip_renderer_type = 'A:')",
-                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.20s' * $var_title_text)))) - ':')"
-                                          },
-                                          {
-                                            "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                            "$texture": "(('textures/r4isen1920/waila/icons/' + ('%.1s' * ($var_title_text - ('%.41s' * $var_title_text)))) - ':')"
-                                          }
-                                        ],
-
-                                        "ignored": "(not (($var_title_text - ';z') = $var_title_text))"
-                                      }
-                                    }
-                                  ],
-
-                                  "ignored": "(not (($var_title_text - ':z;z') = $var_title_text))"
-                                }
+                                "requires": "(not ($tooltip_renderer_type = 'A:'))",
+                                "$text": "('' + ($var_title_text - ('%.286s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
                               }
-
                             ]
                           }
                         },
 
-                        //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn
+                        //* _r4ui:B:yyyyyyyyyyyyyyyyyyyydddddddddd
 
                         {
                           "entity_metadatas@common.empty_panel": {
@@ -625,7 +551,7 @@
                                           { "armor_9@r4isen1920_waila_display.icon_renderer": { "$texture": "('%.1s' * ($var_title_text - ('%.37s' * $var_title_text)))" } }
                                         ],
 
-                                        "ignored": "(('' + ('%.1s' * ($var_title_text - ('%.28s' * $var_title_text)))) = 'n')"
+                                        "ignored": "(('' + ('%.1s' * ($var_title_text - ('%.28s' * $var_title_text)))) = 'd')"
                                       }
                                     },
 
@@ -649,7 +575,7 @@
                                       }
                                     },
                                     {
-                                      //* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:z;z:d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0e00
+                                      //* _r4ui:B:yyyyyyyyyyyyyyyyyyyydddddddddd:z;z:d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0e00
 
                                       "effects@common.empty_panel": {
                                         "size": [ "100%c + 3px", "100%c + 1px" ],
@@ -1021,6 +947,64 @@
                           }
                         }
                       ]
+                    }
+                  },
+                  {
+                    "tags_panel": {
+                      "type": "stack_panel",
+                      "orientation": "horizontal",
+      
+                      "anchor_from": "top_right",
+                      "anchor_to": "top_right",
+                      "size": [ "100%c", 11 ],
+      
+                      /* デフォルトのプレースホルダーアイコンを設定 */
+                      "$texture|default": "pack_icon",
+      
+                      "$tooltip_renderer_type": "('%.2s' * ($var_title_text - ('%.6s' * $var_title_text)))",
+      
+                      "controls": [
+                        {
+                          "icon_0@r4isen1920_waila_display.image": {
+                            "texture": "$texture",
+                            "size": [ "100%y", "100%" ],
+      
+                            "variables": [
+                              {
+                                "requires": "($tooltip_renderer_type = 'A:')",
+                                "$texture": "(('textures/r4isen1920/waila/icons/block/' + ('%.1s' * ($var_title_text - ('%.18s' * $var_title_text)))) - ':')"
+                              },
+                              {
+                                "requires": "(not ($tooltip_renderer_type = 'A:'))",
+                                "$texture": "(('textures/r4isen1920/waila/icons/entity/' + ('%.1s' * ($var_title_text - ('%.39s' * $var_title_text)))) - ':')"
+                              }
+                            ],
+      
+                            "ignored": "(not (($var_title_text - ':z;') = $var_title_text))"
+                          }
+                        },
+                        {
+                          "icon_1@r4isen1920_waila_display.image": {
+                            "texture": "$texture",
+                            "size": [ "100%y", "100%" ],
+      
+                            "variables": [
+                              {
+                                "requires": "($tooltip_renderer_type = 'A:')",
+                                "$texture": "(('textures/r4isen1920/waila/icons/block/' + ('%.1s' * ($var_title_text - ('%.20s' * $var_title_text)))) - ':')"
+                              },
+                              {
+                                "requires": "(not ($tooltip_renderer_type = 'A:'))",
+                                "$texture": "(('textures/r4isen1920/waila/icons/entity/' + ('%.1s' * ($var_title_text - ('%.41s' * $var_title_text)))) - ':')"
+                              }
+                            ],
+      
+                            "ignored": "(not (($var_title_text - ';z') = $var_title_text))"
+                          }
+                        }
+                      ],
+      
+                      "ignored": "(not (($var_title_text - ':z;z') = $var_title_text))"
                     }
                   }
                 ]

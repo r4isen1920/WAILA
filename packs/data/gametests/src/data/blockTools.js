@@ -21,6 +21,16 @@
  */
 export const blockTools = [
   {
+    type: 'commands',
+    value: [
+      'barrier',
+      'command_block',
+      'light_block',
+      'structure_air',
+      'structure_block',
+    ]
+  },
+  {
     type: 'shears',
     value: [
       'carpet',
