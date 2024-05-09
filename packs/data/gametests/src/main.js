@@ -258,7 +258,7 @@ function armorRenderer(player) {
  */
 function effectsRenderer(entity) {
 
-  const MAX_EFFECTS_TO_RESOLVE = 5
+  const MAX_EFFECTS_TO_RESOLVE = 6
 
   /**
    * @type { Array<{ name: string, id: number, is_negative: boolean }> }
@@ -315,7 +315,7 @@ function effectsRenderer(entity) {
     if (effectsResolved >= MAX_EFFECTS_TO_RESOLVE) {
       effectDuration = 0;
       effectAmplifier = 0;
-    } else effectAmplifier = !effectData.typeId ? 0 : Math.min(effectAmplifier + 1, 8)
+    } else effectAmplifier = !effectData.typeId ? 0 : Math.min(effectAmplifier + 1, 9)
     if (effectData.typeId) effectsResolved++
 
     effectDuration /= TicksPerSecond;
@@ -367,11 +367,16 @@ function fetchLookAt(player, max_dist) {
       _a.hit = _a.rawHit.typeId
       _a.hp = _a.rawHit.getComponent(EntityComponentTypes.Health)?.currentValue || '0'
       _a.maxHp = _a.rawHit.getComponent(EntityComponentTypes.Health)?.effectiveMax || '0'
-      _a.effects = _a.rawHit.getEffects().map(effect => ({
-        id: effect.typeId,
-        amplifier: effect.amplifier,
-        effectDuration: Math.floor(effect.duration / TicksPerSecond)
-      })) || []
+      _a.effects = _a.rawHit.getEffects().map(effect => 
+        _a.rawHit.getEffects().length > 3 ? {
+          id: effect.typeId,
+          amplifier: effect.amplifier
+        } : {
+          id: effect.typeId, 
+          amplifier: effect.amplifier,
+          effectDuration: Math.floor(effect.duration / TicksPerSecond)
+        }
+      ) || []
     }
 
     if (_a.hit) return _a;
@@ -442,6 +447,7 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     _a.maxHp = Math.floor(entityHp?.effectiveMax);
 
     if (!_a.hideHealth) _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax), lookAtObject.rawHit.matches({ type: 'minecraft:player' }) ? 20 : 40);
+    else if (entityHp?.effectiveMax > 40 && !lookAtObject.rawHit.matches({ type: 'minecraft:player' })) _a.healthRenderer = 'xyyyyyyyyyyyyyyyyyyy';
     else _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
 
     //* Set entity ID metadata
@@ -558,16 +564,34 @@ function displayUI(player, lookAtObject=undefined) {
     //** -605590388693
 
     parseStr = [
+
+      //* Define prefix
       { text: `_r4ui:${(object.type === 'tile' || object.hitItem) ? 'A' : 'B'}:` },
+
+      //* Define icon via item AUX renderer || health and armor renderers
       { text: `${(object.type === 'tile' || object.hitItem) ? `${object.itemAux > 0 ? '' : '-'}${zFill(Math.abs(object.itemAux), object.itemAux > 0 ? 9 : 8)}` : `${object.healthRenderer}${object.armorRenderer}`}` },
 
+      //* Define block tags
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
-      { text: `${object.type === 'entity' ? `${object.effectsRenderer.effectString}e${object.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, '0')}` : ''}` },
+
+      //* Resolve status effects the entity may have
+      { text: `${(object.type === 'entity' && !object.hitItem) ? `${object.effectsRenderer.effectString}e${object.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, '0')}` : ''}` },
+
+      //* Translate object name
       { translate: `${object.type === 'tile' ? `${nameAlias?.startsWith('item.') ? '' : 'tile.'}${!nameAlias ? object.hit.replace(hitNamespace, '') : nameAlias}.name` : object.hit.replace(hitNamespace, '')}` },
+
+      //* Append specific Minecraft dropped item metadata when available
       { text: `${(object.hitItem !== undefined ? `\n§7${object.hitItem}§r` : '')}` },
+
+      //* Append integer health metadata if health is more than the allocated value
       { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
-      { text: '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) },
-      { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
+      
+      //* Append additional newlines for status effects' renderer padding
+      { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.hideHealth && object.maxHp > 40) ? '\n' : '\n\n'}` },
+
+      //* Define object namespace
+      { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
+      
     ]
     parseStrSubtitle = [
       { text: object.entityId }
@@ -577,15 +601,31 @@ function displayUI(player, lookAtObject=undefined) {
   } else {
 
     parseStr = [
+
+      //* Define prefix
       { text: `_r4ui:${object.type === 'tile' ? 'A' : 'B'}:` },
+
+      //* Define health renderer | item AUX, and armor renderer values are placeholders to ensure the same character length
       { text: `${object.type === 'tile' ? '-00000NaN' : `${object.healthRenderer}nnnnnnnnnn`}` },
 
+      //* Define block tags
       { text: `${object.type === 'tile' ? `:${iconTypes[object.tool[0]]};${iconTypes[object.tool[1]]}:` : ':z;z:'}` },
-      { text: `${object.type === 'entity' ? `${object.effectsRenderer.effectString}e${object.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, '0')}` : ''}` },
+
+      //* Resolve status effects the entity may have
+      { text: `${(object.type === 'entity' && !object.hitItem) ? `${object.effectsRenderer.effectString}e${object.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, '0')}` : ''}` },
+
+      //* Translate object name
       { translate: `${object.type}.${object.hit}.name` },
+
+      //* Append integer health metadata if health is more than the allocated value
       { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
-      { text: '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) },
-      { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}${object.maxHp > 40 ? '\n ' : ''}` }
+      
+      //* Append additional newlines for status effects' renderer padding
+      { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.hideHealth && object.maxHp > 40) ? '\n' : '\n\n'}` },
+
+      //* Define object namespace
+      { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
+
     ]
     parseStrSubtitle = [
       { text: object.entityId }
@@ -596,7 +636,7 @@ function displayUI(player, lookAtObject=undefined) {
     'Render:', object.hit
   )
 
-  //* Pass the information on the JSON UI
+  //* Pass the information to the JSON UI
   player.onScreenDisplay.setTitle(parseStr, {
     subtitle: parseStrSubtitle,
 
