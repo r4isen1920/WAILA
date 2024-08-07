@@ -347,6 +347,7 @@
                       "$ignore_entity_icon|default": false,
 
                       "variables": [
+
                         {
                           "requires": "(('%.10s' * ($var_title_text - ('%.7s' * $var_title_text))) = ':-00000NaN')",
                           "$ignore_block_icon": true
@@ -365,6 +366,7 @@
                           "requires": "($ignore_entity_icon and not ($tooltip_renderer_type = 'A:'))",
                           "$set_ignored": true
                         }
+
                       ],
 
                       "controls": [
@@ -447,7 +449,7 @@
                               },
                               {
                                 "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                "$text": "('' + ($var_title_text - ('%.286s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
+                                "$text": "('' + ($var_title_text - ('%.318s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
                               }
                             ]
                           }
@@ -571,18 +573,18 @@
                                           }
                                         ],
 
-                                        "ignored": "(('%.3s' * ($var_title_text - ('%.283s' * $var_title_text))) = 'e00')"
+                                        "ignored": "(('%.3s' * ($var_title_text - ('%.315s' * $var_title_text))) = 'e00')"
                                       }
                                     },
                                     {
-                                      //* _r4ui:B:yyyyyyyyyyyyyyyyyyyydddddddddd:z;z:d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0e00
+                                      //* _r4ui:B:yyyyyyyyyyyyyyyyyyyydddddddddd:z;z:d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0e00:00p0e00:00p0e00:00p0e00:00p0e00
 
                                       "effects@common.empty_panel": {
                                         "size": [ "100%c + 3px", "100%c + 1px" ],
 
-                                        "$effects_length": "('%.3s' * ($var_title_text - ('%.283s' * $var_title_text)))",
+                                        "$effects_length": "('%.3s' * ($var_title_text - ('%.315s' * $var_title_text)))",
 
-                                        "ignored": "(('%.3s' * ($var_title_text - ('%.283s' * $var_title_text))) = 'e00')",
+                                        "ignored": "(('%.3s' * ($var_title_text - ('%.315s' * $var_title_text))) = 'e00')",
 
                                         "controls": [
                                           {
@@ -745,6 +747,26 @@
                                                 {
                                                   "darkness@r4isen1920_waila_display.status_effect_renderer": {
                                                     "$data_a": "darkness", "$data_b": "effect.darkness", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.275s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "wind_charged@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "wind_charged", "$data_b": "effect.wind_charged", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.283s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "weaving@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "weaving", "$data_b": "effect.weaving", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.291s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "oozing@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "oozing", "$data_b": "effect.oozing", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.299s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "infested@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "infested", "$data_b": "effect.infested", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.307s' * $var_title_text)))"
                                                   }
                                                 }
                                               ]
@@ -910,6 +932,26 @@
                                                 {
                                                   "darkness@r4isen1920_waila_display.status_effect_renderer": {
                                                     "$data_a": "darkness", "$data_b": "effect.darkness", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.275s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "wind_charged@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "wind_charged", "$data_b": "effect.wind_charged", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.283s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "weaving@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "weaving", "$data_b": "effect.weaving", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.291s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "oozing@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "oozing", "$data_b": "effect.oozing", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.299s' * $var_title_text)))"
+                                                  }
+                                                },
+                                                {
+                                                  "infested@r4isen1920_waila_display.status_effect_renderer": {
+                                                    "$data_a": "infested", "$data_b": "effect.infested", "$data_c": true, "$data_d": "('%.8s' * ($var_title_text - ('%.307s' * $var_title_text)))"
                                                   }
                                                 },
                                                 {

@@ -369,6 +369,10 @@ function effectsRenderer(entity) {
     { name: 'bad_omen', id: 28, is_negative: true },
     { name: 'village_hero', id: 29, is_negative: false },
     { name: 'darkness', id: 30, is_negative: true },
+    { name: 'wind_charged', id: 31, is_negative: true },
+    { name: 'weaving', id: 32, is_negative: true },
+    { name: 'oozing', id: 33, is_negative: true },
+    { name: 'infested', id: 34, is_negative: true },
   ]
 
   //* Array<'d00:00p0'>
@@ -399,7 +403,7 @@ function effectsRenderer(entity) {
     if (effectDuration > 0) effectsResolvedArray.push(effectData.typeId)
   })
 
-  //* d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0
+  //* d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0d00:00p0
   return {
     effectString,
     effectsResolvedArray
@@ -705,7 +709,7 @@ function displayUI(player, lookAtObject=undefined) {
 
       //* Append integer health metadata if health is more than the allocated value
       { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
-      
+
       //* Append additional newlines for status effects' renderer padding
       { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.hideHealth && object.maxHp > 40) ? '\n' : '\n\n'}` },
 
@@ -714,7 +718,7 @@ function displayUI(player, lookAtObject=undefined) {
 
       //* Define object namespace
       { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
-      
+
     ]
     parseStrSubtitle = [
       { text: object.entityId }
@@ -742,7 +746,7 @@ function displayUI(player, lookAtObject=undefined) {
 
       //* Append integer health metadata if health is more than the allocated value
       { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
-      
+
       //* Append additional newlines for status effects' renderer padding
       { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.hideHealth && object.maxHp > 40) ? '\n' : '\n\n'}` },
 
@@ -755,9 +759,11 @@ function displayUI(player, lookAtObject=undefined) {
     ]
   }
 
-  log.info(
+  log.trace(
     'Render:', object.hit
   )
+
+  //* player.sendMessage(parseStr)
 
   //* Pass the information to the JSON UI
   player.onScreenDisplay.setTitle(parseStr, {
@@ -769,6 +775,7 @@ function displayUI(player, lookAtObject=undefined) {
   });
 
   //* Reset title properties
+  // TODO: transform to native function instead of runCommand
   player.runCommand(`title @s reset`)
 }
 
