@@ -139,6 +139,7 @@ export const blockTools = [
       'minecraft:mycelium',
       'minecraft:podzol',
       'minecraft:soul_soil',
+      '!stone',
       '!suspicious',
       '!wall',
     ]
