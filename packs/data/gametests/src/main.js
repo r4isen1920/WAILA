@@ -10,7 +10,7 @@
  * 
  */
 
-import { Entity, EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, TicksPerSecond, world } from '@minecraft/server';
+import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, TicksPerSecond, ItemTypes, world, BlockStates, BlockStateType } from '@minecraft/server';
 import { toTitle, zFill, prettyCaps } from './utils';
 
 import { armor } from './data/armor';
@@ -33,6 +33,7 @@ const log = new Logger('WAILA')
  * @property { string } hp - The current health points of the entity, if applicable.
  * @property { string } maxHp - The maximum health points of the entity, if applicable.
  * @property { import('@minecraft/server').Effect[] } effects - The status effects applied to the entity, if applicable.
+ * @property { boolean } isPlayerSneaking - Whether the player is sneaking.
  */
 
 /**
@@ -52,6 +53,7 @@ const log = new Logger('WAILA')
  * @property { string } entityId - The unique identifier for the entity.
  * @property { string[] } tool - The tools applicable for interacting with the object.
  * @property { string[] } tags - The tags of the entity.
+ * @property { import('@minecraft/server').BlockStates } blockStates - The states of the block.
  */
 
 
@@ -409,6 +411,21 @@ function effectsRenderer(entity) {
 
 }
 
+/**
+ * 
+ * Fetches and parses the states of the block
+ * in a readable format
+ * 
+ * @param { import('@minecraft/server').Block } block 
+ * 
+ * @returns { Record<string, boolean | number | string> }
+ */
+function getBlockStates(block) {
+  const blockStates = Object.getOwnPropertyNames(block.permutation.getAllStates()).sort();
+  if (blockStates.length === 0) return '';
+  return `\n${blockStates.map(state => `§7${state.replace(/.+:/g, '')}: ${block.permutation.getAllStates()[state]}§r`).join('\n')}`;
+}
+
 
 /**
  * 
@@ -427,6 +444,9 @@ function fetchLookAt(player, max_dist) {
   let _a = {};
 
   try {
+
+    //* Update when player is sneaking
+    _a.isPlayerSneaking = player.isSneaking;
 
     //* Fetch entity the player is looking at
     const entityLookAt = player.getEntitiesFromViewDirection({
@@ -471,7 +491,7 @@ function fetchLookAt(player, max_dist) {
     return _a;
 
   } catch (e) {
-    if (!(e instanceof LocationOutOfWorldBoundariesError)) log.warn(e);
+    if (!(e instanceof LocationOutOfWorldBoundariesError)) log.er(e);
   }
 
 }
@@ -541,7 +561,10 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     _a.tool = parseBlockTools(lookAtObject.hit)
 
     //* Set block item AUX metadata
-    _a.itemAux = getItemAux(lookAtObject.rawHit.getItemStack(1, true))
+    _a.itemAux = getItemAux(lookAtObject.rawHit.getItemStack(1, true) || lookAtObject.rawHit)
+
+    //* Set block states metadata
+    _a.blockStates = getBlockStates(lookAtObject.rawHit)
 
     //* Set healthRenderer placeholder value
     _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
@@ -594,7 +617,7 @@ function clearUI(player) {
  * 
  * @param { import('@minecraft/server').Player } player 
  * The player to render the UI onto
- * @param { object | undefined } lookAtObject 
+ * @param { lookAtObject | undefined } lookAtObject 
  * Type of object to render
  */
 function displayUI(player, lookAtObject=undefined) {
@@ -604,7 +627,7 @@ function displayUI(player, lookAtObject=undefined) {
   if (!hitNamespace) return
 
   //* Only send a UI update if the value has changed
-  const _L = lookAtObject.type === 'entity' ? JSON.stringify(lookAtObject) : lookAtObject.hit
+  const _L = lookAtObject.type === 'entity' ? JSON.stringify(lookAtObject) : JSON.stringify({ _a: lookAtObject.hit, _b: lookAtObject.isPlayerSneaking, _c: lookAtObject?.rawHit?.permutation?.getAllStates() });
   if (player.getDynamicProperty('r4isen1920_waila:old_log') !== _L) player.setDynamicProperty('r4isen1920_waila:old_log', _L); else return;
 
   //* Remove information that was once displayed on screen
@@ -702,6 +725,9 @@ function displayUI(player, lookAtObject=undefined) {
       //* Translate object name
       { translate: `${object.type === 'tile' ? `${nameAlias?.startsWith('item.') ? '' : 'tile.'}${!nameAlias ? object.hit.replace(hitNamespace, '') : nameAlias}.name` : object.hit.replace(hitNamespace, '')}` },
 
+      //* Append block states metadata when available and player is sneaking
+      { text: `${((object.type === 'tile' && player.isSneaking) ? object.blockStates : '')}` },
+
       //* Append specific Minecraft dropped item metadata when available
       { text: `${(object.hitItem !== undefined ? `\n§7${object.hitItem}§r` : '')}` },
 
@@ -742,6 +768,9 @@ function displayUI(player, lookAtObject=undefined) {
       //* Translate object name
       { translate: `${object.type}.${object.hit}.name` },
 
+      //* Append block states metadata when available and player is sneaking
+      { text: `${((object.type === 'tile' && player.isSneaking) ? object.blockStates : '')}` },
+
       //* Append integer health metadata if health is more than the allocated value
       { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
 
@@ -757,10 +786,7 @@ function displayUI(player, lookAtObject=undefined) {
     ]
   }
 
-  log.trace(
-    'Render:', object.hit
-  )
-
+  log.trace('Render:', object)
   //* player.sendMessage(parseStr)
 
   //* Pass the information to the JSON UI
