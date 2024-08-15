@@ -38,7 +38,7 @@
                 "target": "es2020"
               },
               "modules": [
-                "@minecraft/server@1.10.0"
+                "@minecraft/server@1.13.0"
               ],
               "outdir": "BP/scripts/r4isen1920/waila",
               "outfile": "BP/scripts/r4isen1920/waila/main.js"
@@ -95,7 +95,7 @@
                 "target": "es2020"
               },
               "modules": [
-                "@minecraft/server@1.10.0"
+                "@minecraft/server@1.13.0"
               ],
               "outdir": "BP/scripts/r4isen1920/waila",
               "outfile": "BP/scripts/r4isen1920/waila/main.js"

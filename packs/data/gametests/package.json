@@ -2,8 +2,9 @@
   "dependencies": {
     "@bedrock-oss/bedrock-boost": "^0.0.14",
     "@minecraft/common": "^1.2.0",
-    "@minecraft/server": "^1.10.0",
-    "@minecraft/server-ui": "^1.1.0",
-    "@minecraft/vanilla-data": "^1.20.80"
+    "@minecraft/math": "^1.4.0",
+    "@minecraft/server": "^1.13.0",
+    "@minecraft/server-ui": "^1.2.0",
+    "@minecraft/vanilla-data": "^1.21.20"
   }
 }
