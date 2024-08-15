@@ -51,7 +51,7 @@ export const blockTools = [
       'bubble',
       'lava',
       'powder_snow',
-      'water_bucket',
+      'water',
     ]
   },
   {

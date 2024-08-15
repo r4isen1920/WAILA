@@ -96,14 +96,12 @@ function iterAllPlayers() {
  * Parses the item AUX value of
  * the block or item
  * 
- * @param { import('@minecraft/server').ItemStack } type
+ * @param { import('@minecraft/server').ItemStack | string } type
  * 
  * @returns { number | undefined }
  */
 function getItemAux(type) {
-
-  let _a = blockIds.get(type?.typeId) * 65536;
-
+  let _a = blockIds.get(type?.typeId || type) * 65536;
   if (_a == undefined) return NaN;
   else return _a
 }
@@ -459,8 +457,8 @@ function fetchLookAt(player, max_dist) {
 
     //* Fetch block the player is looking at
     const blockLookAt = player.getBlockFromViewDirection({
-      includeLiquidBlocks: false,
-      includePassableBlocks: true,
+      includeLiquidBlocks: !player.isInWater,
+      includePassableBlocks: !player.isInWater,
       maxDistance: max_dist
     })
 
