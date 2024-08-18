@@ -1,4 +1,4 @@
-name: Build test world
+name: Build release
 on:
   push:
     tags:
@@ -20,4 +20,4 @@ jobs:
         with:
           fail_on_unmatched_files: true
           files: |
-            *.mcworld
+            *.mcaddon
