@@ -12,3 +12,5 @@ node_modules/
 *.mcworld
 *.mcpack
 *.mcaddon
+
+packs/RP/ui/beacon_screen.json
