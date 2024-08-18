@@ -976,7 +976,7 @@ export const blockIds = new Map([
 	['minecraft:detector_rail', 28],
 	['minecraft:sticky_piston', 29],
 	['minecraft:web', 30],
-	['minecraft:tallgrass', 31],
+	['minecraft:short_grass', 31],
 	['minecraft:deadbush', 32],
 	['minecraft:piston', 33],
 	['minecraft:piston_arm_collision', 34],

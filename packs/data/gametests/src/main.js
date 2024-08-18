@@ -10,8 +10,7 @@
  * 
  */
 
-import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, TicksPerSecond, ItemTypes, world, BlockStates, BlockStateType } from '@minecraft/server';
-import { toTitle, zFill, prettyCaps } from './utils';
+import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, TicksPerSecond, ItemTypes, world } from '@minecraft/server';
 
 import { armor } from './data/armor';
 import { blockIds } from './data/blockIds';
@@ -19,8 +18,15 @@ import { blockTools } from './data/blockTools';
 import { entityInteractions } from './data/entityInteractions';
 import { nameAliases } from './data/nameAliases';
 
-import { Logger } from '@bedrock-oss/bedrock-boost';
+import { Logger, LogLevel } from '@bedrock-oss/bedrock-boost';
 const log = new Logger('WAILA')
+Logger.setLevel(LogLevel.Trace)
+
+
+//log.warn(
+//  `item list: ${ItemTypes.getAll().length}\n`,
+//  ItemTypes.getAll().map((item, index) => `${index} | ${item.id}`).join('\n')
+//)
 
 
 /**
@@ -54,6 +60,7 @@ const log = new Logger('WAILA')
  * @property { string[] } tool - The tools applicable for interacting with the object.
  * @property { string[] } tags - The tags of the entity.
  * @property { import('@minecraft/server').BlockStates } blockStates - The states of the block.
+ * @property { string | string[] } inventory - The inventory of the block.
  */
 
 
@@ -134,7 +141,7 @@ function transformEntityId(entity) {
 
   const entityId = entity.id || '0000000000000';
   if (IGNORE_IDS.some(id => entity.typeId.includes(id))) return '0000000000000';
-  else return `${entityId < 0 ? '-' : ''}${zFill(Math.abs(entityId), 12)}`;
+  else return `${entityId < 0 ? '-' : ''}${String(Math.abs(entityId)).padStart(12, '0')}`;
 }
 
 
@@ -426,6 +433,28 @@ function getBlockStates(block) {
   return `\n${blockStates.map(state => `§7${state.replace(/.+:/g, '')}: ${block.permutation.getAllStates()[state]}§r`).join('\n')}`;
 }
 
+/**
+ * 
+ * Fetches the inventory of the block
+ * 
+ * @param { Block } block
+ * 
+ * @returns { string | string[] }
+ */
+function getBlockInventory(block) {
+  /**
+   * @type { import('@minecraft/server').Container | undefined }
+   */
+  const blockContainer = block.getComponent(EntityComponentTypes.Inventory)?.container
+  if (blockContainer === undefined) return 'none'
+  let _items = [];
+  for (let i = 0; i < blockContainer.size; i++) {
+    const itemStack = blockContainer.getItem(i)
+    if (itemStack !== undefined) _items.push(itemStack.typeId)
+  }
+  return _items
+}
+
 
 /**
  * 
@@ -565,6 +594,9 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
 
     //* Set block states metadata
     _a.blockStates = getBlockStates(lookAtObject.rawHit)
+
+    //* Set block inventory metadata
+    _a.inventory = getBlockInventory(lookAtObject.rawHit)
 
     //* Set healthRenderer placeholder value
     _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
@@ -714,7 +746,7 @@ function displayUI(player, lookAtObject=undefined) {
       { text: `_r4ui:${(object.type === 'tile' || object.hitItem) ? 'A' : 'B'}:` },
 
       //* Define icon via item AUX renderer || health and armor renderers
-      { text: `${(object.type === 'tile' || object.hitItem) ? `${object.itemAux > 0 ? '' : '-'}${zFill(Math.abs(object.itemAux), object.itemAux > 0 ? 9 : 8)}` : `${object.healthRenderer}${object.armorRenderer}`}` },
+      { text: `${(object.type === 'tile' || object.hitItem) ? `${object.itemAux > 0 ? '' : '-'}${String(Math.abs(object.itemAux)).padStart(object.itemAux > 0 ? 9 : 8, '0')}` : `${object.healthRenderer}${object.armorRenderer}`}` },
 
       //* Define block tags
       { text: `:${iconTypes[object.type][object.type === 'tile' ? object.tool[0] : object.tags[0] || 'undefined'] || 'z'};${iconTypes[object.type][object.type === 'tile' ? object.tool[1] : object.tags[1] || 'undefined'] || 'z'}:` },
@@ -741,7 +773,7 @@ function displayUI(player, lookAtObject=undefined) {
       { text: !object.armorRenderer.startsWith('dd') ? '\n' : '' },
 
       //* Define object namespace
-      { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
+      { text: `${`§9§o${hitNamespace.length > 3 ? hitNamespace.replace(/_/g, ' ').replace(':', '').toTitle().abrevCaps() : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
 
     ]
     parseStrSubtitle = [
@@ -778,7 +810,7 @@ function displayUI(player, lookAtObject=undefined) {
       { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.hideHealth && object.maxHp > 40) ? '\n' : '\n\n'}` },
 
       //* Define object namespace
-      { text: `${`§9§o${hitNamespace.length > 3 ? prettyCaps(toTitle(hitNamespace.replace(/_/g, ' ').replace(':', ''))) : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
+      { text: `${`§9§o${hitNamespace.length > 3 ? hitNamespace.replace(/_/g, ' ').replace(':', '').toTitle().abrevCaps() : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
 
     ]
     parseStrSubtitle = [

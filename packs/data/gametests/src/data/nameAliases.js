@@ -264,12 +264,13 @@ export const nameAliases = new Map([
   ['glow_frame', 'item.glow_frame'],
   ['seagrass', 'seagrass.seagrass'],
   ['powder_snow_bucket', 'powder_snow'],
-  ['wheat_seeds', 'item.wheat_seeds'],
+  ['wheat_seeds', 'item.wheat'],
   ['beetroot_seeds', 'beetroot'],
   ['carrot', 'item.carrot'],
   ['potato', 'potatoes'],
   ['melon_seeds', 'item.melon_seeds'],
   ['pumpkin_seeds', 'pumpkin'],
+  ['pitcher_pod', 'item.pitcher_pod'],
   ['cornflower', 'red_flower.cornflower'],
   ['sea_lantern', 'seaLantern'],
   ['chiseled_sandstone', 'sandstone.chiseled'],
@@ -333,5 +334,7 @@ export const nameAliases = new Map([
   ['bubble_column', 'water'],
   ['glow_berries', 'item.glow_berries'],
   ['coarse_dirt', 'dirt.coarse'],
+  ['banner', 'standing_banner'],
+  ['bamboo_door', 'item.bamboo_door'],
 
 ])
