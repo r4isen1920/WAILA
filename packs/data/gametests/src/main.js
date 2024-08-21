@@ -10,6 +10,8 @@
  * 
  */
 
+// TODO: Re-factor the entire codebase to be more readable and maintainable
+
 import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, system, TicksPerSecond, ItemTypes, world } from '@minecraft/server';
 
 import { armor } from './data/armor';
@@ -50,7 +52,7 @@ Logger.setLevel(LogLevel.Trace)
  * @property { string } hit - The identifier of the hit object.
  * @property { string } hitItem - The identifier of the item associated with the hit object.
  * @property { number } itemAux - Auxiliary data for the item used for rendering in the UI.
- * @property { boolean } hideHealth - Whether to hide the health bar in the UI.
+ * @property { boolean } intHealthDisplay - Whether to show the health as an integer value or not.
  * @property { string } healthRenderer - The rendered string of health icons.
  * @property { string } armorRenderer - The rendered string of armor icons.
  * @property { { effectString: string, effectsResolvedArray: string[] } } effectsRenderer - The rendered string of effects.
@@ -562,13 +564,13 @@ function fetchLookAtMetadata(lookAtObject, hitNamespace) {
     }
 
     //* Set entity HP metadata
-    _a.hideHealth =
+    _a.intHealthDisplay =
       lookAtObject.rawHit.matches({ families: [ 'inanimate' ] }) ||
       (entityHp?.effectiveMax > 40 && !lookAtObject.rawHit.matches({ type: 'minecraft:player' }));
     _a.hp = Math.floor(entityHp?.currentValue);
     _a.maxHp = Math.floor(entityHp?.effectiveMax);
 
-    if (!_a.hideHealth) _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax), lookAtObject.rawHit.matches({ type: 'minecraft:player' }) ? 20 : 40);
+    if (!_a.intHealthDisplay) _a.healthRenderer = healthRenderer(Math.floor(entityHp?.currentValue), Math.floor(entityHp?.effectiveMax), lookAtObject.rawHit.matches({ type: 'minecraft:player' }) ? 20 : 40);
     else if (entityHp?.effectiveMax > 40 && !lookAtObject.rawHit.matches({ type: 'minecraft:player' })) _a.healthRenderer = 'xyyyyyyyyyyyyyyyyyyy';
     else _a.healthRenderer = 'yyyyyyyyyyyyyyyyyyyy';
 
@@ -764,10 +766,10 @@ function displayUI(player, lookAtObject=undefined) {
       { text: `${(object.hitItem !== undefined ? `\n§7${object.hitItem}§r` : '')}` },
 
       //* Append integer health metadata if health is more than the allocated value
-      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
+      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.intHealthDisplay ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.maxHp < 1000000 ? `${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)` : '∞'}§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
 
       //* Append additional newlines for status effects' renderer padding
-      { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.hideHealth && object.maxHp > 40) ? '\n' : '\n\n'}` },
+      { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.intHealthDisplay && object.maxHp > 40) ? '\n' : '\n\n'}` },
 
       //* Append additional newlines for armor renderer padding
       { text: !object.armorRenderer.startsWith('dd') ? '\n' : '' },
@@ -804,10 +806,10 @@ function displayUI(player, lookAtObject=undefined) {
       { text: `${((object.type === 'tile' && player.isSneaking) ? object.blockStates : '')}` },
 
       //* Append integer health metadata if health is more than the allocated value
-      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.hideHealth ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
+      { text: `\n${(object.maxHp > 0 && object.maxHp <= 40 && !object.intHealthDisplay ? '\n' : '')}${object.maxHp > 40 ? `§7 ${object.maxHp < 1000000 ? `${object.hp}/${object.maxHp} (${Math.round(object.hp / object.maxHp * 100)}%)` : '∞'}§r\n` : (object.maxHp > 20 ? '\n' : '')}` },
 
       //* Append additional newlines for status effects' renderer padding
-      { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.hideHealth && object.maxHp > 40) ? '\n' : '\n\n'}` },
+      { text: object.effectsRenderer.effectsResolvedArray.length < 4 ? '\n\n'.repeat(object.effectsRenderer.effectsResolvedArray.length) : `${(!object.intHealthDisplay && object.maxHp > 40) ? '\n' : '\n\n'}` },
 
       //* Define object namespace
       { text: `${`§9§o${hitNamespace.length > 3 ? hitNamespace.replace(/_/g, ' ').replace(':', '').toTitle().abrevCaps() : hitNamespace.replace(':', '').toUpperCase()}§r`}` }
