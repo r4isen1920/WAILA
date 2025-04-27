@@ -9,30 +9,8 @@
  *
  */
 
-import {
-   Entity,
-   Block,
-   Effect,
-   BlockStates,
-   EntityComponentTypes,
-   EquipmentSlot,
-   LocationOutOfWorldBoundariesError,
-   system,
-   TicksPerSecond,
-   ItemTypes,
-   world,
-   Player,
-   ItemStack,
-   Container,
-   RawMessage,
-   EntityEquippableComponent,
-   EntityHealthComponent,
-   EntityInventoryComponent,
-   BlockInventoryComponent,
-   BlockPermutation,
-   EntityItemComponent,
-   TitleDisplayOptions,
-} from "@minecraft/server";
+import { Block, BlockInventoryComponent, Effect, Entity, EntityComponentTypes, EntityEquippableComponent, EntityHealthComponent, EntityItemComponent, EquipmentSlot, ItemStack, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
+import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
 
 import armor from "./data/armor.json";
 import blockIds from "./data/blockIds.json";
@@ -40,44 +18,9 @@ import blockTools from "./data/blockTools.json";
 import entityInteractions from "./data/entityInteractions.json";
 import nameAliases from "./data/nameAliases.json";
 
-import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
-
-
-/**
- * Represents the object a player is currently looking at in the game.
- */
-interface LookAtObject {
-   type: "entity" | "tile" | undefined;
-   rawHit: Entity | Block | undefined;
-   hit: string | undefined;
-   hp?: number | string; // Can be string '0' initially
-   maxHp?: number | string; // Can be string '0' initially
-   effects?:
-   | { id: string; amplifier: number; effectDuration?: number }[]
-   | Effect[];
-   isPlayerSneaking: boolean;
-}
-
-/**
- * Contains metadata about the object a player is looking at, used for UI display.
- */
-interface LookAtObjectMetadata {
-   type: "entity" | "tile" | undefined;
-   hit: string;
-   hitItem?: string;
-   itemAux: number;
-   intHealthDisplay: boolean;
-   healthRenderer: string;
-   armorRenderer: string;
-   effectsRenderer: { effectString: string; effectsResolvedArray: string[] };
-   hp: number;
-   maxHp: number;
-   entityId?: string;
-   tool: string[];
-   tags: string[];
-   blockStates: string; // Changed from BlockStates to string representation
-   inventory: string | string[];
-}
+import { LookAtObject } from "./types/LookAtObjectInterface";
+import { LookAtObjectMetadata } from "./types/LookAtObjectMetadataInterface";
+import { LookAtObjectTypeEnum as LookAtObjectType } from "./types/LookAtObjectTypeEnum";
 
 class WAILA {
    private static instance: WAILA;
@@ -499,7 +442,7 @@ class WAILA {
          });
          if (entityLookAt.length > 0 && entityLookAt[0]?.entity) {
             const entity = entityLookAt[0].entity;
-            lookAt.type = "entity";
+            lookAt.type = LookAtObjectType.ENTITY;
             lookAt.rawHit = entity;
             lookAt.hit = entity.typeId;
             const healthComponent = entity.getComponent(
@@ -530,7 +473,7 @@ class WAILA {
 
          if (blockLookAt?.block) {
             const block = blockLookAt.block;
-            lookAt.type = "tile"; // Use 'tile' to match original logic
+            lookAt.type = LookAtObjectType.TILE;
             lookAt.rawHit = block;
             try {
                const itemStack = block.getItemStack(1, true);
