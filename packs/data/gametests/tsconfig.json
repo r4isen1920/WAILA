@@ -11,7 +11,7 @@
         "outDir": "scripts/",
         "strict": true,
         "noImplicitReturns": true,
-        "allowJs": true,
+        "allowJs": false,
         "resolveJsonModule": true,
     },
     "include": [
@@ -19,6 +19,7 @@
     ],
     "exclude": [
         "node_modules",
+        "**/__tests__/*",
         "**/__tests__/*"
     ]
 }

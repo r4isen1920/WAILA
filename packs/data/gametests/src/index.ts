@@ -1,4 +1,2 @@
-
-import "./utils/string"
-
-import "./main"
+import "./String";
+import "./Waila";
