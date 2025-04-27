@@ -1,5 +1,4 @@
 {
-  "$schema": "https://raw.githubusercontent.com/Bedrock-OSS/regolith-schemas/main/config/v1.2.json",
   "author": "r4isen1920",
   "name": "WAILA",
   "packs": {
@@ -7,11 +6,12 @@
     "resourcePack": "./packs/RP"
   },
   "regolith": {
+    "formatVersion": "1.2.0",
     "dataPath": "./packs/data",
     "filterDefinitions": {
       "gametests": {
         "url": "github.com/Bedrock-OSS/regolith-filters",
-        "version": "1.5.3"
+        "version": "1.7.1"
       },
       "packer": {
         "url": "github.com/MCDevKit/regolith-library",
@@ -26,56 +26,56 @@
         },
         "filters": [
           {
-            "filter": "gametests",
+            "profile": "scripts-dev"
+          }
+        ]
+      },
+      "build-dev": {
+        "export": {
+          "readOnly": false,
+          "target": "local"
+        },
+        "filters": [
+          {
+            "profile": "default"
+          },
+          {
+            "filter": "packer",
             "settings": {
-              "buildOptions": {
-                "entryPoints": [
-                  "data/gametests/src/index.ts"
-                ],
-                "format": "esm",
-                "bundle": true,
-                "minify": false,
-                "target": "es2020"
-              },
-              "modules": [
-                "@minecraft/server@1.13.0"
-              ],
-              "outdir": "BP/scripts/r4isen1920/waila",
-              "outfile": "BP/scripts/r4isen1920/waila/main.js"
+              "output": "WAILA-${git.tag ?? 'test'}-dev.mcaddon"
             }
           }
         ]
       },
-      "raw": {
+      "build-release": {
+        "export": {
+          "readOnly": false,
+          "target": "local"
+        },
+        "filters": [
+          {
+            "profile": "release"
+          },
+          {
+            "filter": "packer",
+            "settings": {
+              "output": "WAILA-${git.tag ?? 'test'}.mcaddon"
+            }
+          }
+        ]
+      },
+      "release": {
         "export": {
           "readOnly": false,
           "target": "development"
         },
         "filters": [
           {
-            "filter": "gametests",
-            "settings": {
-              "buildOptions": {
-                "entryPoints": [
-                  "data/gametests/src/*.js",
-                  "data/gametests/src/**/*.js",
-                  "data/gametests/src/index.ts"
-                ],
-                "format": "esm",
-                "bundle": false,
-                "minify": false,
-                "target": "es2020"
-              },
-              "modules": [
-                "@minecraft/server@1.10.0"
-              ],
-              "outdir": "BP/scripts/r4isen1920/waila",
-              "outfile": "BP/scripts/r4isen1920/waila/main.js"
-            }
+            "profile": "scripts"
           }
         ]
       },
-      "ci": {
+      "scripts": {
         "export": {
           "readOnly": false,
           "target": "local"
@@ -85,27 +85,59 @@
             "filter": "gametests",
             "settings": {
               "buildOptions": {
-                "dropLabels": [ "LOGGING" ],
                 "entryPoints": [
                   "data/gametests/src/index.ts"
                 ],
-                "format": "esm",
+                "dropLabels": [
+                  "DEBUG",
+                  "LOGGING"
+                ],
                 "bundle": true,
-                "minify": true,
-                "target": "es2020"
+                "minify": false
               },
               "modules": [
                 "@minecraft/server@1.13.0"
               ],
-              "outdir": "BP/scripts/r4isen1920/waila",
               "outfile": "BP/scripts/r4isen1920/waila/main.js"
             }
+          }
+        ]
+      },
+      "scripts-dev": {
+        "export": {
+          "readOnly": false,
+          "target": "local"
+        },
+        "filters": [
+          {
+            "filter": "gametests",
+            "settings": {
+              "buildOptions": {
+                "entryPoints": [
+                  "data/gametests/src/index.ts"
+                ],
+                "bundle": true,
+                "minify": false
+              },
+              "modules": [
+                "@minecraft/server@1.13.0"
+              ],
+              "outfile": "BP/scripts/r4isen1920/waila/main.js"
+            }
+          }
+        ]
+      },
+      "build": {
+        "export": {
+          "readOnly": false,
+          "target": "local"
+        },
+        "filters": [
+          {
+            "profile": "build-dev"
           },
           {
-            "filter": "packer",
-            "settings": {
-              "output": "WAILA.v${git.tag ?? 'test'}.r4isen1920.mcaddon"
-            }
+            "profile": "build-release"
           }
         ]
       }
