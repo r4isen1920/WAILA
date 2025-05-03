@@ -48,11 +48,11 @@ export class BlockHandler {
       // Check if any namespace indicates this block should render as an item
       let foundItemRender = null;
       for (const namespace of Object.values(namespacesType)) {
-         if (!namespace.item_rendered_blocks) {
+         if (!namespace.texture_mapping) {
             continue;
          }
 
-         for (const [key, value] of Object.entries(namespace.item_rendered_blocks)) {
+         for (const [key, value] of Object.entries(namespace.texture_mapping)) {
             if (key === blockName) {
                foundItemRender = value;
                break;
@@ -67,7 +67,7 @@ export class BlockHandler {
       const isInBlockCatalog = BlockTypes.get(blockId) !== undefined;
       const shouldRenderAsItem = foundItemRender !== null || !isInBlockCatalog;
 
-      const texturePath = namespacesType[blockNamespace]?.texture_path!;
+      const texturePath = namespacesType[blockNamespace]?.texture_root_path!;
 
       this.logger.debug(blockNamespace, blockName, foundItemRender, shouldRenderAsItem);
 

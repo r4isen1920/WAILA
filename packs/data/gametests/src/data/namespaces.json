@@ -1,8 +1,8 @@
 {
   "minecraft": {
     "display_name": "Minecraft",
-    "texture_path": "textures/items/",
-    "item_rendered_blocks": {
+    "texture_root_path": "textures/items/",
+    "texture_mapping": {
       "acacia_hanging_sign": "acacia_hanging_sign",
       "bamboo_hanging_sign": "bamboo_hanging_sign",
       "birch_hanging_sign": "birch_hanging_sign",

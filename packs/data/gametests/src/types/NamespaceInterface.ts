@@ -13,10 +13,10 @@ export default interface Namespace {
     * Root texture path for this namespace.
     * We will assume that all the textures for this namespace are within this folder.
     */
-   texture_path: string;
+   texture_root_path: string;
    /**
     * List of blocks that are rendered as items instead of their 3D isometric model.
     * It is mapped to the block identifier to the corresponding item texture file name.
     */
-   item_rendered_blocks?: { [key: string]: string };
+   texture_mapping?: { [key: string]: string };
 }
