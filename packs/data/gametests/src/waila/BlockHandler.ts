@@ -1,4 +1,4 @@
-import { Block, BlockInventoryComponent, EntityComponentTypes } from "@minecraft/server";
+import { Block, BlockInventoryComponent, BlockTypes, EntityComponentTypes } from "@minecraft/server";
 import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import { LookAtBlock } from "../types/LookAtObjectInterface";
@@ -43,7 +43,7 @@ export class BlockHandler {
    */
    static resolveIcon(blockId: string): string | number {
       const namespacesType: { [key: string]: Namespace } = namespaces;
-      const blockName = blockId.split(":")[1];
+      const [blockNamespace, blockName] = blockId.split(":");
 
       // Check if any namespace indicates this block should render as an item
       let foundItemRender = null;
@@ -52,12 +52,8 @@ export class BlockHandler {
             continue;
          }
 
-         for (const [renderedBlock, value] of Object.entries(namespace.item_rendered_blocks)) {
-         if (renderedBlock === blockId || 
-             renderedBlock === blockName || 
-             renderedBlock.includes(blockId) || 
-             renderedBlock.includes(blockName)
-            ) {
+         for (const [key, value] of Object.entries(namespace.item_rendered_blocks)) {
+            if (key === blockName) {
                foundItemRender = value;
                break;
             }
@@ -68,15 +64,16 @@ export class BlockHandler {
          }
       }
 
-      const shouldRenderAsItem = foundItemRender !== null;
-      if (shouldRenderAsItem) {
-         // If it should render as an item, use the texture path from the namespace
-         const namespace = Object.values(namespacesType).find((ns) => ns.item_rendered_blocks?.[blockId] === foundItemRender);
-         if (namespace) {
-            return `${namespace.texture_path}${foundItemRender}`;
-         }
-      }
-      return this.getItemAux(blockId);
+      const isInBlockCatalog = BlockTypes.get(blockId) !== undefined;
+      const shouldRenderAsItem = foundItemRender !== null || !isInBlockCatalog;
+
+      const texturePath = namespacesType[blockNamespace]?.texture_path!;
+
+      this.logger.debug(blockNamespace, blockName, foundItemRender, shouldRenderAsItem);
+
+      return shouldRenderAsItem ?
+      `${texturePath}${foundItemRender ?? blockName}` :
+         this.getItemAux(blockId);
    }
 
    /**

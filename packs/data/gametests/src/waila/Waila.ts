@@ -158,9 +158,9 @@ class WAILA {
             type: lookAtObject.type,
             hitIdentifier: displayName,
             namespace: hitNamespace,
-            icon: itemEntity?.itemStack 
-               ? BlockHandler.resolveIcon(itemEntity.itemStack.typeId) 
-               : NaN,
+            icon: itemEntity?.itemStack ?
+               BlockHandler.resolveIcon(itemEntity.itemStack.typeId) :
+               NaN,
             displayName,
             renderData: entityRenderData
          };
@@ -284,7 +284,7 @@ class WAILA {
     */
    private generateUIComponents(player: Player, metadata: LookAtObjectMetadata): { title: RawMessage[], subtitle: RawMessage[] } {
       // Set up subtitle (entity ID, texture path, or empty)
-      const parseStrSubtitle: RawMessage[] = metadata.type === LookAtObjectType.ENTITY ?
+      const parseStrSubtitle: RawMessage[] = (metadata.type === LookAtObjectType.ENTITY) && ((metadata.renderData as EntityRenderData).hitItem === undefined) ?
          [{ text: (metadata.renderData as EntityRenderData).entityId || "" }] :
          [{ text: typeof metadata.icon === "string" && metadata.icon.startsWith('textures/') ? metadata.icon : "" }];
          
@@ -432,6 +432,8 @@ class WAILA {
          player.sendMessage(filteredTitle);
          player.sendMessage(parseStrSubtitle);
       }
+
+      this.log.debug(filteredTitle, parseStrSubtitle);
 
       return { title: filteredTitle, subtitle: parseStrSubtitle };
    }
