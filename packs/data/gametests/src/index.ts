@@ -1,2 +1,2 @@
 import "./String";
-import "./Waila";
+import "./waila/Waila";
