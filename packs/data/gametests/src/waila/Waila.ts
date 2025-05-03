@@ -13,12 +13,14 @@ import { Block, Entity, ItemStack, LocationOutOfWorldBoundariesError, Player, Ra
 import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
 
 import nameAliases from "../data/nameAliases.json";
+import namespaces from "../data/namespaces.json";
 
 import { LookAtBlock, LookAtEntity, LookAtItemEntity, LookAtObject } from "../types/LookAtObjectInterface";
 import { BlockRenderData, EntityRenderData, LookAtObjectMetadata } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
+import Namespace from "../types/NamespaceInterface";
 
 class WAILA {
    private static instance: WAILA;
@@ -156,8 +158,8 @@ class WAILA {
             type: lookAtObject.type,
             hitIdentifier: displayName,
             namespace: hitNamespace,
-            itemAux: itemEntity?.itemStack 
-               ? BlockHandler.getItemAux(itemEntity.itemStack.typeId) 
+            icon: itemEntity?.itemStack 
+               ? BlockHandler.resolveIcon(itemEntity.itemStack.typeId) 
                : NaN,
             displayName,
             renderData: entityRenderData
@@ -170,7 +172,7 @@ class WAILA {
          const blockId = lookAtObject.hitIdentifier;
          
          // Get item auxiliary ID for texture lookup
-         const itemAux = BlockHandler.getItemAux(blockId);
+         const itemAux = BlockHandler.resolveIcon(blockId);
          
          // Get block-specific render data
          const blockRenderData = BlockHandler.createRenderData(block, blockId);
@@ -189,7 +191,7 @@ class WAILA {
             type: lookAtObject.type,
             hitIdentifier: displayName,
             namespace: hitNamespace,
-            itemAux,
+            icon: itemAux,
             displayName,
             renderData: blockRenderData
          };
@@ -241,7 +243,7 @@ class WAILA {
 
       // Generate UI components
       const { title, subtitle } = this.generateUIComponents(player, metadata);
-      
+
       // Display the UI
       player.onScreenDisplay.setTitle(title, {
          subtitle: subtitle,
@@ -281,10 +283,10 @@ class WAILA {
     * Generates UI components for the title display
     */
    private generateUIComponents(player: Player, metadata: LookAtObjectMetadata): { title: RawMessage[], subtitle: RawMessage[] } {
-      // Set up subtitle (entity ID or empty)
+      // Set up subtitle (entity ID, texture path, or empty)
       const parseStrSubtitle: RawMessage[] = metadata.type === LookAtObjectType.ENTITY ?
          [{ text: (metadata.renderData as EntityRenderData).entityId || "" }] :
-         [{ text: "" }];
+         [{ text: typeof metadata.icon === "string" && metadata.icon.startsWith('textures/') ? metadata.icon : "" }];
          
       // Create icon mappings
       const iconTypes = this.getIconTypes();
@@ -303,10 +305,11 @@ class WAILA {
       
       if (isTileOrItemEntity) {
          // For blocks or item entities, show item aux ID
-         iconOrHealthArmor = `${metadata.itemAux >= 0 ? "" : "-"}${String(
-            Math.abs(metadata.itemAux)
-         ).padStart(metadata.itemAux >= 0 ? 9 : 8, "0")}`;
-         
+         iconOrHealthArmor = typeof metadata.icon === 'number' ?
+            `${metadata.icon >= 0 ? "" : "-"}${String(Math.abs(metadata.icon)).padStart(metadata.icon >= 0 ? 9 : 8, "0")}` :
+            // Render nothing if icon is not a number
+            "000000000";
+
          // For blocks, show tool icons
          if (metadata.type === LookAtObjectType.TILE) {
             const blockData = metadata.renderData as BlockRenderData;
@@ -363,7 +366,7 @@ class WAILA {
             const hpDisplay = entityData.maxHp < 1000000 ?
                // "" corresponds to health icon in the UI
                ` ${entityData.hp}/${entityData.maxHp} (${percentage}%)` :
-               "∞";
+               " ∞";
             healthText = `\n§7 ${hpDisplay}§r`;
          }
          
@@ -395,13 +398,17 @@ class WAILA {
             paddingNewlines += "\n";
          }
       }
-      
-      // Format namespace
-      const formattedNamespace = metadata.namespace.length > 3
-         ? metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps()
-         : metadata.namespace.replace(":", "").toUpperCase();
-      const namespaceText = `§9§o${formattedNamespace}§r`;
-      
+
+      // Get namespace display name from predefined mappings or format it manually
+      const namespacesType: { [key: string]: Namespace } = namespaces;
+      const namespaceKey = Object.keys(namespacesType).find(ns => metadata.namespace.startsWith(ns));
+      const namespaceText = `§9§o${
+         namespaceKey ? namespacesType[namespaceKey].display_name : 
+         metadata.namespace.length > 3 ?
+            metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps() :
+            metadata.namespace.replace(":", "").toUpperCase()
+      }§r`;
+
       // Build the complete title
       const parseStr: RawMessage[] = [
          { text: `_r4ui:${prefixType}:` },
@@ -423,6 +430,7 @@ class WAILA {
 
       DEBUG: {
          player.sendMessage(filteredTitle);
+         player.sendMessage(parseStrSubtitle);
       }
 
       return { title: filteredTitle, subtitle: parseStrSubtitle };

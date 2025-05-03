@@ -15,10 +15,9 @@ export interface LookAtObjectMetadata {
     */
    hitIdentifier: string;
    /**
-    * The item aux value of the object being looked at.
-    * This is used for blocks and items to determine their icon.
+    * This can either be an item aux value or a texture path.
     */
-   itemAux: number;
+   icon: string | number;
    /**
     * The display name of the object being looked at.
     */

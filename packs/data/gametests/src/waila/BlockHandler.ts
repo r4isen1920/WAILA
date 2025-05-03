@@ -1,14 +1,23 @@
 import { Block, BlockInventoryComponent, EntityComponentTypes } from "@minecraft/server";
+import { Logger } from "@bedrock-oss/bedrock-boost";
+
 import { LookAtBlock } from "../types/LookAtObjectInterface";
+import Namespace from "../types/NamespaceInterface";
 import { BlockRenderData } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
+
 import blockTools from "../data/blockTools.json";
 import blockIds from "../data/blockIds.json";
+import namespaces from "../data/namespaces.json";
+
+
 
 /**
  * Handles block-specific operations for WAILA
  */
 export class BlockHandler {
+   private static logger = Logger.getLogger("BlockHandler");
+
    /**
     * Creates lookup data for a block
     */
@@ -27,6 +36,47 @@ export class BlockHandler {
          block: block,
          viewAdditionalProperties: false,
       };
+   }
+
+   /**
+    * Returns either the item aux or the icon texture path. Prefers the icon texture path if its rendered as an item.
+   */
+   static resolveIcon(blockId: string): string | number {
+      const namespacesType: { [key: string]: Namespace } = namespaces;
+      const blockName = blockId.split(":")[1];
+
+      // Check if any namespace indicates this block should render as an item
+      let foundItemRender = null;
+      for (const namespace of Object.values(namespacesType)) {
+         if (!namespace.item_rendered_blocks) {
+            continue;
+         }
+
+         for (const [renderedBlock, value] of Object.entries(namespace.item_rendered_blocks)) {
+         if (renderedBlock === blockId || 
+             renderedBlock === blockName || 
+             renderedBlock.includes(blockId) || 
+             renderedBlock.includes(blockName)
+            ) {
+               foundItemRender = value;
+               break;
+            }
+         }
+
+         if (foundItemRender !== null) {
+            break;
+         }
+      }
+
+      const shouldRenderAsItem = foundItemRender !== null;
+      if (shouldRenderAsItem) {
+         // If it should render as an item, use the texture path from the namespace
+         const namespace = Object.values(namespacesType).find((ns) => ns.item_rendered_blocks?.[blockId] === foundItemRender);
+         if (namespace) {
+            return `${namespace.texture_path}${foundItemRender}`;
+         }
+      }
+      return this.getItemAux(blockId);
    }
 
    /**
