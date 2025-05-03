@@ -352,10 +352,11 @@
   "cracked_stone_bricks": "stonebrick.cracked",
   "stone_bricks": "stonebrick.default",
   "mossy_stone_bricks": "stonebrick.mossy",
-  "infested_stone_bricks": "monster_egg.brick",
-  "infested_chiseled_stone_bricks": "monster_egg.chiseledbrick",
-  "infested_cobblestone": "monster_egg.cobble",
-  "infested_cracked_stone_bricks": "monster_egg.crackedbrick",
-  "infested_mossy_stone_bricks": "monster_egg.mossybrick",
-  "infested_stone": "monster_egg.stone"
+  "infested_stone_bricks": "stonebrick.default",
+  "infested_chiseled_stone_bricks": "stonebrick.chiseled",
+  "infested_cobblestone": "cobblestone",
+  "infested_cracked_stone_bricks": "stonebrick.cracked",
+  "infested_mossy_stone_bricks": "stonebrick.mossy",
+  "infested_deepslate": "deepslate",
+  "infested_stone": "stone.stone"
 }
