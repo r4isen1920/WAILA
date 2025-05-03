@@ -1,4 +1,9 @@
 {
+  "name": "waila",
+  "version": "4.0.0",
+  "description": "Handles the WAILA backend and the WAILA UI.",
+  "author": "r4isen1920",
+  "license": "MIT",
   "dependencies": {
     "@bedrock-oss/bedrock-boost": "^0.0.14",
     "@minecraft/common": "^1.2.0",
@@ -6,5 +11,15 @@
     "@minecraft/server": "^1.13.0",
     "@minecraft/server-ui": "^1.2.0",
     "@minecraft/vanilla-data": "^1.21.20"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin-js": "^4.2.0",
+    "@stylistic/eslint-plugin-ts": "^4.2.0",
+    "@typescript-eslint/eslint-plugin": "^8.31.1",
+    "@typescript-eslint/parser": "^8.31.1",
+    "eslint": "^9.26.0",
+    "eslint-plugin-minecraft-linting": "^2.0.4",
+    "globals": "^16.0.0",
+    "typescript-eslint": "^8.31.1"
   }
 }
