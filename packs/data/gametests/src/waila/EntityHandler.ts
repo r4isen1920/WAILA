@@ -2,8 +2,12 @@ import { Effect, Entity, EntityComponentTypes, EntityEquippableComponent, Entity
 import { LookAtEntity, LookAtItemEntity } from "../types/LookAtObjectInterface";
 import { EffectsRenderer, EntityRenderData } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
+
 import armor from "../data/armor.json";
 import entityInteractions from "../data/entityInteractions.json";
+import ignoredEntityRender from "../data/ignoredEntityRender.json";
+
+
 
 /**
  * Handles entity-specific operations for WAILA
@@ -51,22 +55,8 @@ export class EntityHandler {
     * Transforms entity ID into a displayable format
     */
    static transformEntityId(entity: Entity): string {
-      const IGNORE_IDS = [
-         "area_effect_cloud",
-         "fireball",
-         "minecart",
-         "potion",
-         "minecraft:arrow",
-         "minecraft:boat",
-         "minecraft:egg",
-         "minecraft:eye_of_ender_signal",
-         "minecraft:item",
-         "minecraft:snowball",
-         "minecraft:tnt",
-      ];
-
       const entityId = entity.id ?? "0000000000000";
-      if (IGNORE_IDS.some((id) => entity.typeId.includes(id))) {
+      if (ignoredEntityRender.some((id) => entity.typeId.includes(id))) {
          return "0000000000000";
       }
 
