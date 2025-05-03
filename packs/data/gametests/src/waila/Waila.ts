@@ -242,8 +242,6 @@ class WAILA {
       // Generate UI components
       const { title, subtitle } = this.generateUIComponents(player, metadata);
       
-      this.log.trace("Render:", JSON.stringify(metadata, null, 2));
-
       // Display the UI
       player.onScreenDisplay.setTitle(title, {
          subtitle: subtitle,
@@ -423,9 +421,10 @@ class WAILA {
          part => !(typeof part === "object" && "text" in part && part.text === "")
       );
 
-      this.log.debug(filteredTitle);
-      player.sendMessage(filteredTitle);
-      
+      DEBUG: {
+         player.sendMessage(filteredTitle);
+      }
+
       return { title: filteredTitle, subtitle: parseStrSubtitle };
    }
    
