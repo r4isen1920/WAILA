@@ -154,7 +154,7 @@ class WAILA {
          
          return {
             type: lookAtObject.type,
-            hit: displayName,
+            hitIdentifier: displayName,
             namespace: hitNamespace,
             itemAux: itemEntity?.itemStack 
                ? BlockHandler.getItemAux(itemEntity.itemStack.typeId) 
@@ -187,7 +187,7 @@ class WAILA {
          
          return {
             type: lookAtObject.type,
-            hit: displayName,
+            hitIdentifier: displayName,
             namespace: hitNamespace,
             itemAux,
             displayName,
@@ -337,9 +337,9 @@ class WAILA {
       
       // Determine translated or text name
       const nameElement: RawMessage = 
-         metadata.hit.startsWith("__r4ui:player.") 
-            ? { text: metadata.hit.replace("__r4ui:player.", "") }
-            : { translate: metadata.hit };
+         metadata.hitIdentifier.startsWith("__r4ui:player.") 
+            ? { text: metadata.hitIdentifier.replace("__r4ui:player.", "") }
+            : { translate: metadata.hitIdentifier };
             
       // Determine block states text (only shown when sneaking)
       const blockStatesText = metadata.type === LookAtObjectType.TILE && player.isSneaking 
