@@ -9,10 +9,10 @@
     "type": "label",
 
     "size": [ "default", "default" ],
-
     "font_scale_factor": 1.0,
     "localize": false,
     "shadow": true,
+    "enable_profanity_filter": false,
 
     "layer": "($layer + 1)"
 	},
