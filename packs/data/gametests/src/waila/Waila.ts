@@ -146,10 +146,10 @@ class WAILA {
             
             if (itemStack) {
                entityRenderData.hitItem = itemStack.typeId;
-               displayName = "entity.minecraft:item.name";
+               displayName = "entity.item.name";
             }
          } else if (hitNamespace === "minecraft:") {
-            displayName = `entity.${lookAtObject.hitIdentifier}.name`;
+            displayName = `entity.${lookAtObject.hitIdentifier.replace(/minecraft:/gm, '')}.name`;
          }
          
          return {
@@ -284,9 +284,9 @@ class WAILA {
     */
    private generateUIComponents(player: Player, metadata: LookAtObjectMetadata): { title: RawMessage[], subtitle: RawMessage[] } {
       // Set up subtitle (entity ID or empty)
-      const parseStrSubtitle: RawMessage[] = metadata.type === LookAtObjectType.ENTITY 
-         ? [{ text: (metadata.renderData as EntityRenderData).entityId || "" }]
-         : [{ text: "" }];
+      const parseStrSubtitle: RawMessage[] = metadata.type === LookAtObjectType.ENTITY ?
+         [{ text: (metadata.renderData as EntityRenderData).entityId || "" }] :
+         [{ text: "" }];
          
       // Create icon mappings
       const iconTypes = this.getIconTypes();
@@ -362,9 +362,10 @@ class WAILA {
          // Handle integer health display
          if (entityData.maxHp > 0 && entityData.intHealthDisplay) {
             const percentage = Math.round((entityData.hp / entityData.maxHp) * 100);
-            const hpDisplay = entityData.maxHp < 1000000
-               ? `${entityData.hp}/${entityData.maxHp} (${percentage}%)`
-               : "∞";
+            const hpDisplay = entityData.maxHp < 1000000 ?
+               // "" corresponds to health icon in the UI
+               ` ${entityData.hp}/${entityData.maxHp} (${percentage}%)` :
+               "∞";
             healthText = `\n§7 ${hpDisplay}§r`;
          }
          
@@ -381,8 +382,6 @@ class WAILA {
                ? `${entityData.hp}/${entityData.maxHp} (${Math.round((entityData.hp / entityData.maxHp) * 100)}%)`
                : "∞"
             }§r`;
-         } else if (entityData.maxHp > 20 && entityData.intHealthDisplay) {
-            paddingNewlines += "\n";
          }
          
          // Effects padding
@@ -423,6 +422,9 @@ class WAILA {
       const filteredTitle = parseStr.filter(
          part => !(typeof part === "object" && "text" in part && part.text === "")
       );
+
+      this.log.debug(filteredTitle);
+      player.sendMessage(filteredTitle);
       
       return { title: filteredTitle, subtitle: parseStrSubtitle };
    }
