@@ -29,8 +29,8 @@ class WAILA {
 
    private constructor() {
       Logger.setLevel(LogLevel.Trace);
-      system.runInterval(() => this.toAllPlayers(), 3);
-      this.log.info("WAILA Manager Initialized.");
+      system.runInterval(() => this.toAllPlayers());
+      this.log.info("WAILA loaded and running.");
    }
 
    public static getInstance(): WAILA {
@@ -45,19 +45,13 @@ class WAILA {
     */
    private toAllPlayers(): void {
       world.getAllPlayers().forEach((player) => {
-         let lookAtObject = this.fetchLookAt(player, this.MAX_DISTANCE);
+         const lookAtObject = this.fetchLookAt(player, this.MAX_DISTANCE);
 
-         //* Reset UI when needed
-         if (player.hasTag("r4ui_reset")) {
-            if (lookAtObject) lookAtObject.hitIdentifier = "none";
-            player.removeTag("r4ui_reset");
+         if (lookAtObject.hitIdentifier === undefined) {
+            lookAtObject.hitIdentifier = "none";
+            player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
          }
 
-         //* Inform UI that there is nothing on the screen the player is looking at
-         if (!lookAtObject) return;
-         if (lookAtObject.hitIdentifier === undefined) lookAtObject.hitIdentifier = "none";
-
-         //* Render the UI in the screen
          this.displayUI(player, lookAtObject);
       });
    }
@@ -65,7 +59,7 @@ class WAILA {
    /**
     * Fetches what block or entity the specified player is looking at.
     */
-   private fetchLookAt(player: Player, max_dist: number): LookAtObject | null {
+   private fetchLookAt(player: Player, max_dist: number): LookAtObject {
       try {
          // First check for entities in view direction (higher priority)
          const entityLookAt = player.getEntitiesFromViewDirection({
@@ -212,10 +206,12 @@ class WAILA {
       player.onScreenDisplay.setTitle(" ", options);
 
       try {
-         player.runCommandAsync(`title @s reset`);
+         player.runCommand(`title @s reset`);
       } catch (e) {
          this.log.warn(`Failed to run title reset command for ${player.name}: ${e}`);
       }
+
+      player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
    }
 
    /**
@@ -230,7 +226,7 @@ class WAILA {
       // Create comparison data to see if UI needs updating
       const comparisonData = this.createComparisonData(lookAtObject);
       const oldLog = player.getDynamicProperty("r4isen1920_waila:old_log") as string | undefined;
-      
+
       if (oldLog === comparisonData) return;
       player.setDynamicProperty("r4isen1920_waila:old_log", comparisonData);
 
@@ -267,7 +263,8 @@ class WAILA {
          Object.assign(baseData, {
             hp: entityData.hp,
             maxHp: entityData.maxHp,
-            effects: entityData.effectsData?.map(e => `${e.id}:${e.amplifier}`).join(",") || ""
+            armor: EntityHandler.armorRenderer(entityData.entity),
+            effects: entityData.effectsData?.map(e => `${e.id}:${e.amplifier}:${e.duration}`).join(",") || ""
          });
       } else if (lookAtObject.type === LookAtObjectType.TILE && (lookAtObject as LookAtBlock).block) {
          const blockData = lookAtObject as LookAtBlock;
@@ -339,7 +336,7 @@ class WAILA {
       // Determine translated or text name
       const nameElement: RawMessage = 
          metadata.hitIdentifier.startsWith("__r4ui:player.") 
-            ? { text: metadata.hitIdentifier.replace("__r4ui:player.", "") }
+            ? { text: metadata.hitIdentifier }
             : { translate: metadata.hitIdentifier };
             
       // Determine block states text (only shown when sneaking)
