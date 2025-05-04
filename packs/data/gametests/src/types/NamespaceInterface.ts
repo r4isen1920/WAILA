@@ -9,14 +9,25 @@ export default interface Namespace {
     * This is whats directly visible to the player in-game.
     */
    display_name: string;
+   author?: string | string[];
+   /**
+    * The texture data to be used in rendering for this namespace.
+    */
+   textures: NamespaceTextures;
+}
+
+/**
+ * Represents the texture data for a namespace.
+ */
+interface NamespaceTextures {
    /**
     * Root texture path for this namespace.
-    * We will assume that all the textures for this namespace are within this folder.
+    * This is prepended to the textures path.
     */
-   texture_root_path: string;
+   root: string;
    /**
-    * List of blocks that are rendered as items instead of their 3D isometric model.
-    * It is mapped to the block identifier to the corresponding item texture file name.
+    * The list of textures that are available for this namespace.
+    * We will use this to determine if a texture is available, and if so, we will try to render it.
     */
-   texture_mapping?: { [key: string]: string };
+   list?: string[];
 }
