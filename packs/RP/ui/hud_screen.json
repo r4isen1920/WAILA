@@ -62,7 +62,7 @@
                 },
                 {
                   "requires": "(not $touch)",
-                  "$offset": [ 0, 16 ]
+                  "$offset": [ 0, 4 ]
                 }
               ]
             }
