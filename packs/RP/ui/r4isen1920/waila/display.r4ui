@@ -397,7 +397,7 @@
                               {
                                 "item@r4isen1920_waila_display.image": {
                                   "texture": "$var_subtitle_text",
-                                  "size": [ 20, 20 ],
+                                  "size": [ "100%", "100%" ],
 
                                   "visible": "($tooltip_renderer_type = 'A:')",
                                   "ignored": "($ignore_block_icon and not ($var_subtitle_text > 'textures/'))"
