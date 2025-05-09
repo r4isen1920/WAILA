@@ -408,7 +408,7 @@ class WAILA {
       }
 
       // Get namespace display name from predefined mappings or format it manually
-      const namespacesType: { [key: string]: Namespace } = namespaces;
+      const namespacesType = namespaces as Record<string, Namespace>;
       const namespaceKey = Object.keys(namespacesType).find(ns => metadata.namespace.startsWith(ns));
       const namespaceText = `§9§o${
          namespaceKey ? namespacesType[namespaceKey].display_name : 
