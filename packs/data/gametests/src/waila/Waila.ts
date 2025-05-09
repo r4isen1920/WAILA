@@ -26,6 +26,7 @@ class WAILA {
    private static instance: WAILA;
    private readonly log = Logger.getLogger("Waila");
    private readonly MAX_DISTANCE = 8;
+   private playerPreviousLookState: Map<string, boolean> = new Map();
 
    private constructor() {
       Logger.setLevel(LogLevel.Trace);
@@ -218,8 +219,18 @@ class WAILA {
     * Handles final string parse and sends a request to the UI.
     */
    private displayUI(player: Player, lookAtObject: LookAtObject): void {
-      if (!lookAtObject.hitIdentifier || lookAtObject.hitIdentifier === "none") {
-         this.clearUI(player);
+      const hasTarget = lookAtObject.hitIdentifier !== "none";
+      const playerId = player.id;
+      const hadPreviousTarget = this.playerPreviousLookState.get(playerId) ?? false;
+      
+      // Update the player's look state for the next tick
+      this.playerPreviousLookState.set(playerId, hasTarget);
+
+      if (!hasTarget) {
+         // Only clear UI when transitioning from having a target to no target
+         if (hadPreviousTarget) {
+            this.clearUI(player);
+         }
          return;
       }
 
