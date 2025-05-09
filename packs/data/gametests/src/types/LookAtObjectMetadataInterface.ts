@@ -1,7 +1,5 @@
 import { LookAtObjectTypeEnum } from "./LookAtObjectTypeEnum";
 
-
-
 /**
  * Represents the metadata of an object being looked at in the game.
  */
@@ -11,15 +9,19 @@ export interface LookAtObjectMetadata {
     */
    type: LookAtObjectTypeEnum;
    /**
-    * The type identifier of the object being looked at.
+    * The fundamental type identifier of the object being looked at
+    * (e.g., minecraft:stone, minecraft:cow, minecraft:item for item entities).
     */
    hitIdentifier: string;
    /**
     * This can either be an item aux value or a texture path.
+    * For item entities, this represents the icon of the item they hold.
     */
    icon: string | number;
    /**
-    * The display name of the object being looked at.
+    * The primary display name or translation key for the object.
+    * If an entity has a nameTag, this will be the nameTag.
+    * For item entities, this would be 'entity.item.name'.
     */
    displayName: string;
    /**
@@ -30,6 +32,17 @@ export interface LookAtObjectMetadata {
     * Contains the data used to render the object being looked at.
     */
    renderData: BlockRenderData | EntityRenderData;
+   /**
+    * If the looked-at object is an entity with a nameTag, this holds
+    * the translation key for the entity's type (e.g., "entity.cow.name").
+    * Used to display as: "{displayName (nameTag)}" ({nameTagContextTranslationKey})
+    */
+   nameTagContextTranslationKey?: string;
+   /**
+    * If the looked-at entity is an item entity (hitIdentifier is 'minecraft:item'),
+    * this holds the type identifier of the actual item (e.g., "minecraft:diamond_sword").
+    */
+   itemContextIdentifier?: string;
 }
 
 /**
@@ -107,9 +120,4 @@ export interface EntityRenderData {
     * The renderer string that is used to display the effects of the entity.
     */
    effectsRenderer: EffectsRenderer;
-   /**
-    * The item identifier of the entity being looked at.
-    * This is present if the entity being looked at is an item entity.
-    */
-   hitItem?: string;
 }

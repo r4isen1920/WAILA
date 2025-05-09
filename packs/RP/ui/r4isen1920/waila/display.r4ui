@@ -281,11 +281,11 @@
 
     "variables": [
       {
-        "requires": "(($var_title_text - '__r4ui:player.') = $var_title_text)",
+        "requires": "(($var_title_text - '__r4ui:humanoid.') = $var_title_text)",
         "$offset": [ 0, "75%y + 2.5px" ]
       },
       {
-        "requires": "(not (($var_title_text - '__r4ui:player.') = $var_title_text))",
+        "requires": "(not (($var_title_text - '__r4ui:humanoid.') = $var_title_text))",
         "$offset": [ 0, -5 ]
       }
     ]
@@ -458,7 +458,7 @@
                               },
                               {
                                 "requires": "(not ($tooltip_renderer_type = 'A:'))",
-                                "$text": "('' + ($var_title_text - ('%.318s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:player.')"
+                                "$text": "('' + ($var_title_text - ('%.318s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:humanoid.')"
                               }
                             ]
                           }

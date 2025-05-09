@@ -113,81 +113,94 @@ class WAILA {
          return null;
       }
 
-      // Extract namespace
       const hitNamespace = lookAtObject.hitIdentifier.includes(":")
          ? lookAtObject.hitIdentifier.substring(0, lookAtObject.hitIdentifier.indexOf(":") + 1)
          : "minecraft:";
 
-      // Prepare display name based on type
-      let displayName = lookAtObject.hitIdentifier;
+      let resultDisplayName: string = lookAtObject.hitIdentifier;
+      let nameTagContextTranslationKey_local: string | undefined = undefined;
+      let itemContextIdentifier_local: string | undefined = undefined;
+      let resolvedIcon: string | number = NaN;
+      
       const nameAliasTypes: { [key: string]: string } = nameAliases;
       
-      // Process entity
       if (lookAtObject.type === LookAtObjectType.ENTITY) {
          const entity = (lookAtObject as LookAtEntity).entity;
-         
-         // Get entity-specific render data
+         const entityNameTag = entity.nameTag;
+         const entityTypeId = entity.typeId; // This is the lookAtObject.hitIdentifier for entities
+         const cleanEntityTypeId = entityTypeId.replace(/minecraft:/gm, '');
+
          const entityRenderData = EntityHandler.createRenderData(
             entity, 
-            entity.typeId === "minecraft:player"
+            entityTypeId === "minecraft:player"
          );
 
-         let itemEntity: LookAtItemEntity | undefined;
-         
-         // Handle special entity types
-         if (entity.typeId === "minecraft:player" && entity instanceof Player) {
-            displayName = `__r4ui:player.${entity.name}`;
-         } else if (entity.typeId === "minecraft:item") {
-            itemEntity = lookAtObject as LookAtItemEntity;
-            const itemStack = itemEntity.itemStack;
-            
-            if (itemStack) {
-               entityRenderData.hitItem = itemStack.typeId;
-               displayName = "entity.item.name";
+         const humanoidLikeEntities = [
+            "minecraft:player"
+         ];
+
+         if (entityNameTag && entityNameTag.length > 0) {
+            resultDisplayName = entityNameTag;
+            nameTagContextTranslationKey_local = `entity.${cleanEntityTypeId}.name`;
+         } else {
+            if (humanoidLikeEntities.includes(entityTypeId)) {
+               if (entityTypeId === "minecraft:player" && entity instanceof Player) {
+                  resultDisplayName = `__r4ui:humanoid.${entity.name}`;
+               } else {
+                  // For non-player humanoids without a nameTag
+                  resultDisplayName = "__r4ui:humanoid_translate_type";
+               }
+            } else if (entityTypeId === "minecraft:item") {
+               resultDisplayName = "entity.item.name";
+               const itemEntity = lookAtObject as LookAtItemEntity;
+               const itemStack = itemEntity.itemStack;
+               if (itemStack) {
+                  itemContextIdentifier_local = itemStack.typeId;
+                  resolvedIcon = BlockHandler.resolveIcon(itemStack.typeId);
+               }
+            } else if (entityTypeId === "minecraft:npc") {
+               resultDisplayName = 'npcscreen.npc';
+            } else if (hitNamespace === "minecraft:") {
+               resultDisplayName = `entity.${cleanEntityTypeId}.name`;
+            } else {
+               resultDisplayName = lookAtObject.hitIdentifier; // Full ID for unknown custom entities
             }
-         } else if (hitNamespace === "minecraft:") {
-            displayName = `entity.${lookAtObject.hitIdentifier.replace(/minecraft:/gm, '')}.name`;
          }
-         
+
          return {
             type: lookAtObject.type,
-            hitIdentifier: displayName,
+            hitIdentifier: entityTypeId,
             namespace: hitNamespace,
-            icon: itemEntity?.itemStack ?
-               BlockHandler.resolveIcon(itemEntity.itemStack.typeId) :
-               NaN,
-            displayName,
-            renderData: entityRenderData
+            icon: resolvedIcon, // NaN for non-item entities, aux value for item entities
+            displayName: resultDisplayName,
+            renderData: entityRenderData,
+            ...(nameTagContextTranslationKey_local && { nameTagContextTranslationKey: nameTagContextTranslationKey_local }),
+            ...(itemContextIdentifier_local && { itemContextIdentifier: itemContextIdentifier_local })
          };
       }
       
-      // Process block
       if (lookAtObject.type === LookAtObjectType.TILE) {
          const block = (lookAtObject as LookAtBlock).block;
          const blockId = lookAtObject.hitIdentifier;
          
-         // Get item auxiliary ID for texture lookup
-         const itemAux = BlockHandler.resolveIcon(blockId);
-         
-         // Get block-specific render data
+         resolvedIcon = BlockHandler.resolveIcon(blockId);
          const blockRenderData = BlockHandler.createRenderData(block, blockId);
          
-         // Format display name with proper namespace
          if (hitNamespace === "minecraft:") {
             const nameAlias = nameAliasTypes[blockId.replace(hitNamespace, "")];
-            displayName = `${nameAlias?.startsWith("item.") ? "" : "tile."}${
+            resultDisplayName = `${nameAlias?.startsWith("item.") ? "" : "tile."}${
                !nameAlias ? blockId.replace(hitNamespace, "") : nameAlias
             }.name`;
          } else {
-            displayName = `${lookAtObject.type}.${blockId}.name`;
+            resultDisplayName = `${lookAtObject.type}.${blockId}.name`;
          }
          
          return {
             type: lookAtObject.type,
-            hitIdentifier: displayName,
+            hitIdentifier: blockId,
             namespace: hitNamespace,
-            icon: itemAux,
-            displayName,
+            icon: resolvedIcon,
+            displayName: resultDisplayName,
             renderData: blockRenderData
          };
       }
@@ -291,74 +304,78 @@ class WAILA {
     * Generates UI components for the title display
     */
    private generateUIComponents(player: Player, metadata: LookAtObjectMetadata): { title: RawMessage[], subtitle: RawMessage[] } {
-      // Set up subtitle (entity ID, texture path, or empty)
-      const parseStrSubtitle: RawMessage[] = (metadata.type === LookAtObjectType.ENTITY) && ((metadata.renderData as EntityRenderData).hitItem === undefined) ?
-         [{ text: (metadata.renderData as EntityRenderData).entityId || "" }] :
-         [{ text: typeof metadata.icon === "string" && metadata.icon.startsWith('textures/') ? metadata.icon : "" }];
+      // Set up subtitle
+      // Show entityId in subtitle only if it's not an item entity (item entities use main icon)
+      // For blocks/item entities, subtitle can show texture path if icon is a string (custom), or empty if icon is number (handled by font)
+      const parseStrSubtitle: RawMessage[] = 
+         (metadata.type === LookAtObjectType.ENTITY && !metadata.itemContextIdentifier) ?
+            [{ text: (metadata.renderData as EntityRenderData).entityId || "" }] :
+            [{ text: typeof metadata.icon === "string" && metadata.icon.startsWith('textures/') ? metadata.icon : "" }];
          
-      // Create icon mappings
       const iconTypes = this.getIconTypes();
       
-      // Determine if we're dealing with an item entity or a block/tile
       const isTileOrItemEntity = metadata.type === LookAtObjectType.TILE || 
-         (metadata.type === LookAtObjectType.ENTITY && 'hitItem' in metadata.renderData);
+         (metadata.type === LookAtObjectType.ENTITY && !!metadata.itemContextIdentifier);
       
-      // Determine prefix type for UI format
       const prefixType = isTileOrItemEntity ? "A" : "B";
       
-      // Get icons or health/armor display
       let iconOrHealthArmor = "";
       let finalTagIcons = "";
       let effectsStr = "";
       
       if (isTileOrItemEntity) {
-         // For blocks or item entities, show item aux ID
+         // metadata.icon is already the resolved aux value for both blocks and items in itemEntities
          iconOrHealthArmor = typeof metadata.icon === 'number' ?
             `${metadata.icon >= 0 ? "" : "-"}${String(Math.abs(metadata.icon)).padStart(metadata.icon >= 0 ? 9 : 8, "0")}` :
-            // Render nothing if icon is not a number
-            "000000000";
+            "000000000"; // Should not happen if logic is correct, but fallback
 
-         // For blocks, show tool icons
          if (metadata.type === LookAtObjectType.TILE) {
             const blockData = metadata.renderData as BlockRenderData;
             finalTagIcons = `:${iconTypes.tile[blockData.tool[0] || "undefined"] || "z"};${
                iconTypes.tile[blockData.tool[1] || "undefined"] || "z"
             }:`;
-         } else {
-            // For item entities, use undefined tool icons
-            finalTagIcons = `:z;z:`;
+         } else { // Item Entity
+            finalTagIcons = `:z;z:`; // Item entities don't have specific "tool" icons in this context
          }
-      } else {
-         // For entities (non-items), show health and armor
+      } else { // Non-item Entities
          const entityData = metadata.renderData as EntityRenderData;
          iconOrHealthArmor = `${entityData.healthRenderer}${entityData.armorRenderer}`;
          
-         // Show entity tag icons
          finalTagIcons = `:${iconTypes.entity[entityData.tags[0] || "undefined"] || "z"};${
             iconTypes.entity[entityData.tags[1] || "undefined"] || "z"
          }:`;
          
-         // For entities with effects, add effect string
          effectsStr = `${entityData.effectsRenderer.effectString}e${
             entityData.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, "0")
          }`;
       }
       
-      // Determine translated or text name
-      const nameElement: RawMessage = 
-         metadata.hitIdentifier.startsWith("__r4ui:player.") 
-            ? { text: metadata.hitIdentifier }
-            : { translate: metadata.hitIdentifier };
-            
-      // Determine block states text (only shown when sneaking)
+      const nameElements: RawMessage[] = [];
+      if (metadata.nameTagContextTranslationKey) {
+         // Entity with nameTag: {nameTag} (entity.type.name)
+         nameElements.push({ text: `${metadata.displayName} §7(` }); // metadata.displayName is the nameTag
+         nameElements.push({ translate: metadata.nameTagContextTranslationKey });
+         nameElements.push({ text: ")§r" });
+      } else if (metadata.displayName === "__r4ui:humanoid_translate_type") {
+         // Non-player humanoid without nameTag: "__r4ui:humanoid." + translate<entity_type>
+         nameElements.push({ text: "__r4ui:humanoid." });
+         const cleanHitIdentifier = metadata.hitIdentifier.replace(/minecraft:/gm, '');
+         nameElements.push({ translate: `entity.${cleanHitIdentifier}.name` });
+      } else if (metadata.displayName.startsWith("__r4ui:humanoid.")) {
+         // Player without nameTag: "__r4ui:humanoid.PlayerName"
+         nameElements.push({ text: metadata.displayName });
+      } else {
+         nameElements.push({ translate: metadata.displayName }); // Standard translation key or 'entity.item.name'
+      }
+      nameElements.push({ text: "§r" });
+
       const blockStatesText = metadata.type === LookAtObjectType.TILE && player.isSneaking 
          ? (metadata.renderData as BlockRenderData).blockStates 
          : "";
          
-      // Show item entity's item type
-      const itemEntityText = metadata.type === LookAtObjectType.ENTITY && 
-         'hitItem' in metadata.renderData && metadata.renderData.hitItem
-         ? `\n§7${metadata.renderData.hitItem}§r` 
+      // Show item entity's specific item type ID (e.g., minecraft:diamond_sword)
+      const itemEntityText = metadata.type === LookAtObjectType.ENTITY && metadata.itemContextIdentifier
+         ? `\n§7${metadata.itemContextIdentifier}§r` 
          : "";
          
       // Format health text for entities
@@ -407,7 +424,6 @@ class WAILA {
          }
       }
 
-      // Get namespace display name from predefined mappings or format it manually
       const namespacesType = namespaces as Record<string, Namespace>;
       const namespaceKey = Object.keys(namespacesType).find(ns => metadata.namespace.startsWith(ns));
       const namespaceText = `§9§o${
@@ -423,7 +439,7 @@ class WAILA {
          { text: iconOrHealthArmor },
          { text: finalTagIcons },
          { text: effectsStr },
-         nameElement,
+         ...nameElements,
          { text: blockStatesText },
          { text: itemEntityText },
          { text: healthText },
@@ -431,7 +447,6 @@ class WAILA {
          { text: `\n${namespaceText}` },
       ];
       
-      // Filter out empty text elements
       const filteredTitle = parseStr.filter(
          part => !(typeof part === "object" && "text" in part && part.text === "")
       );
