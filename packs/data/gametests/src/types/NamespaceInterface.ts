@@ -1,4 +1,3 @@
-
 /**
  * Represents a namespace that includes information needed for rendering objects that are looked at.
  * We can leverage this to render objects that would be otherwise not available just within the vanilla game.
@@ -27,7 +26,8 @@ interface NamespaceTextures {
    root: string;
    /**
     * The list of textures that are available for this namespace.
+    * Can be a list of texture names (strings) or a list of objects mapping a block/item name to a texture name.
     * We will use this to determine if a texture is available, and if so, we will try to render it.
     */
-   list?: string[];
+   list?: (string | { [key: string]: string })[];
 }
