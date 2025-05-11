@@ -9,7 +9,7 @@
  *
  */
 
-import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
+import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, MemoryTier, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
 import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
 
 import nameAliases from "../data/nameAliases.json";
@@ -33,8 +33,13 @@ class WAILA {
 
    private constructor() {
       Logger.setLevel(LogLevel.Trace);
-      system.runInterval(() => this.toAllPlayers());
-      this.log.info("WAILA loaded and running.");
+
+		const additionalTickInterval = MemoryTier.SuperHigh - system.serverSystemInfo.memoryTier;
+		const tickInterval = 1 + additionalTickInterval;
+
+      system.runInterval(() => this.toAllPlayers(), tickInterval);
+
+      this.log.info(`WAILA loaded and running at ${tickInterval} tick(s) at a time.`);
    }
 
    public static getInstance(): WAILA {
