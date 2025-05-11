@@ -1,9 +1,7 @@
 {
-  /* created by r4isen1920 | MIT License */
+	/* created by r4isen1920 | MIT License */
 
-
-  "ui_defs": [
-    "ui/r4isen1920/waila/display.r4ui"
-  ]
-
+	"ui_defs": [
+		"ui/r4isen1920/waila/display.r4ui"
+	]
 }

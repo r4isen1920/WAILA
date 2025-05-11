@@ -1,15 +1,15 @@
 [
-  "area_effect_cloud",
-  "fireball",
-  "minecart",
-  "potion",
-  "minecraft:arrow",
-  "minecraft:boat",
-  "minecraft:chest_boat",
-  "minecraft:egg",
-  "minecraft:eye_of_ender_signal",
-  "minecraft:item",
-  "minecraft:snowball",
-  "minecraft:tnt",
-  "minecraft:wind_charge_projectile"
+	"area_effect_cloud",
+	"fireball",
+	"minecart",
+	"potion",
+	"minecraft:arrow",
+	"minecraft:boat",
+	"minecraft:chest_boat",
+	"minecraft:egg",
+	"minecraft:eye_of_ender_signal",
+	"minecraft:item",
+	"minecraft:snowball",
+	"minecraft:tnt",
+	"minecraft:wind_charge_projectile"
 ]
