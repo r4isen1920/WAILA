@@ -58,7 +58,6 @@ export class EntityHandler {
          type: LookAtObjectTypeEnum.ENTITY,
          hitIdentifier: entity.typeId,
          entity: entity,
-         viewAdditionalProperties: false,
          hp: healthComponent?.currentValue ?? 0,
          maxHp: healthComponent?.effectiveMax ?? 0,
       };

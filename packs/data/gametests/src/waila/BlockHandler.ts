@@ -69,7 +69,6 @@ export class BlockHandler {
          type: LookAtObjectTypeEnum.TILE,
          hitIdentifier: hitId,
          block: block,
-         viewAdditionalProperties: false,
       };
    }
 

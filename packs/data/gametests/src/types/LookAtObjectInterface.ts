@@ -9,17 +9,21 @@ import { LookAtObjectTypeEnum } from "./LookAtObjectTypeEnum";
  */
 export interface LookAtObjectInterface {
    /**
-    * The type of the object being looked at.
+    * The type of the object being looked at. Otherwise undefined.
     */
    type: LookAtObjectTypeEnum | undefined;
    /**
     * The type identifier of the object being looked at.
     */
-   hitIdentifier: string | undefined;
+   hitIdentifier: string;
    /**
     * Whether or not additional properties should be displayed for this object.
     */
-   viewAdditionalProperties: boolean;
+   viewAdditionalProperties?: boolean;
+	/**
+	 * The type identifier of the item being held.
+	 */
+	itemHeld?: string;
 }
 
 

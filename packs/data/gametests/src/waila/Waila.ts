@@ -9,7 +9,7 @@
  *
  */
 
-import { LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
+import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
 import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
 
 import nameAliases from "../data/nameAliases.json";
@@ -52,7 +52,7 @@ class WAILA {
          const lookAtObject = this.fetchLookAt(player, this.MAX_DISTANCE);
 
          if (lookAtObject.hitIdentifier === undefined) {
-            lookAtObject.hitIdentifier = "none";
+            lookAtObject.hitIdentifier = "__r4ui:none";
             player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
          }
 
@@ -71,10 +71,15 @@ class WAILA {
             maxDistance: max_dist,
          });
 
+			// Check for the item held by the player
+			const playerEquippedItem = player.getComponent(EntityComponentTypes.Equippable)
+                                         ?.getEquipment(EquipmentSlot.Mainhand)?.typeId || "__r4ui:none";
+
          if (entityLookAt.length > 0 && entityLookAt[0]?.entity) {
             const entity = entityLookAt[0].entity;
             const lookAtEntity = EntityHandler.createLookupData(entity);
             lookAtEntity.viewAdditionalProperties = player.isSneaking;
+            lookAtEntity.itemHeld = playerEquippedItem;
             return lookAtEntity;
          }
 
@@ -88,14 +93,16 @@ class WAILA {
          if (blockLookAt?.block) {
             const lookAtBlock = BlockHandler.createLookupData(blockLookAt.block);
             lookAtBlock.viewAdditionalProperties = player.isSneaking;
+				lookAtBlock.itemHeld = playerEquippedItem;
             return lookAtBlock;
          }
 
          // Nothing was found
          return {
             type: undefined,
-            hitIdentifier: "none",
-            viewAdditionalProperties: player.isSneaking
+            hitIdentifier: "__r4ui:none",
+            viewAdditionalProperties: player.isSneaking,
+            itemHeld: playerEquippedItem
          };
       } catch (e) {
          if (!(e instanceof LocationOutOfWorldBoundariesError)) {
@@ -103,8 +110,9 @@ class WAILA {
          }
          return {
             type: undefined,
-            hitIdentifier: "none",
-            viewAdditionalProperties: player.isSneaking
+            hitIdentifier: "__r4ui:none",
+            viewAdditionalProperties: player.isSneaking,
+				itemHeld: "__r4ui:none"
          };
       }
    }
@@ -113,7 +121,7 @@ class WAILA {
     * Fetches metadata for the looked-at object.
     */
    private fetchLookAtMetadata(player: Player, lookAtObject: LookAtObjectInterface): LookAtObjectMetadata | null {
-      if (!lookAtObject.type || !lookAtObject.hitIdentifier || lookAtObject.hitIdentifier === "none") {
+      if (!lookAtObject.type || !lookAtObject.hitIdentifier || lookAtObject.hitIdentifier === "__r4ui:none") {
          return null;
       }
 
@@ -238,7 +246,7 @@ class WAILA {
     * Handles final string parse and sends a request to the UI.
     */
    private displayUI(player: Player, lookAtObject: LookAtObjectInterface): void {
-      const hasTarget = lookAtObject.hitIdentifier !== "none";
+      const hasTarget = lookAtObject.hitIdentifier !== "__r4ui:none";
       const playerId = player.id;
       const hadPreviousTarget = this.playerPreviousLookState.get(playerId) ?? false;
 
@@ -285,7 +293,8 @@ class WAILA {
    private createComparisonData(lookAtObject: LookAtObjectInterface): string {
       const baseData: any = {
          hit: lookAtObject.hitIdentifier,
-         sneaking: lookAtObject.viewAdditionalProperties
+         sneaking: lookAtObject.viewAdditionalProperties,
+			itemHeld: lookAtObject.itemHeld
       };
 
       if (lookAtObject.type === LookAtObjectType.ENTITY) {
