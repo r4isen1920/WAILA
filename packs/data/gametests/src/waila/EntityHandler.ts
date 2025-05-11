@@ -29,11 +29,13 @@ export class EntityHandler {
       };
 
       try {
-            lookupData.effectsData = entity.getEffects().map((effect) => ({
-            id: effect.typeId,
-            amplifier: effect.amplifier,
-            duration: Math.floor(effect.duration / TicksPerSecond),
-         }));
+         lookupData.effectsData = entity.getEffects()
+            .filter(effect => effect.duration !== -1 && effect.amplifier !== -1)
+            .map(effect => ({
+               id: effect.typeId,
+               amplifier: effect.amplifier,
+               duration: Math.floor(effect.duration / TicksPerSecond),
+            }));
       } catch {
          lookupData.effectsData = [];
       }
@@ -266,6 +268,10 @@ export class EntityHandler {
             effectData = undefined;
          }
 
+         if (effectData?.duration === -1 || effectData?.amplifier === -1) {
+            effectData = undefined;
+         }
+
          let effectDuration = effectData?.duration ?? 0;
          let effectAmplifier = effectData?.amplifier ?? 0;
          const effectTypeId = effectData?.typeId;
@@ -287,14 +293,12 @@ export class EntityHandler {
          effectDuration /= TicksPerSecond;
          const effectDurationMinutes = Math.min(99, Math.floor(effectDuration / 60));
          const effectDurationSeconds = Math.floor(effectDuration % 60);
+         const effectCombinedDurationStr =
+            `${effectDurationMinutes.toString().padStart(2, "0")}:${effectDurationSeconds.toString().padStart(2, "0")}`;
 
          effectString +=
-         `d${effectDurationMinutes
-            .toString()
-            .padStart(2, "0")}:${effectDurationSeconds
-            .toString()
-            .padStart(2, "0")}` +
-         `p${effectAmplifier.toString().padStart(1, "0")}`;
+            `d${effectCombinedDurationStr}` +
+            `p${effectAmplifier.toString().padStart(1, "0")}`;
       }
 
       return { effectString, effectsResolvedArray };
