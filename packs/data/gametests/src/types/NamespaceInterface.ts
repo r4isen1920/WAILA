@@ -2,7 +2,7 @@
  * Represents a namespace that includes information needed for rendering objects that are looked at.
  * We can leverage this to render objects that would be otherwise not available just within the vanilla game.
  */
-export default interface Namespace {
+export default interface NamespaceInterface {
    /**
     * What the namespace is known for.
     * This is whats directly visible to the player in-game.
@@ -12,13 +12,13 @@ export default interface Namespace {
    /**
     * The texture data to be used in rendering for this namespace.
     */
-   textures: NamespaceTextures;
+   textures: NamespaceTexturesInterface;
 }
 
 /**
  * Represents the texture data for a namespace.
  */
-interface NamespaceTextures {
+interface NamespaceTexturesInterface {
    /**
     * Root texture path for this namespace.
     * This is prepended to the textures path.

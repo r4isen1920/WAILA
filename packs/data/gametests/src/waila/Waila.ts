@@ -15,13 +15,12 @@ import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
 import nameAliases from "../data/nameAliases.json";
 import namespaces from "../data/namespaces.json";
 
-import { LookAtBlock, LookAtEntity, LookAtItemEntity, LookAtObject } from "../types/LookAtObjectInterface";
-import { BlockRenderData, EntityRenderData, LookAtObjectMetadata } from "../types/LookAtObjectMetadataInterface";
+import { LookAtBlockInterface, LookAtEntityInterface, LookAtItemEntityInterface, LookAtObjectInterface } from "../types/LookAtObjectInterface";
+import { BlockRenderDataInterface, EntityRenderDataInterface, LookAtObjectMetadata } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
-import { BlockTools, EntityInteractions } from "../types/TagsEnum";
-import Namespace from "../types/NamespaceInterface";
+import NamespaceInterface from "../types/NamespaceInterface";
 
 
 
@@ -65,7 +64,7 @@ class WAILA {
    /**
     * Fetches what block or entity the specified player is looking at.
     */
-   private fetchLookAt(player: Player, max_dist: number): LookAtObject {
+   private fetchLookAt(player: Player, max_dist: number): LookAtObjectInterface {
       try {
          // First check for entities in view direction (higher priority)
          const entityLookAt = player.getEntitiesFromViewDirection({
@@ -113,7 +112,7 @@ class WAILA {
    /**
     * Fetches metadata for the looked-at object.
     */
-   private fetchLookAtMetadata(lookAtObject: LookAtObject): LookAtObjectMetadata | null {
+   private fetchLookAtMetadata(player: Player, lookAtObject: LookAtObjectInterface): LookAtObjectMetadata | null {
       if (!lookAtObject.type || !lookAtObject.hitIdentifier || lookAtObject.hitIdentifier === "none") {
          return null;
       }
@@ -130,13 +129,14 @@ class WAILA {
       const nameAliasTypes: { [key: string]: string } = nameAliases;
 
       if (lookAtObject.type === LookAtObjectType.ENTITY) {
-         const entity = (lookAtObject as LookAtEntity).entity;
+         const entity = (lookAtObject as LookAtEntityInterface).entity;
          const entityNameTag = entity.nameTag;
-         const entityTypeId = entity.typeId; // This is the lookAtObject.hitIdentifier for entities
+         const entityTypeId = entity.typeId;
          const cleanEntityTypeId = entityTypeId.replace(/minecraft:/gm, '');
 
          const entityRenderData = EntityHandler.createRenderData(
-            entity, 
+            entity,
+            player,
             entityTypeId === "minecraft:player"
          );
 
@@ -157,7 +157,7 @@ class WAILA {
                }
             } else if (entityTypeId === "minecraft:item") {
                resultDisplayName = "entity.item.name";
-               const itemEntity = lookAtObject as LookAtItemEntity;
+               const itemEntity = lookAtObject as LookAtItemEntityInterface;
                const itemStack = itemEntity.itemStack;
                if (itemStack) {
                   itemContextIdentifier_local = itemStack.typeId;
@@ -185,11 +185,11 @@ class WAILA {
       }
 
       if (lookAtObject.type === LookAtObjectType.TILE) {
-         const block = (lookAtObject as LookAtBlock).block;
+         const block = (lookAtObject as LookAtBlockInterface).block;
          const blockId = lookAtObject.hitIdentifier;
 
          resolvedIcon = BlockHandler.resolveIcon(blockId);
-         const blockRenderData = BlockHandler.createRenderData(block, blockId);
+         const blockRenderData = BlockHandler.createRenderData(block, blockId, player);
 
          if (hitNamespace === "minecraft:") {
             const nameAlias = nameAliasTypes[blockId.replace(hitNamespace, "")];
@@ -237,7 +237,7 @@ class WAILA {
    /**
     * Handles final string parse and sends a request to the UI.
     */
-   private displayUI(player: Player, lookAtObject: LookAtObject): void {
+   private displayUI(player: Player, lookAtObject: LookAtObjectInterface): void {
       const hasTarget = lookAtObject.hitIdentifier !== "none";
       const playerId = player.id;
       const hadPreviousTarget = this.playerPreviousLookState.get(playerId) ?? false;
@@ -260,7 +260,7 @@ class WAILA {
       if (oldLog === comparisonData) return;
       player.setDynamicProperty("r4isen1920_waila:old_log", comparisonData);
 
-      const metadata = this.fetchLookAtMetadata(lookAtObject);
+      const metadata = this.fetchLookAtMetadata(player, lookAtObject);
       if (!metadata) {
          this.log.warn(`Failed to fetch metadata for ${lookAtObject.hitIdentifier}, clearing UI.`);
          this.clearUI(player);
@@ -282,22 +282,22 @@ class WAILA {
    /**
     * Creates a comparison string to determine if UI needs updating
     */
-   private createComparisonData(lookAtObject: LookAtObject): string {
+   private createComparisonData(lookAtObject: LookAtObjectInterface): string {
       const baseData: any = {
          hit: lookAtObject.hitIdentifier,
          sneaking: lookAtObject.viewAdditionalProperties
       };
 
       if (lookAtObject.type === LookAtObjectType.ENTITY) {
-         const entityData = lookAtObject as LookAtEntity;
+         const entityData = lookAtObject as LookAtEntityInterface;
          Object.assign(baseData, {
             hp: entityData.hp,
             maxHp: entityData.maxHp,
             armor: EntityHandler.armorRenderer(entityData.entity),
             effects: entityData.effectsData?.map(e => `${e.id}:${e.amplifier}:${e.duration}`).join(",") || ""
          });
-      } else if (lookAtObject.type === LookAtObjectType.TILE && (lookAtObject as LookAtBlock).block) {
-         const blockData = lookAtObject as LookAtBlock;
+      } else if (lookAtObject.type === LookAtObjectType.TILE && (lookAtObject as LookAtBlockInterface).block) {
+         const blockData = lookAtObject as LookAtBlockInterface;
          Object.assign(baseData, {
             states: BlockHandler.getBlockStates(blockData.block)
          });
@@ -315,7 +315,7 @@ class WAILA {
       // For blocks/item entities, subtitle can show texture path if icon is a string (custom), or empty if icon is number (handled by font)
       const parseStrSubtitle: RawMessage[] = 
          (metadata.type === LookAtObjectType.ENTITY && !metadata.itemContextIdentifier) ?
-            [{ text: (metadata.renderData as EntityRenderData).entityId || "" }] :
+            [{ text: (metadata.renderData as EntityRenderDataInterface).entityId || "" }] :
             [{ text: typeof metadata.icon === "string" && metadata.icon.startsWith('textures/') ? metadata.icon : "" }];
 
       const isTileOrItemEntity = metadata.type === LookAtObjectType.TILE || 
@@ -334,28 +334,15 @@ class WAILA {
             "000000000"; // Should not happen if logic is correct, but fallback
 
          if (metadata.type === LookAtObjectType.TILE) {
-            const blockData = metadata.renderData as BlockRenderData;
-            const tool1Key = blockData.tool[0]?.toUpperCase();
-            const tool2Key = blockData.tool[1]?.toUpperCase();
-
-            const t1 = tool1Key && tool1Key in BlockTools ? BlockTools[tool1Key as keyof typeof BlockTools] : BlockTools.UNDEFINED;
-            const t2 = tool2Key && tool2Key in BlockTools ? BlockTools[tool2Key as keyof typeof BlockTools] : BlockTools.UNDEFINED;
-
-            finalTagIcons = `:${t1},f;${t2},f:`;
+            const blockData = metadata.renderData as BlockRenderDataInterface;
+            finalTagIcons = blockData.toolIcons;
          } else { // Item Entity
             finalTagIcons = `:zz,f;zz,f:`; // Item entities don't have specific "tool" icons in this context
          }
       } else { // Non-item Entities
-         const entityData = metadata.renderData as EntityRenderData;
+         const entityData = metadata.renderData as EntityRenderDataInterface;
          iconOrHealthArmor = `${entityData.healthRenderer}${entityData.armorRenderer}`;
-
-         const tag1Key = entityData.tags[0]?.toUpperCase();
-         const tag2Key = entityData.tags[1]?.toUpperCase();
-
-         const tg1 = tag1Key && tag1Key in EntityInteractions ? EntityInteractions[tag1Key as keyof typeof EntityInteractions] : EntityInteractions.UNDEFINED;
-         const tg2 = tag2Key && tag2Key in EntityInteractions ? EntityInteractions[tag2Key as keyof typeof EntityInteractions] : EntityInteractions.UNDEFINED;
-
-         finalTagIcons = `:${tg1},f;${tg2},f:`;
+         finalTagIcons = entityData.tagIcons;
 
          effectsStr = `${entityData.effectsRenderer.effectString}e${
             entityData.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, "0")
@@ -382,7 +369,7 @@ class WAILA {
       nameElements.push({ text: "§r" });
 
       const blockStatesText = metadata.type === LookAtObjectType.TILE && player.isSneaking 
-         ? (metadata.renderData as BlockRenderData).blockStates 
+         ? (metadata.renderData as BlockRenderDataInterface).blockStates 
          : "";
 
       // Show item entity's specific item type ID (e.g., minecraft:diamond_sword)
@@ -395,7 +382,7 @@ class WAILA {
       let paddingNewlines = "";
 
       if (metadata.type === LookAtObjectType.ENTITY) {
-         const entityData = metadata.renderData as EntityRenderData;
+         const entityData = metadata.renderData as EntityRenderDataInterface;
 
          // Handle integer health display
          if (entityData.maxHp > 0 && entityData.intHealthDisplay) {
@@ -436,7 +423,7 @@ class WAILA {
          }
       }
 
-      const namespacesType = namespaces as Record<string, Namespace>;
+      const namespacesType = namespaces as Record<string, NamespaceInterface>;
       const namespaceKey = Object.keys(namespacesType).find(ns => metadata.namespace.startsWith(ns));
       const namespaceText = 
          namespaceKey ? namespacesType[namespaceKey].display_name : 

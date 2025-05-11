@@ -1,13 +1,13 @@
 import { Effect, Entity, EntityComponentTypes, EntityEquippableComponent, EntityHealthComponent, EntityItemComponent, EquipmentSlot, Player, TicksPerSecond } from "@minecraft/server";
-import { LookAtEntity, LookAtItemEntity } from "../types/LookAtObjectInterface";
-import { EffectsRenderer, EntityRenderData } from "../types/LookAtObjectMetadataInterface";
+import { LookAtEntityInterface, LookAtItemEntityInterface } from "../types/LookAtObjectInterface";
+import { EffectsRendererType, EntityRenderDataInterface } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
+import { EntityInteractionsEnum, TagRemarksEnum } from "../types/TagsEnum";
+import TagsInterface from "../types/TagsInterface";
 
 import armor from "../data/armor.json";
-import entityInteractions from "../data/entityInteractions.json";
+import entityInteractionsData from "../data/entityInteractions.json";
 import ignoredEntityRender from "../data/ignoredEntityRender.json";
-
-
 
 //#region Entity
 /**
@@ -15,12 +15,46 @@ import ignoredEntityRender from "../data/ignoredEntityRender.json";
  */
 export class EntityHandler {
    /**
+    * Helper function to check if a single value matches a condition rule.
+    * Mirrors the logic used for TagsInterface.target matching.
+    */
+   private static checkRemarkConditionRule(value: string | undefined, rule: string): boolean {
+      if (value === undefined) return false;
+
+      const valueNamePart = value.includes(':') ? value.split(':')[1] : value;
+      const isNegatedRule = rule.startsWith("!");
+      const actualRule = isNegatedRule ? rule.substring(1) : rule;
+
+      let positiveMatchFound = false;
+
+      // Case 1: Rule is an exact match for the full value string (e.g., rule="minecraft:stone", value="minecraft:stone")
+      if (actualRule === value) {
+         positiveMatchFound = true;
+      }
+      // Case 2: Rule is namespace-less and is an exact match for the name part of the value (e.g., rule="stone", value="minecraft:stone")
+      else if (!actualRule.includes(':') && actualRule === valueNamePart) {
+         positiveMatchFound = true;
+      }
+      // Case 3: Rule is namespace-less and the full value string includes the rule (e.g., rule="pickaxe", value="minecraft:diamond_pickaxe")
+      else if (!actualRule.includes(':') && value.includes(actualRule)) {
+         positiveMatchFound = true;
+      }
+      // Case 4: Rule is namespace-less and the name part of the value includes the rule (e.g., rule="axe", value="minecraft:diamond_pickaxe" -> namePart "diamond_pickaxe")
+      // This also covers cases where value itself is namespace-less and includes the rule.
+      else if (!actualRule.includes(':') && valueNamePart.includes(actualRule)) {
+         positiveMatchFound = true;
+      }
+
+      return isNegatedRule ? !positiveMatchFound : positiveMatchFound;
+   }
+
+   /**
     * Creates lookup data for an entity
     */
-   static createLookupData(entity: Entity): LookAtEntity {
+   static createLookupData(entity: Entity): LookAtEntityInterface {
       const healthComponent = entity.getComponent(EntityComponentTypes.Health) as EntityHealthComponent | undefined;
 
-      const lookupData: LookAtEntity = {
+      const lookupData: LookAtEntityInterface = {
          type: LookAtObjectTypeEnum.ENTITY,
          hitIdentifier: entity.typeId,
          entity: entity,
@@ -44,7 +78,7 @@ export class EntityHandler {
       // Handle item entities
       if (entity.typeId === "minecraft:item") {
          const itemComponent = entity.getComponent(EntityComponentTypes.Item) as EntityItemComponent | undefined;
-         const itemData = lookupData as LookAtItemEntity;
+         const itemData = lookupData as LookAtItemEntityInterface;
 
          if (itemComponent?.itemStack) {
             itemData.itemStack = itemComponent.itemStack;
@@ -68,31 +102,35 @@ export class EntityHandler {
    }
 
    /**
-    * Fetches entity tags based on components and interactions
+    * Fetches entity tags based on components and interactions and returns a formatted icon string.
     */
-   static getEntityTags(entity: Entity): string[] {
-      let entityTags: string[] = [];
+   static getEntityTagIcons(entity: Entity, player: Player): string {
       const typeId = entity.typeId;
-      const namespaceRemoved = typeId.replace(/(?<=:).+/g, "");
+      const namespaceRemoved = typeId.replace(/:.*/, "");
 
-      // Get tags from entityInteractions.json
-      const interactionMatches = entityInteractions
-         .filter(
-         (items) =>
-            (items.value.some((item) => namespaceRemoved.includes(item)) ||
-               items.value.some((item) => typeId.includes(item))) &&
-            !items.value.some(
-               (item) =>
-               item.startsWith("!") &&
-               (namespaceRemoved.includes(item.substring(1)) ||
-                  typeId.includes(item.substring(1)))
-            )
-         )
-         .map((item) => item.type);
+      const interactionTagDefinitions: Map<string, TagsInterface> = new Map();
+      entityInteractionsData.filter(tagDef => {
+         const typedTag = tagDef as TagsInterface;
+         const positiveMatch =
+            typedTag.target.some(item => item === typeId || item === namespaceRemoved) ||
+            typedTag.target.some(item => !item.startsWith("!") && typeId.includes(item)) ||
+            typedTag.target.some(item => !item.startsWith("!") && namespaceRemoved.includes(item));
+         if (!positiveMatch) return false;
 
-      entityTags.push(...interactionMatches);
+         const negativeMatch = typedTag.target.some(
+            item => item.startsWith("!") &&
+            (item.substring(1) === typeId ||
+             item.substring(1) === namespaceRemoved ||
+             typeId.includes(item.substring(1)) ||
+             namespaceRemoved.includes(item.substring(1)))
+         );
+         return !negativeMatch;
+      }).forEach(tagDef => {
+         const typedTag = tagDef as TagsInterface;
+         interactionTagDefinitions.set(typedTag.name.toUpperCase(), typedTag);
+      });
 
-      // Helper to safely get component values
+      const componentDerivedTagNames: string[] = [];
       const getComponentValue = <T>(ent: Entity, componentName: string): T | undefined => {
          try {
             return ent.getComponent(componentName) as T | undefined;
@@ -101,7 +139,6 @@ export class EntityHandler {
          }
       };
 
-      // Check for entity components
       const componentList = [
          EntityComponentTypes.CanFly,
          EntityComponentTypes.CanPowerJump,
@@ -117,25 +154,89 @@ export class EntityHandler {
 
       componentList.forEach((componentId) => {
          if (getComponentValue(entity, componentId)) {
-            const tagName = componentId.replace("minecraft:", "");
-
-            // Handle special cases
-            if (componentId === EntityComponentTypes.IsBaby) {
-               entityTags = entityTags.filter((tag) => tag !== "is_rideable");
-            }
-            if (componentId === EntityComponentTypes.IsTamed) {
-               entityTags = entityTags.filter((tag) => tag !== "tameable");
-            }
-
-            entityTags.push(tagName);
+            const tagName = componentId.replace("minecraft:", "").toUpperCase();
+            componentDerivedTagNames.push(tagName);
          }
       });
 
-      if (entityTags.length > 0) {
-         return [...new Set(entityTags)].slice(0, 2);
-      } else {
-         return ["undefined", "undefined"];
+      const allPotentialTagNames = new Set([...interactionTagDefinitions.keys(), ...componentDerivedTagNames]);
+
+      if (allPotentialTagNames.has("IS_BABY")) {
+         allPotentialTagNames.delete("IS_RIDEABLE");
       }
+      if (allPotentialTagNames.has("IS_TAMED")) {
+         allPotentialTagNames.delete("TAMEABLE");
+      }
+      
+      const orderedFinalTagNames: string[] = [];
+      for (const name of interactionTagDefinitions.keys()) {
+          if (allPotentialTagNames.has(name) && orderedFinalTagNames.length < 2 && !orderedFinalTagNames.includes(name)) {
+              orderedFinalTagNames.push(name);
+          }
+      }
+      for (const name of componentDerivedTagNames) {
+          if (allPotentialTagNames.has(name) && orderedFinalTagNames.length < 2 && !orderedFinalTagNames.includes(name)) {
+              orderedFinalTagNames.push(name);
+          }
+      }
+      const finalTagNamesForProcessing = orderedFinalTagNames.slice(0, 2);
+
+      // 4. Get player's mainhand item tags and typeId for remark checking
+      let playerMainHandItemTags: string[] = [];
+      let playerMainHandItemTypeId: string | undefined = undefined;
+      try {
+         const equipComponent = player.getComponent(EntityComponentTypes.Equippable) as EntityEquippableComponent | undefined;
+         const mainHandItem = equipComponent?.getEquipment(EquipmentSlot.Mainhand);
+         if (mainHandItem) {
+            playerMainHandItemTags = mainHandItem.getTags();
+            playerMainHandItemTypeId = mainHandItem.typeId;
+         }
+      } catch {
+         // Error getting item or tags, proceed with empty tags/undefined typeId
+      }
+
+      // 5. Process the final selected tags for icon and remarks
+      const processedTagsOutput: { id: string; remark: string }[] = [];
+      for (const tagName of finalTagNamesForProcessing) {
+         const iconId = EntityInteractionsEnum[tagName as keyof typeof EntityInteractionsEnum] || EntityInteractionsEnum.UNDEFINED;
+         let remarkIcon = TagRemarksEnum.UNDEFINED; 
+         
+         const tagDefinitionForRemarks = interactionTagDefinitions.get(tagName);
+
+         if (tagDefinitionForRemarks?.remarks) {
+            for (const jsonRemarkKey in tagDefinitionForRemarks.remarks) {
+               const enumKeyCandidate = jsonRemarkKey.toUpperCase();
+
+               if (enumKeyCandidate in TagRemarksEnum) {
+                  const remarkEnumValue = TagRemarksEnum[enumKeyCandidate as keyof typeof TagRemarksEnum];
+                  const conditions = tagDefinitionForRemarks.remarks[jsonRemarkKey as keyof typeof tagDefinitionForRemarks.remarks]!;
+                  let conditionMet = false;
+
+                  // Check itemIds condition against the player's mainhand item typeId
+                  if (conditions.itemIds) {
+                     conditionMet = conditions.itemIds.some(idRule => EntityHandler.checkRemarkConditionRule(playerMainHandItemTypeId, idRule));
+                  }
+
+                  // Check tags condition (player's held item) if itemIds condition not met
+                  if (!conditionMet && conditions.tags) {
+                     conditionMet = conditions.tags.some(tagRule => playerMainHandItemTags.some(heldItemTag => EntityHandler.checkRemarkConditionRule(heldItemTag, tagRule)));
+                  }
+
+                  if (conditionMet) {
+                     remarkIcon = remarkEnumValue; 
+                     break; 
+                  }
+               }
+            }
+         }
+         processedTagsOutput.push({ id: iconId, remark: remarkIcon });
+      }
+
+      // Ensure two tags for formatting, using defaults if necessary
+      const tag1 = processedTagsOutput[0] || { id: EntityInteractionsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED }; // Corrected default id
+      const tag2 = processedTagsOutput[1] || { id: EntityInteractionsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED }; // Corrected default id
+
+      return `:${tag1.id},${tag1.remark};${tag2.id},${tag2.remark}:`;
    }
 
    /**
@@ -218,7 +319,7 @@ export class EntityHandler {
    /**
     * Renders entity effects into a formatted string
     */
-   static effectsRenderer(entity: Entity): EffectsRenderer {
+   static effectsRenderer(entity: Entity): EffectsRendererType {
       const MAX_EFFECTS_TO_RESOLVE = 6;
       const effectList = [
          { name: "speed", id: 1, is_negative: false },
@@ -308,7 +409,7 @@ export class EntityHandler {
    /**
     * Creates entity render data for UI display
     */
-   static createRenderData(entity: Entity, isPlayer: boolean): EntityRenderData {
+   static createRenderData(entity: Entity, player: Player, isPlayer: boolean): EntityRenderDataInterface {
       const healthComponent = entity.getComponent(EntityComponentTypes.Health) as EntityHealthComponent | undefined;
       const currentHp = Math.floor(healthComponent?.currentValue ?? 0);
       const maxHp = Math.floor(healthComponent?.effectiveMax ?? 0);
@@ -334,7 +435,7 @@ export class EntityHandler {
 
       return {
          entityId: this.transformEntityId(entity),
-         tags: this.getEntityTags(entity),
+         tagIcons: this.getEntityTagIcons(entity, player),
          hp: currentHp,
          maxHp: maxHp,
          intHealthDisplay: intHealthDisplay,

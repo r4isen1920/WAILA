@@ -1,21 +1,21 @@
 [
   {
-    "type": "can_climb",
-    "value": [
+    "name": "can_climb",
+    "target": [
       "spider"
     ]
   },
   {
-    "type": "is_tradeable",
-    "value": [
+    "name": "is_tradeable",
+    "target": [
       "merchant",
       "wandering_trader",
       "villager"
     ]
   },
   {
-    "type": "is_rideable",
-    "value": [
+    "name": "is_rideable",
+    "target": [
       "boat",
       "camel",
       "donkey",
@@ -28,8 +28,8 @@
     ]
   },
   {
-    "type": "tameable",
-    "value": [
+    "name": "tameable",
+    "target": [
       "cat",
       "donkey",
       "horse",
@@ -41,15 +41,15 @@
     ]
   },
   {
-    "type": "golden_apple",
-    "value": [
+    "name": "golden_apple",
+    "target": [
       "horse",
       "donkey"
     ]
   },
   {
-    "type": "wheat",
-    "value": [
+    "name": "wheat",
+    "target": [
       "cow",
       "goat",
       "mooshroom",
@@ -57,67 +57,67 @@
     ]
   },
   {
-    "type": "potato",
-    "value": [
+    "name": "potato",
+    "target": [
       "pig",
       "!piglin"
     ]
   },
   {
-    "type": "seeds",
-    "value": [
+    "name": "seeds",
+    "target": [
       "chicken",
       "parrot"
     ]
   },
   {
-    "type": "fish",
-    "value": [
+    "name": "fish",
+    "target": [
       "cat",
       "ocelot"
     ]
   },
   {
-    "type": "hay_bale",
-    "value": [
+    "name": "hay_bale",
+    "target": [
       "llama"
     ]
   },
   {
-    "type": "flowers",
-    "value": [
+    "name": "flowers",
+    "target": [
       "bee",
       "rabbit"
     ]
   },
   {
-    "type": "fungi",
-    "value": [
+    "name": "fungi",
+    "target": [
       "hoglin",
       "strider"
     ]
   },
   {
-    "type": "slimeball",
-    "value": [
+    "name": "slimeball",
+    "target": [
       "frog"
     ]
   },
   {
-    "type": "cactus",
-    "value": [
+    "name": "cactus",
+    "target": [
       "camel"
     ]
   },
   {
-    "type": "torchflower",
-    "value": [
+    "name": "torchflower",
+    "target": [
       "sniffer"
     ]
   },
   {
-    "type": "spider_eye",
-    "value": [
+    "name": "spider_eye",
+    "target": [
       "armadillo"
     ]
   }

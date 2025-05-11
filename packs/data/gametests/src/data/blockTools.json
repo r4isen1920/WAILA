@@ -1,7 +1,7 @@
 [
   {
-    "type": "commands",
-    "value": [
+    "name": "commands",
+    "target": [
       "barrier",
       "command_block",
       "light_block",
@@ -10,8 +10,8 @@
     ]
   },
   {
-    "type": "shears",
-    "value": [
+    "name": "shears",
+    "target": [
       "carpet",
       "leaves",
       "root",
@@ -25,8 +25,8 @@
     ]
   },
   {
-    "type": "bucket",
-    "value": [
+    "name": "bucket",
+    "target": [
       "bubble",
       "lava",
       "powder_snow",
@@ -34,15 +34,15 @@
     ]
   },
   {
-    "type": "brush",
-    "value": [
+    "name": "brush",
+    "target": [
       "minecraft:suspicious_sand",
       "minecraft:suspicious_gravel"
     ]
   },
   {
-    "type": "hoe",
-    "value": [
+    "name": "hoe",
+    "target": [
       "farmland",
       "leaves",
       "sculk",
@@ -56,8 +56,8 @@
     ]
   },
   {
-    "type": "axe",
-    "value": [
+    "name": "axe",
+    "target": [
       "acacia",
       "bamboo",
       "bed",
@@ -93,8 +93,8 @@
     ]
   },
   {
-    "type": "sword",
-    "value": [
+    "name": "sword",
+    "target": [
       "pumpkin",
       "minecraft:cocoa",
       "minecraft:melon_block",
@@ -103,8 +103,8 @@
     ]
   },
   {
-    "type": "shovel",
-    "value": [
+    "name": "shovel",
+    "target": [
       "concrete_powder",
       "farmland",
       "grass",
@@ -124,8 +124,8 @@
     ]
   },
   {
-    "type": "pickaxe",
-    "value": [
+    "name": "pickaxe",
+    "target": [
       "amethyst",
       "basalt",
       "blackstone",
@@ -186,8 +186,8 @@
     ]
   },
   {
-    "type": "crops",
-    "value": [
+    "name": "crops",
+    "target": [
       "beetroot",
       "berries",
       "berry",

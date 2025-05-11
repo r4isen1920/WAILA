@@ -1,16 +1,16 @@
-import { Block, BlockInventoryComponent, BlockTypes, EntityComponentTypes } from "@minecraft/server";
+import { Block, BlockInventoryComponent, BlockTypes, EntityComponentTypes, Player, EntityEquippableComponent, EquipmentSlot } from "@minecraft/server";
 import { Logger } from "@bedrock-oss/bedrock-boost";
 
-import { LookAtBlock } from "../types/LookAtObjectInterface";
-import Namespace from "../types/NamespaceInterface";
-import { BlockRenderData } from "../types/LookAtObjectMetadataInterface";
+import { LookAtBlockInterface } from "../types/LookAtObjectInterface";
+import NamespaceInterface from "../types/NamespaceInterface";
+import { BlockRenderDataInterface } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
+import TagsInterface from "../types/TagsInterface";
+import { BlockToolsEnum, TagRemarksEnum } from "../types/TagsEnum";
 
 import blockTools from "../data/blockTools.json";
 import blockIds from "../data/blockIds.json";
 import namespaces from "../data/namespaces.json";
-
-
 
 //#region Block
 /**
@@ -20,9 +20,43 @@ export class BlockHandler {
    private static logger = Logger.getLogger("BlockHandler");
 
    /**
+    * Helper function to check if a single value matches a condition rule.
+    * Mirrors the logic used for TagsInterface.target matching.
+    */
+   private static checkRemarkConditionRule(value: string | undefined, rule: string): boolean {
+      if (value === undefined) return false;
+
+      const valueNamePart = value.includes(':') ? value.split(':')[1] : value;
+      const isNegatedRule = rule.startsWith("!");
+      const actualRule = isNegatedRule ? rule.substring(1) : rule;
+
+      let positiveMatchFound = false;
+
+      // Case 1: Rule is an exact match for the full value string (e.g., rule="minecraft:stone", value="minecraft:stone")
+      if (actualRule === value) {
+         positiveMatchFound = true;
+      }
+      // Case 2: Rule is namespace-less and is an exact match for the name part of the value (e.g., rule="stone", value="minecraft:stone")
+      else if (!actualRule.includes(':') && actualRule === valueNamePart) {
+         positiveMatchFound = true;
+      }
+      // Case 3: Rule is namespace-less and the full value string includes the rule (e.g., rule="pickaxe", value="minecraft:diamond_pickaxe")
+      else if (!actualRule.includes(':') && value.includes(actualRule)) {
+         positiveMatchFound = true;
+      }
+      // Case 4: Rule is namespace-less and the name part of the value includes the rule (e.g., rule="axe", value="minecraft:diamond_pickaxe" -> namePart "diamond_pickaxe")
+      // This also covers cases where value itself is namespace-less and includes the rule.
+      else if (!actualRule.includes(':') && valueNamePart.includes(actualRule)) {
+         positiveMatchFound = true;
+      }
+
+      return isNegatedRule ? !positiveMatchFound : positiveMatchFound;
+   }
+
+   /**
     * Creates lookup data for a block
     */
-   static createLookupData(block: Block): LookAtBlock {
+   static createLookupData(block: Block): LookAtBlockInterface {
       let hitId: string;
       try {
          const itemStack = block.getItemStack(1, true);
@@ -43,7 +77,7 @@ export class BlockHandler {
     * Returns either the item aux or the icon texture path. Prefers the icon texture path if its rendered as an item.
     */
    static resolveIcon(blockId: string): string | number {
-      const namespacesType = namespaces as Record<string, Namespace>;
+      const namespacesType = namespaces as Record<string, NamespaceInterface>;
       const [blockNamespace, blockName] = blockId.split(":");
 
       const namespaceData = namespacesType[blockNamespace];
@@ -220,27 +254,85 @@ export class BlockHandler {
    }
 
    /**
-    * Parses block tools data to determine which tools work with this block
+    * Parses block tools data to determine which tools work with this block and returns a formatted icon string.
     */
-   static parseBlockTools(blockId: string): string[] {
-      const namespaceRemoved = blockId.replace(/(?<=:).+/g, "");
-      const matches = blockTools.filter(
-         (tools) =>
-         (tools.value.some((block) => namespaceRemoved.includes(block)) ||
-            tools.value.some((block) => blockId.includes(block))) &&
-         !tools.value.some(
-            (block) =>
-               block.startsWith("!") &&
-               (namespaceRemoved.includes(block.substring(1)) ||
-               blockId.includes(block.substring(1)))
-         )
-      );
+   static getBlockToolIcons(blockId: string, player: Player): string {
+      const namespaceRemoved = blockId.replace(/:.*/, "");
 
-      if (matches.length > 0) {
-         return matches.slice(0, 2).map((match) => match.type);
-      } else {
-         return ["undefined", "undefined"];
+      const matchedTagsData = blockTools.filter((tag) => {
+         const typedTag = tag as TagsInterface;
+         const positiveMatch =
+            typedTag.target.some((item) => item === blockId || item === namespaceRemoved) ||
+            typedTag.target.some((item) => !item.startsWith("!") && blockId.includes(item)) ||
+            typedTag.target.some((item) => !item.startsWith("!") && namespaceRemoved.includes(item));
+
+         if (!positiveMatch) return false;
+
+         // Check for negations
+         const negativeMatch = typedTag.target.some(
+            (item) =>
+               item.startsWith("!") &&
+               (item.substring(1) === blockId ||
+                  item.substring(1) === namespaceRemoved ||
+                  blockId.includes(item.substring(1)) ||
+                  namespaceRemoved.includes(item.substring(1)))
+         );
+         return !negativeMatch;
+      });
+
+      let playerMainHandItemTags: string[] = [];
+      let playerMainHandItemTypeId: string | undefined = undefined;
+      try {
+         const equipComponent = player.getComponent(EntityComponentTypes.Equippable) as EntityEquippableComponent | undefined;
+         const mainHandItem = equipComponent?.getEquipment(EquipmentSlot.Mainhand);
+         if (mainHandItem) {
+            playerMainHandItemTags = mainHandItem.getTags();
+            playerMainHandItemTypeId = mainHandItem.typeId;
+         }
+      } catch { /** Empty */}
+
+      const processedTags: { id: string; remark: string }[] = [];
+
+      for (const tagData of matchedTagsData) {
+         const typedTagData = tagData as TagsInterface;
+         let remarkIcon = TagRemarksEnum.UNDEFINED;
+
+         const tagNameUpper = typedTagData.name.toUpperCase();
+         const iconId = BlockToolsEnum[tagNameUpper as keyof typeof BlockToolsEnum] || BlockToolsEnum.UNDEFINED;
+
+         if (typedTagData.remarks) {
+            for (const jsonRemarkKey in typedTagData.remarks) {
+               const enumKeyCandidate = jsonRemarkKey.toUpperCase();
+
+               if (enumKeyCandidate in TagRemarksEnum) {
+                  const remarkEnumValue = TagRemarksEnum[enumKeyCandidate as keyof typeof TagRemarksEnum];
+                  const conditions = typedTagData.remarks[jsonRemarkKey as keyof typeof typedTagData.remarks]!;
+                  let conditionMet = false;
+
+                  // Check itemIds condition against the player's mainhand item typeId
+                  if (conditions.itemIds) {
+                     conditionMet = conditions.itemIds.some(idRule => BlockHandler.checkRemarkConditionRule(playerMainHandItemTypeId, idRule));
+                  }
+                  
+                  if (!conditionMet && conditions.tags) {
+                     conditionMet = conditions.tags.some(tagRule => playerMainHandItemTags.some(heldItemTag => BlockHandler.checkRemarkConditionRule(heldItemTag, tagRule)));
+                  }
+
+                  if (conditionMet) {
+                     remarkIcon = remarkEnumValue;
+                     break; 
+                  }
+               }
+            }
+         }
+         processedTags.push({ id: iconId, remark: remarkIcon });
+         if (processedTags.length >= 2) break; // Max 2 tags
       }
+
+      const tag1 = processedTags[0] || { id: BlockToolsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED };
+      const tag2 = processedTags[1] || { id: BlockToolsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED };
+
+      return `:${tag1.id},${tag1.remark};${tag2.id},${tag2.remark}:`;
    }
 
    /**
@@ -288,9 +380,9 @@ export class BlockHandler {
    /**
     * Creates block render data for UI display
     */
-   static createRenderData(block: Block, blockId: string): BlockRenderData {
+   static createRenderData(block: Block, blockId: string, player: Player): BlockRenderDataInterface {
       return {
-         tool: this.parseBlockTools(blockId),
+         toolIcons: this.getBlockToolIcons(blockId, player),
          blockStates: this.getBlockStates(block),
          inventory: this.getBlockInventory(block),
       };

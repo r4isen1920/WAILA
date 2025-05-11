@@ -1,8 +1,20 @@
 
 /**
+ * List of remarks that can be used to describe the state of a tag.
+ */
+export enum TagRemarksEnum {
+	/** Indicates that this tag is correct. Used, for instance, if the player is holding the correct tool. */
+	CORRECT = "a",
+	/** Indicates that this tag is incorrect. Used, for instance, if the player is holding the wrong tool. */
+	INCORRECT = "b",
+	/** Undefined tag. This will not display any indicator in the UI whatsoever. */
+	UNDEFINED = "z",
+}
+
+/**
  * List of all block tools that can be used to efficiently break blocks.
  */
-export enum BlockTools {
+export enum BlockToolsEnum {
 	SWORD = "aa",
 	AXE = "ab",
 	PICKAXE = "ac",
@@ -20,7 +32,7 @@ export enum BlockTools {
 /**
  * List of entity interactions that can be performed on entities.
  */
-export enum EntityInteractions {
+export enum EntityInteractionsEnum {
    CAN_CLIMB = "aa",
    CAN_FLY = "ab",
    CAN_POWER_JUMP = "ac",

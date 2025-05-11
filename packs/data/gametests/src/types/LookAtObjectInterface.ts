@@ -7,7 +7,7 @@ import { LookAtObjectTypeEnum } from "./LookAtObjectTypeEnum";
 /**
  * Represents the objects that can be looked at in the game.
  */
-export interface LookAtObject {
+export interface LookAtObjectInterface {
    /**
     * The type of the object being looked at.
     */
@@ -38,7 +38,7 @@ type EffectsData = {
  * Represents an entity that can be looked at in the game.
  * This includes player entities, and other mobs.
  */
-export interface LookAtEntity extends LookAtObject {
+export interface LookAtEntityInterface extends LookAtObjectInterface {
    type: LookAtObjectTypeEnum.ENTITY;
    /**
     * The Entity reference being looked at.
@@ -64,7 +64,7 @@ export interface LookAtEntity extends LookAtObject {
 /**
  * Represents an item entity that can be looked at in the game.
  */
-export interface LookAtItemEntity extends LookAtObject {
+export interface LookAtItemEntityInterface extends LookAtObjectInterface {
    /**
     * The ItemStack reference being looked at.
     * This can be manipulated by the Script API.
@@ -78,7 +78,7 @@ export interface LookAtItemEntity extends LookAtObject {
  * Represents a block that can be looked at in the game.
  * This includes blocks that are not entities, such as tiles and items.
  */
-export interface LookAtBlock extends LookAtObject {
+export interface LookAtBlockInterface extends LookAtObjectInterface {
    type: LookAtObjectTypeEnum.TILE;
    /**
     * The Block reference being looked at.

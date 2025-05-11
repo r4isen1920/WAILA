@@ -31,7 +31,7 @@ export interface LookAtObjectMetadata {
    /**
     * Contains the data used to render the object being looked at.
     */
-   renderData: BlockRenderData | EntityRenderData;
+   renderData: BlockRenderDataInterface | EntityRenderDataInterface;
    /**
     * If the looked-at object is an entity with a nameTag, this holds
     * the translation key for the entity's type (e.g., "entity.cow.name").
@@ -48,11 +48,11 @@ export interface LookAtObjectMetadata {
 /**
  * Rendering data specifically for blocks
  */
-export interface BlockRenderData {
+export interface BlockRenderDataInterface {
    /**
-    * Tools that can be used to break or interact with the block.
+    * Renderer string that will be used to display the tools that can be used to efficiently break the block.
     */
-   tool: string[];
+   toolIcons: string;
    /**
     * The block states of the block being looked at.
     */
@@ -68,7 +68,7 @@ export interface BlockRenderData {
  * A type which includes the status effects data for an entity.
  * That is formatted for rendering in the UI.
  */
-export type EffectsRenderer = {
+export type EffectsRendererType = {
    /**
     * The renderer string that will be used to display the effects of the entity.
     * It's value is to be parsed in the client-side UI to determine how to display the effects.
@@ -83,16 +83,16 @@ export type EffectsRenderer = {
 /**
  * Rendering data for entities
  */
-export interface EntityRenderData {
+export interface EntityRenderDataInterface {
    /**
     * The entity's unique identifier that can be used to render its model in the UI.
     * This is equivalent to the item aux value for blocks and items.
     */
    entityId: string;
    /**
-    * The tags associated with the entity for categorization and identification.
+    * Renderer string that will be used to display the tags that are associated with the entity.
     */
-   tags: string[];
+   tagIcons: string;
    /**
     * The current health points of the entity.
     */
@@ -119,5 +119,5 @@ export interface EntityRenderData {
    /**
     * The renderer string that is used to display the effects of the entity.
     */
-   effectsRenderer: EffectsRenderer;
+   effectsRenderer: EffectsRendererType;
 }
