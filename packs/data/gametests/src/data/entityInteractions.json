@@ -1,124 +1,95 @@
 [
-  {
-    "name": "can_climb",
-    "target": [
-      "spider"
-    ]
-  },
-  {
-    "name": "is_tradeable",
-    "target": [
-      "merchant",
-      "wandering_trader",
-      "villager"
-    ]
-  },
-  {
-    "name": "is_rideable",
-    "target": [
-      "boat",
-      "camel",
-      "donkey",
-      "horse",
-      "minecart",
-      "mule",
-      "pig",
-      "strider",
-      "!piglin"
-    ]
-  },
-  {
-    "name": "tameable",
-    "target": [
-      "cat",
-      "donkey",
-      "horse",
-      "llama",
-      "mule",
-      "parrot",
-      "skeleton_horse",
-      "wolf"
-    ]
-  },
-  {
-    "name": "golden_apple",
-    "target": [
-      "horse",
-      "donkey"
-    ]
-  },
-  {
-    "name": "wheat",
-    "target": [
-      "cow",
-      "goat",
-      "mooshroom",
-      "sheep"
-    ]
-  },
-  {
-    "name": "potato",
-    "target": [
-      "pig",
-      "!piglin"
-    ]
-  },
-  {
-    "name": "seeds",
-    "target": [
-      "chicken",
-      "parrot"
-    ]
-  },
-  {
-    "name": "fish",
-    "target": [
-      "cat",
-      "ocelot"
-    ]
-  },
-  {
-    "name": "hay_bale",
-    "target": [
-      "llama"
-    ]
-  },
-  {
-    "name": "flowers",
-    "target": [
-      "bee",
-      "rabbit"
-    ]
-  },
-  {
-    "name": "fungi",
-    "target": [
-      "hoglin",
-      "strider"
-    ]
-  },
-  {
-    "name": "slimeball",
-    "target": [
-      "frog"
-    ]
-  },
-  {
-    "name": "cactus",
-    "target": [
-      "camel"
-    ]
-  },
-  {
-    "name": "torchflower",
-    "target": [
-      "sniffer"
-    ]
-  },
-  {
-    "name": "spider_eye",
-    "target": [
-      "armadillo"
-    ]
-  }
+	{
+		"name": "can_climb",
+		"target": ["spider"]
+	},
+	{
+		"name": "is_tradeable",
+		"remarks": {
+			"correct": {
+				"itemIds": ["emerald"]
+			}
+		},
+		"target": ["merchant", "wandering_trader", "villager"]
+	},
+	{
+		"name": "is_rideable",
+		"remarks": {
+			"correct": {
+				"itemIds": ["saddle"]
+			}
+		},
+		"target": [
+			"boat",
+			"camel",
+			"donkey",
+			"horse",
+			"minecart",
+			"mule",
+			"pig",
+			"strider",
+			"!piglin"
+		]
+	},
+	{
+		"name": "tameable",
+		"target": [
+			"cat",
+			"donkey",
+			"horse",
+			"llama",
+			"mule",
+			"parrot",
+			"skeleton_horse",
+			"wolf"
+		]
+	},
+	{
+		"name": "golden_apple",
+		"target": ["horse", "donkey"]
+	},
+	{
+		"name": "wheat",
+		"target": ["cow", "goat", "mooshroom", "sheep"]
+	},
+	{
+		"name": "potato",
+		"target": ["pig", "!piglin"]
+	},
+	{
+		"name": "seeds",
+		"target": ["chicken", "parrot"]
+	},
+	{
+		"name": "fish",
+		"target": ["cat", "ocelot"]
+	},
+	{
+		"name": "hay_bale",
+		"target": ["llama"]
+	},
+	{
+		"name": "flowers",
+		"target": ["bee", "rabbit"]
+	},
+	{
+		"name": "fungi",
+		"target": ["hoglin", "strider"]
+	},
+	{
+		"name": "slimeball",
+		"target": ["frog"]
+	},
+	{
+		"name": "cactus",
+		"target": ["camel"]
+	},
+	{
+		"name": "torchflower",
+		"target": ["sniffer"]
+	},
+	{
+		"name": "spider_eye",
+		"target": ["armadillo"]
+	}
 ]

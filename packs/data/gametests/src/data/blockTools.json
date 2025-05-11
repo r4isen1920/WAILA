@@ -1,218 +1,283 @@
 [
-  {
-    "name": "commands",
-    "target": [
-      "barrier",
-      "command_block",
-      "light_block",
-      "structure_air",
-      "structure_block"
-    ]
-  },
-  {
-    "name": "shears",
-    "target": [
-      "carpet",
-      "leaves",
-      "root",
-      "sprout",
-      "vine",
-      "waterlily",
-      "weed",
-      "wool",
-      "minecraft:seagrass",
-      "!seed"
-    ]
-  },
-  {
-    "name": "bucket",
-    "target": [
-      "bubble",
-      "lava",
-      "powder_snow",
-      "water"
-    ]
-  },
-  {
-    "name": "brush",
-    "target": [
-      "minecraft:suspicious_sand",
-      "minecraft:suspicious_gravel"
-    ]
-  },
-  {
-    "name": "hoe",
-    "target": [
-      "farmland",
-      "leaves",
-      "sculk",
-      "sponge",
-      "wart_block",
-      "minecraft:dried_kelp",
-      "minecraft:hay_block",
-      "minecraft:moss_block",
-      "minecraft:shroomlight",
-      "minecraft:target"
-    ]
-  },
-  {
-    "name": "axe",
-    "target": [
-      "acacia",
-      "bamboo",
-      "bed",
-      "bookshelf",
-      "birch",
-      "cherry",
-      "chest",
-      "fence",
-      "hyphae",
-      "jungle",
-      "log",
-      "mangrove",
-      "mushroom_block",
-      "oak",
-      "plank",
-      "sign",
-      "spruce",
-      "stem",
-      "wood",
-      "minecraft:barrel",
-      "minecraft:bee_nest",
-      "minecraft:beehive",
-      "minecraft:campfire",
-      "minecraft:cartography_table",
-      "minecraft:composter",
-      "minecraft:crafting_table",
-      "minecraft:daylight_detector",
-      "minecraft:fletching_table",
-      "minecraft:jukebox",
-      "minecraft:ladder",
-      "minecraft:lectern",
-      "minecraft:smithing_table"
-    ]
-  },
-  {
-    "name": "sword",
-    "target": [
-      "pumpkin",
-      "minecraft:cocoa",
-      "minecraft:melon_block",
-      "minecraft:web",
-      "!seed"
-    ]
-  },
-  {
-    "name": "shovel",
-    "target": [
-      "concrete_powder",
-      "farmland",
-      "grass",
-      "sand",
-      "snow",
-      "minecraft:clay",
-      "minecraft:coarse_dirt",
-      "minecraft:dirt",
-      "minecraft:gravel",
-      "minecraft:mud",
-      "minecraft:mycelium",
-      "minecraft:podzol",
-      "minecraft:soul_soil",
-      "!stone",
-      "!suspicious",
-      "!wall"
-    ]
-  },
-  {
-    "name": "pickaxe",
-    "target": [
-      "amethyst",
-      "basalt",
-      "blackstone",
-      "brick",
-      "coal",
-      "copper",
-      "concrete",
-      "deepslate",
-      "diamond",
-      "dripstone",
-      "emerald",
-      "gold",
-      "hardened_clay",
-      "furnace",
-      "ice",
-      "iron",
-      "lantern",
-      "nylium",
-      "obsidian",
-      "ore",
-      "prismarine",
-      "purpur",
-      "quartz",
-      "rail",
-      "redstone",
-      "stone",
-      "terracotta",
-      "minecraft:ancient_debris",
-      "minecraft:andesite",
-      "minecraft:anvil",
-      "minecraft:bell",
-      "minecraft:beacon",
-      "minecraft:bone_block",
-      "minecraft:brewing_stand",
-      "minecraft:cauldron",
-      "minecraft:chain",
-      "minecraft:conduit",
-      "minecraft:diorite",
-      "minecraft:dispenser",
-      "minecraft:dropper",
-      "minecraft:enchanting_table",
-      "minecraft:granite",
-      "minecraft:hopper",
-      "minecraft:lightning_rod",
-      "minecraft:lodestone",
-      "minecraft:magma",
-      "minecraft:mob_spawner",
-      "minecraft:netherite_block",
-      "minecraft:netherrack",
-      "minecraft:observer",
-      "minecraft:packed_mud",
-      "minecraft:respawn_anchor",
-      "minecraft:shulker_box",
-      "minecraft:smoker",
-      "minecraft:tuff",
-      "minecraft:undyed_shulker_box",
-      "!concrete_powder"
-    ]
-  },
-  {
-    "name": "crops",
-    "target": [
-      "beetroot",
-      "berries",
-      "berry",
-      "cactus",
-      "carrot",
-      "chorus_flower",
-      "chorus_fruit",
-      "chorus_plant",
-      "cocoa",
-      "crop",
-      "flower",
-      "fungus",
-      "kelp",
-      "melon",
-      "mushroom",
-      "nether_wart",
-      "pickle",
-      "pitcher",
-      "potato",
-      "pumpkin",
-      "sapling",
-      "seed",
-      "sugar_cane",
-      "torchflower",
-      "wheat"
-    ]
-  }
+	{
+		"name": "commands",
+		"target": [
+			"barrier",
+			"command_block",
+			"light_block",
+			"structure_air",
+			"structure_block"
+		]
+	},
+	{
+		"name": "shears",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:shears"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:shears"]
+			}
+		},
+		"target": [
+			"carpet",
+			"coral",
+			"leaves",
+			"root",
+			"sprout",
+			"vine",
+			"waterlily",
+			"weed",
+			"wool",
+			"minecraft:glow_lichen",
+			"minecraft:pink_petals",
+			"minecraft:seagrass",
+			"minecraft:short_grass",
+			"minecraft:short_dry_grass",
+			"!coral_block",
+			"!seed"
+		]
+	},
+	{
+		"name": "bucket",
+		"remarks": {
+			"correct": {
+				"itemIds": ["bucket"]
+			},
+			"incorrect": {
+				"itemIds": ["!bucket"]
+			}
+		},
+		"target": ["bubble", "lava", "powder_snow", "water"]
+	},
+	{
+		"name": "brush",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:brush"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:brush"]
+			}
+		},
+		"target": ["minecraft:suspicious_sand", "minecraft:suspicious_gravel"]
+	},
+	{
+		"name": "hoe",
+		"remarks": {
+			"correct": {
+				"tags": ["minecraft:is_hoe"]
+			},
+			"incorrect": {
+				"itemIds": ["!hoe"]
+			}
+		},
+		"target": [
+			"farmland",
+			"leaves",
+			"sculk",
+			"sponge",
+			"wart_block",
+			"minecraft:dried_kelp",
+			"minecraft:hay_block",
+			"minecraft:moss_block",
+			"minecraft:shroomlight",
+			"minecraft:target"
+		]
+	},
+	{
+		"name": "axe",
+		"remarks": {
+			"correct": {
+				"tags": ["minecraft:is_axe"]
+			},
+			"incorrect": {
+				"tags": ["!minecraft:is_axe"],
+				"itemIds": ["!axe"]
+			}
+		},
+		"target": [
+			"acacia",
+			"bamboo",
+			"bed",
+			"bookshelf",
+			"birch",
+			"cherry",
+			"chest",
+			"fence",
+			"hyphae",
+			"jungle",
+			"log",
+			"mangrove",
+			"mushroom_block",
+			"oak",
+			"plank",
+			"sign",
+			"spruce",
+			"stem",
+			"wood",
+			"minecraft:barrel",
+			"minecraft:bee_nest",
+			"minecraft:beehive",
+			"minecraft:campfire",
+			"minecraft:cartography_table",
+			"minecraft:composter",
+			"minecraft:crafting_table",
+			"minecraft:daylight_detector",
+			"minecraft:fletching_table",
+			"minecraft:jukebox",
+			"minecraft:ladder",
+			"minecraft:lectern",
+			"minecraft:smithing_table"
+		]
+	},
+	{
+		"name": "sword",
+		"remarks": {
+			"correct": {
+				"tags": ["minecraft:is_sword"]
+			},
+			"incorrect": {
+				"itemIds": ["!sword"]
+			}
+		},
+		"target": [
+			"pumpkin",
+			"minecraft:cocoa",
+			"minecraft:melon_block",
+			"minecraft:web",
+			"!seed"
+		]
+	},
+	{
+		"name": "shovel",
+		"remarks": {
+			"correct": {
+				"tags": ["minecraft:is_shovel"]
+			},
+			"incorrect": {
+				"itemIds": ["!shovel"]
+			}
+		},
+		"target": [
+			"concrete_powder",
+			"farmland",
+			"grass",
+			"sand",
+			"snow",
+			"minecraft:clay",
+			"minecraft:coarse_dirt",
+			"minecraft:dirt",
+			"minecraft:gravel",
+			"minecraft:mud",
+			"minecraft:mycelium",
+			"minecraft:podzol",
+			"minecraft:soul_soil",
+			"!minecraft:short_grass",
+			"!minecraft:short_dry_grass",
+			"!stone",
+			"!suspicious",
+			"!wall"
+		]
+	},
+	{
+		"name": "pickaxe",
+		"remarks": {
+			"correct": {
+				"tags": ["minecraft:is_pickaxe"]
+			},
+			"incorrect": {
+				"itemIds": ["!pickaxe"]
+			}
+		},
+		"target": [
+			"amethyst",
+			"basalt",
+			"blackstone",
+			"brick",
+			"coal",
+			"copper",
+			"concrete",
+			"coral_block",
+			"deepslate",
+			"diamond",
+			"dripstone",
+			"emerald",
+			"gold",
+			"hardened_clay",
+			"furnace",
+			"ice",
+			"iron",
+			"lantern",
+			"nylium",
+			"obsidian",
+			"ore",
+			"prismarine",
+			"purpur",
+			"quartz",
+			"rail",
+			"redstone",
+			"shulker_box",
+			"stone",
+			"terracotta",
+			"minecraft:ancient_debris",
+			"minecraft:andesite",
+			"minecraft:anvil",
+			"minecraft:bell",
+			"minecraft:beacon",
+			"minecraft:bone_block",
+			"minecraft:brewing_stand",
+			"minecraft:cauldron",
+			"minecraft:chain",
+			"minecraft:conduit",
+			"minecraft:diorite",
+			"minecraft:dispenser",
+			"minecraft:dropper",
+			"minecraft:enchanting_table",
+			"minecraft:granite",
+			"minecraft:hopper",
+			"minecraft:lightning_rod",
+			"minecraft:lodestone",
+			"minecraft:magma",
+			"minecraft:mob_spawner",
+			"minecraft:netherite_block",
+			"minecraft:netherrack",
+			"minecraft:observer",
+			"minecraft:packed_mud",
+			"minecraft:respawn_anchor",
+			"minecraft:smoker",
+			"minecraft:tuff",
+			"!concrete_powder"
+		]
+	},
+	{
+		"name": "crops",
+		"target": [
+			"beetroot",
+			"berries",
+			"berry",
+			"cactus",
+			"carrot",
+			"chorus_flower",
+			"chorus_fruit",
+			"chorus_plant",
+			"cocoa",
+			"crop",
+			"flower",
+			"fungus",
+			"kelp",
+			"melon",
+			"mushroom",
+			"nether_wart",
+			"pickle",
+			"pitcher",
+			"potato",
+			"pumpkin",
+			"sapling",
+			"seed",
+			"sugar_cane",
+			"torchflower",
+			"wheat"
+		]
+	}
 ]
