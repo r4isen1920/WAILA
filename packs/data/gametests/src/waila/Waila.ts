@@ -341,9 +341,9 @@ class WAILA {
             const t1 = tool1Key && tool1Key in BlockTools ? BlockTools[tool1Key as keyof typeof BlockTools] : BlockTools.UNDEFINED;
             const t2 = tool2Key && tool2Key in BlockTools ? BlockTools[tool2Key as keyof typeof BlockTools] : BlockTools.UNDEFINED;
 
-            finalTagIcons = `:${t1};${t2}:`;
+            finalTagIcons = `:${t1},f;${t2},f:`;
          } else { // Item Entity
-            finalTagIcons = `:z;z:`; // Item entities don't have specific "tool" icons in this context
+            finalTagIcons = `:zz,f;zz,f:`; // Item entities don't have specific "tool" icons in this context
          }
       } else { // Non-item Entities
          const entityData = metadata.renderData as EntityRenderData;
@@ -355,7 +355,7 @@ class WAILA {
          const tg1 = tag1Key && tag1Key in EntityInteractions ? EntityInteractions[tag1Key as keyof typeof EntityInteractions] : EntityInteractions.UNDEFINED;
          const tg2 = tag2Key && tag2Key in EntityInteractions ? EntityInteractions[tag2Key as keyof typeof EntityInteractions] : EntityInteractions.UNDEFINED;
 
-         finalTagIcons = `:${tg1};${tg2}:`;
+         finalTagIcons = `:${tg1},f;${tg2},f:`;
 
          effectsStr = `${entityData.effectsRenderer.effectString}e${
             entityData.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, "0")
