@@ -20,6 +20,7 @@ import { BlockRenderData, EntityRenderData, LookAtObjectMetadata } from "../type
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
+import { BlockTools, EntityInteractions } from "../types/TagsEnum";
 import Namespace from "../types/NamespaceInterface";
 
 class WAILA {
@@ -331,20 +332,28 @@ class WAILA {
 
          if (metadata.type === LookAtObjectType.TILE) {
             const blockData = metadata.renderData as BlockRenderData;
-            finalTagIcons = `:${iconTypes.tile[blockData.tool[0] || "undefined"] || "z"};${
-               iconTypes.tile[blockData.tool[1] || "undefined"] || "z"
-            }:`;
+            const tool1Key = blockData.tool[0]?.toUpperCase();
+            const tool2Key = blockData.tool[1]?.toUpperCase();
+
+            const t1 = tool1Key && tool1Key in BlockTools ? BlockTools[tool1Key as keyof typeof BlockTools] : BlockTools.UNDEFINED;
+            const t2 = tool2Key && tool2Key in BlockTools ? BlockTools[tool2Key as keyof typeof BlockTools] : BlockTools.UNDEFINED;
+
+            finalTagIcons = `:${t1};${t2}:`;
          } else { // Item Entity
             finalTagIcons = `:z;z:`; // Item entities don't have specific "tool" icons in this context
          }
       } else { // Non-item Entities
          const entityData = metadata.renderData as EntityRenderData;
          iconOrHealthArmor = `${entityData.healthRenderer}${entityData.armorRenderer}`;
-         
-         finalTagIcons = `:${iconTypes.entity[entityData.tags[0] || "undefined"] || "z"};${
-            iconTypes.entity[entityData.tags[1] || "undefined"] || "z"
-         }:`;
-         
+
+         const tag1Key = entityData.tags[0]?.toUpperCase();
+         const tag2Key = entityData.tags[1]?.toUpperCase();
+
+         const tg1 = tag1Key && tag1Key in EntityInteractions ? EntityInteractions[tag1Key as keyof typeof EntityInteractions] : EntityInteractions.UNDEFINED;
+         const tg2 = tag2Key && tag2Key in EntityInteractions ? EntityInteractions[tag2Key as keyof typeof EntityInteractions] : EntityInteractions.UNDEFINED;
+
+         finalTagIcons = `:${tg1};${tg2}:`;
+
          effectsStr = `${entityData.effectsRenderer.effectString}e${
             entityData.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, "0")
          }`;
@@ -460,56 +469,6 @@ class WAILA {
       this.log.debug(filteredTitle, parseStrSubtitle);
 
       return { title: filteredTitle, subtitle: parseStrSubtitle };
-   }
-   
-   /**
-    * Gets icon mapping for UI display
-    */
-   private getIconTypes(): { tile: Record<string, string>, entity: Record<string, string> } {
-      return {
-         tile: {
-            sword: "a",
-            axe: "b",
-            pickaxe: "c",
-            shovel: "d",
-            hoe: "e",
-            armor: "f",
-            crops: "g",
-            shears: "h",
-            bucket: "i",
-            brush: "j",
-            commands: "k",
-            undefined: "z",
-         },
-         entity: {
-            can_climb: "a",
-            can_fly: "b",
-            can_power_jump: "c",
-            fire_immune: "d",
-            is_baby: "e",
-            is_chested: "f",
-            is_dyeable: "g",
-            is_stunned: "h",
-            is_rideable: "i",
-            is_tradeable: "j",
-            projectile: "k",
-            wants_jockey: "l",
-            tameable: "m",
-            wheat: "n",
-            potato: "o",
-            hay_bale: "p",
-            seeds: "q",
-            golden_apple: "r",
-            fish: "s",
-            flowers: "t",
-            fungi: "u",
-            slimeball: "v",
-            cactus: "w",
-            torchflower: "x",
-            spider_eye: "y",
-            undefined: "z",
-         }
-      };
    }
 }
 
