@@ -426,12 +426,11 @@ class WAILA {
 
       const namespacesType = namespaces as Record<string, Namespace>;
       const namespaceKey = Object.keys(namespacesType).find(ns => metadata.namespace.startsWith(ns));
-      const namespaceText = `§9§o${
+      const namespaceText = 
          namespaceKey ? namespacesType[namespaceKey].display_name : 
          metadata.namespace.length > 3 ?
             metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps() :
-            metadata.namespace.replace(":", "").toUpperCase()
-      }§r`;
+            metadata.namespace.replace(":", "").toUpperCase();
 
       // Build the complete title
       const parseStr: RawMessage[] = [
@@ -444,7 +443,9 @@ class WAILA {
          { text: itemEntityText },
          { text: healthText },
          { text: paddingNewlines },
-         { text: `\n${namespaceText}` },
+         { text: '\n§9§o' },
+         { translate: namespaceText },
+         { text: '§r' },
       ];
       
       const filteredTitle = parseStr.filter(

@@ -1,6 +1,6 @@
 {
   "minecraft": {
-    "display_name": "Minecraft",
+    "display_name": "namespace.minecraft",
     "textures": {
       "root": "textures/items/",
       "list": [
