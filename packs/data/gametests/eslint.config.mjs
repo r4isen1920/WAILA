@@ -26,7 +26,6 @@ export default defineConfig([
       "no-inner-declarations": "off",
       "no-duplicate-imports": "error",
       "one-var-declaration-per-line": "error",
-      "@stylistic/js/brace-style": ["error", "1tbs"],
       "curly": ["off", "all"],
       "eqeqeq": "error",
       "minecraft-linting/avoid-unnecessary-command": "error",
