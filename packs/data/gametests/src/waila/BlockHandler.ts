@@ -23,9 +23,7 @@ export class BlockHandler {
     * Helper function to check if a single value matches a condition rule.
     * Mirrors the logic used for TagsInterface.target matching.
     */
-   private static checkRemarkConditionRule(value: string | undefined, rule: string): boolean {
-      if (value === undefined) return false;
-
+   private static checkRemarkConditionRule(value: string, rule: string): boolean {
       const valueNamePart = value.includes(':') ? value.split(':')[1] : value;
       const isNegatedRule = rule.startsWith("!");
       const actualRule = isNegatedRule ? rule.substring(1) : rule;
@@ -280,13 +278,13 @@ export class BlockHandler {
       });
 
       let playerMainHandItemTags: string[] = [];
-      let playerMainHandItemTypeId: string | undefined = undefined;
+      let playerMainHandItemTypeId: string = "__r4ui:none";
       try {
          const equipComponent = player.getComponent(EntityComponentTypes.Equippable) as EntityEquippableComponent | undefined;
          const mainHandItem = equipComponent?.getEquipment(EquipmentSlot.Mainhand);
          if (mainHandItem) {
             playerMainHandItemTags = mainHandItem.getTags();
-            playerMainHandItemTypeId = mainHandItem.typeId;
+            playerMainHandItemTypeId = mainHandItem.typeId || "__r4ui:none";
          }
       } catch { /** Empty */}
 
