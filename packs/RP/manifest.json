@@ -6,7 +6,7 @@
     "uuid": "7174f709-2140-4f50-989e-afcb55533b62",
     "pack_scope": "world",
     "version": [ 4, 0, 0 ],
-    "min_engine_version": [ 1, 21, 60 ]
+    "min_engine_version": [ 1, 21, 80 ]
   },
   "modules": [
     {
