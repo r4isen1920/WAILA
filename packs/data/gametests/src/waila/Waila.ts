@@ -23,6 +23,9 @@ import { EntityHandler } from "./EntityHandler";
 import { BlockTools, EntityInteractions } from "../types/TagsEnum";
 import Namespace from "../types/NamespaceInterface";
 
+
+
+//#region WAILA
 class WAILA {
    private static instance: WAILA;
    private readonly log = Logger.getLogger("Waila");
@@ -58,6 +61,7 @@ class WAILA {
       });
    }
 
+	//#region Fetch
    /**
     * Fetches what block or entity the specified player is looking at.
     */
@@ -67,7 +71,7 @@ class WAILA {
          const entityLookAt = player.getEntitiesFromViewDirection({
             maxDistance: max_dist,
          });
-         
+
          if (entityLookAt.length > 0 && entityLookAt[0]?.entity) {
             const entity = entityLookAt[0].entity;
             const lookAtEntity = EntityHandler.createLookupData(entity);
@@ -87,7 +91,7 @@ class WAILA {
             lookAtBlock.viewAdditionalProperties = player.isSneaking;
             return lookAtBlock;
          }
-         
+
          // Nothing was found
          return {
             type: undefined,
@@ -122,9 +126,9 @@ class WAILA {
       let nameTagContextTranslationKey_local: string | undefined = undefined;
       let itemContextIdentifier_local: string | undefined = undefined;
       let resolvedIcon: string | number = NaN;
-      
+
       const nameAliasTypes: { [key: string]: string } = nameAliases;
-      
+
       if (lookAtObject.type === LookAtObjectType.ENTITY) {
          const entity = (lookAtObject as LookAtEntity).entity;
          const entityNameTag = entity.nameTag;
@@ -179,14 +183,14 @@ class WAILA {
             ...(itemContextIdentifier_local && { itemContextIdentifier: itemContextIdentifier_local })
          };
       }
-      
+
       if (lookAtObject.type === LookAtObjectType.TILE) {
          const block = (lookAtObject as LookAtBlock).block;
          const blockId = lookAtObject.hitIdentifier;
-         
+
          resolvedIcon = BlockHandler.resolveIcon(blockId);
          const blockRenderData = BlockHandler.createRenderData(block, blockId);
-         
+
          if (hitNamespace === "minecraft:") {
             const nameAlias = nameAliasTypes[blockId.replace(hitNamespace, "")];
             resultDisplayName = `${nameAlias?.startsWith("item.") ? "" : "tile."}${
@@ -195,7 +199,7 @@ class WAILA {
          } else {
             resultDisplayName = `${lookAtObject.type}.${blockId}.name`;
          }
-         
+
          return {
             type: lookAtObject.type,
             hitIdentifier: blockId,
@@ -205,10 +209,11 @@ class WAILA {
             renderData: blockRenderData
          };
       }
-      
+
       return null;
    }
 
+	//#region Render
    /**
     * Clears the UI for the specified player.
     */
@@ -236,7 +241,7 @@ class WAILA {
       const hasTarget = lookAtObject.hitIdentifier !== "none";
       const playerId = player.id;
       const hadPreviousTarget = this.playerPreviousLookState.get(playerId) ?? false;
-      
+
       // Update the player's look state for the next tick
       this.playerPreviousLookState.set(playerId, hasTarget);
 
@@ -273,7 +278,7 @@ class WAILA {
          stayDuration: TicksPerSecond * 60,
       });
    }
-   
+
    /**
     * Creates a comparison string to determine if UI needs updating
     */
@@ -282,7 +287,7 @@ class WAILA {
          hit: lookAtObject.hitIdentifier,
          sneaking: lookAtObject.viewAdditionalProperties
       };
-      
+
       if (lookAtObject.type === LookAtObjectType.ENTITY) {
          const entityData = lookAtObject as LookAtEntity;
          Object.assign(baseData, {
@@ -297,10 +302,10 @@ class WAILA {
             states: BlockHandler.getBlockStates(blockData.block)
          });
       }
-      
+
       return JSON.stringify(baseData);
    }
-   
+
    /**
     * Generates UI components for the title display
     */
@@ -312,18 +317,16 @@ class WAILA {
          (metadata.type === LookAtObjectType.ENTITY && !metadata.itemContextIdentifier) ?
             [{ text: (metadata.renderData as EntityRenderData).entityId || "" }] :
             [{ text: typeof metadata.icon === "string" && metadata.icon.startsWith('textures/') ? metadata.icon : "" }];
-         
-      const iconTypes = this.getIconTypes();
-      
+
       const isTileOrItemEntity = metadata.type === LookAtObjectType.TILE || 
          (metadata.type === LookAtObjectType.ENTITY && !!metadata.itemContextIdentifier);
-      
+
       const prefixType = isTileOrItemEntity ? "A" : "B";
-      
+
       let iconOrHealthArmor = "";
       let finalTagIcons = "";
       let effectsStr = "";
-      
+
       if (isTileOrItemEntity) {
          // metadata.icon is already the resolved aux value for both blocks and items in itemEntities
          iconOrHealthArmor = typeof metadata.icon === 'number' ?
@@ -358,7 +361,7 @@ class WAILA {
             entityData.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, "0")
          }`;
       }
-      
+
       const nameElements: RawMessage[] = [];
       if (metadata.nameTagContextTranslationKey) {
          // Entity with nameTag: {nameTag} (entity.type.name)
@@ -381,19 +384,19 @@ class WAILA {
       const blockStatesText = metadata.type === LookAtObjectType.TILE && player.isSneaking 
          ? (metadata.renderData as BlockRenderData).blockStates 
          : "";
-         
+
       // Show item entity's specific item type ID (e.g., minecraft:diamond_sword)
       const itemEntityText = metadata.type === LookAtObjectType.ENTITY && metadata.itemContextIdentifier
          ? `\n§7${metadata.itemContextIdentifier}§r` 
          : "";
-         
+
       // Format health text for entities
       let healthText = "";
       let paddingNewlines = "";
-      
+
       if (metadata.type === LookAtObjectType.ENTITY) {
          const entityData = metadata.renderData as EntityRenderData;
-         
+
          // Handle integer health display
          if (entityData.maxHp > 0 && entityData.intHealthDisplay) {
             const percentage = Math.round((entityData.hp / entityData.maxHp) * 100);
@@ -403,7 +406,7 @@ class WAILA {
                " ∞";
             healthText = `\n§7 ${hpDisplay}§r`;
          }
-         
+
          // Add padding based on HP and display type
          if (entityData.maxHp > 0 && entityData.maxHp <= 40 && !entityData.intHealthDisplay) {
             paddingNewlines += "\n";
@@ -418,7 +421,7 @@ class WAILA {
                : "∞"
             }§r`;
          }
-         
+
          // Effects padding
          const numEffects = entityData.effectsRenderer.effectsResolvedArray.length;
          if (numEffects > 0 && numEffects < 4) {
@@ -426,7 +429,7 @@ class WAILA {
          } else if (numEffects >= 4) {
             paddingNewlines += !entityData.intHealthDisplay && entityData.maxHp > 40 ? "\n" : "\n\n";
          }
-         
+
          // Armor padding
          if (entityData.armorRenderer !== "dddddddddd") {
             paddingNewlines += "\n";
@@ -456,7 +459,7 @@ class WAILA {
          { translate: namespaceText },
          { text: '§r' },
       ];
-      
+
       const filteredTitle = parseStr.filter(
          part => !(typeof part === "object" && "text" in part && part.text === "")
       );

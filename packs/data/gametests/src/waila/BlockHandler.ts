@@ -10,6 +10,9 @@ import blockTools from "../data/blockTools.json";
 import blockIds from "../data/blockIds.json";
 import namespaces from "../data/namespaces.json";
 
+
+
+//#region Block
 /**
  * Handles block-specific operations for WAILA
  */

@@ -9,6 +9,7 @@ import ignoredEntityRender from "../data/ignoredEntityRender.json";
 
 
 
+//#region Entity
 /**
  * Handles entity-specific operations for WAILA
  */
