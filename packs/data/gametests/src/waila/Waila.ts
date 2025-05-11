@@ -9,7 +9,7 @@
  *
  */
 
-import { Block, Entity, ItemStack, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
+import { LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
 import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
 
 import nameAliases from "../data/nameAliases.json";

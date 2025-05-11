@@ -78,7 +78,7 @@ export type EffectsRenderer = {
     * An array of strings that represent such status effects.
     */
    effectsResolvedArray: string[];
-}
+};
 
 /**
  * Rendering data for entities

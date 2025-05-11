@@ -92,9 +92,9 @@ export class EntityHandler {
       entityTags.push(...interactionMatches);
 
       // Helper to safely get component values
-      const getComponentValue = <T>(entity: Entity, componentName: string): T | undefined => {
+      const getComponentValue = <T>(ent: Entity, componentName: string): T | undefined => {
          try {
-            return entity.getComponent(componentName) as T | undefined;
+            return ent.getComponent(componentName) as T | undefined;
          } catch {
             return undefined;
          }
@@ -154,9 +154,9 @@ export class EntityHandler {
 
       displayCurrent = Math.max(0, displayCurrent);
 
-      let fullHearts = Math.floor(displayCurrent / 2);
-      let halfHearts = displayCurrent % 2;
-      let emptyHearts = Math.max(0, MAX_HEARTS_DISPLAY - fullHearts - halfHearts);
+      const fullHearts = Math.floor(displayCurrent / 2);
+      const halfHearts = displayCurrent % 2;
+      const emptyHearts = Math.max(0, MAX_HEARTS_DISPLAY - fullHearts - halfHearts);
 
       let healthString =
          healthIcons.full.repeat(fullHearts) +
@@ -195,9 +195,9 @@ export class EntityHandler {
       const armorIcons = { empty: "d", half: "e", full: "f" };
 
       const MAX_ARMOR_DISPLAY = Math.ceil(maxArmor / 2);
-      let fullArmor = Math.floor(currentArmor / 2);
-      let halfArmor = currentArmor % 2;
-      let emptyArmor = Math.max(0, MAX_ARMOR_DISPLAY - fullArmor - halfArmor);
+      const fullArmor = Math.floor(currentArmor / 2);
+      const halfArmor = currentArmor % 2;
+      const emptyArmor = Math.max(0, MAX_ARMOR_DISPLAY - fullArmor - halfArmor);
 
       let armorString =
          armorIcons.full.repeat(fullArmor) +
@@ -258,7 +258,7 @@ export class EntityHandler {
 
       let effectString = "";
       let effectsResolved = 0;
-      let effectsResolvedArray: string[] = [];
+      const effectsResolvedArray: string[] = [];
 
       for (const effectInfo of effectList) {
          let effectData: Effect | undefined;
