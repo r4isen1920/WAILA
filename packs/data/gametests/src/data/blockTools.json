@@ -123,12 +123,14 @@
 			"minecraft:cartography_table",
 			"minecraft:composter",
 			"minecraft:crafting_table",
+			"minecraft:crimson_door",
 			"minecraft:daylight_detector",
 			"minecraft:fletching_table",
 			"minecraft:jukebox",
 			"minecraft:ladder",
 			"minecraft:lectern",
-			"minecraft:smithing_table"
+			"minecraft:smithing_table",
+			"minecraft:warped_door"
 		]
 	},
 	{
