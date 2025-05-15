@@ -380,5 +380,15 @@
 	"birch_sapling": "sapling.birch",
 	"jungle_sapling": "sapling.jungle",
 	"oak_sapling": "sapling.oak",
-	"spruce_sapling": "sapling.spruce"
+	"spruce_sapling": "sapling.spruce",
+	"tube_coral_block": "coral_block.blue",
+	"brain_coral_block": "coral_block.pink",
+	"bubble_coral_block": "coral_block.purple",
+	"fire_coral_block": "coral_block.red",
+	"horn_coral_block": "coral_block.yellow",
+	"dead_tube_coral_block": "coral_block.blue_dead",
+	"dead_brain_coral_block": "coral_block.pink_dead",
+	"dead_bubble_coral_block": "coral_block.purple_dead",
+	"dead_fire_coral_block": "coral_block.red_dead",
+	"dead_horn_coral_block": "coral_block.yellow_dead"
 }

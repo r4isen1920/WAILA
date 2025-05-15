@@ -19,7 +19,13 @@
 				"itemIds": ["!bucket"]
 			}
 		},
-		"target": ["bubble", "lava", "powder_snow", "water"]
+		"target": [
+			"bubble",
+			"lava",
+			"powder_snow",
+			"water",
+			"!coral"
+		]
 	},
 	{
 		"name": "brush",

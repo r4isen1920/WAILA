@@ -349,7 +349,7 @@
 				"gold_shovel",
 				"diamond_shovel",
 				"netherite_shovel",
-				"sign",
+				{ "oak_sign": "sign" },
 				"sign_acacia",
 				"sign_birch",
 				"sign_darkoak",
