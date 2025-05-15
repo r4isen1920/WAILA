@@ -178,10 +178,8 @@ class WAILA {
 					}
 				} else if (entityTypeId === "minecraft:npc") {
 					resultDisplayName = 'npcscreen.npc';
-				} else if (hitNamespace === "minecraft:") {
-					resultDisplayName = `entity.${cleanEntityTypeId}.name`;
 				} else {
-					resultDisplayName = lookAtObject.hitIdentifier; // Full ID for unknown custom entities
+					resultDisplayName = `entity.${cleanEntityTypeId}.name`;
 				}
 			}
 
