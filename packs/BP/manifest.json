@@ -5,7 +5,7 @@
 		"description": "pack.description",
 		"uuid": "48402988-e5eb-4da5-a51c-928313d4d705",
 		"pack_scope": "world",
-		"version": [4, 0, 0],
+		"version": [4, 0, 1],
 		"min_engine_version": [1, 21, 80]
 	},
 	"modules": [
@@ -13,13 +13,13 @@
 			"description": "Behavior Pack",
 			"type": "data",
 			"uuid": "eb4c5269-9996-4bbe-8ad3-5a69b946755d",
-			"version": [4, 0, 0]
+			"version": [4, 0, 1]
 		}
 	],
 	"dependencies": [
 		{
 			"uuid": "7174f709-2140-4f50-989e-afcb55533b62",
-			"version": [4, 0, 0]
+			"version": [4, 0, 1]
 		}
 	],
 	"metadata": {
