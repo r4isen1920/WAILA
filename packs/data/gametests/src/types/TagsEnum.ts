@@ -15,17 +15,35 @@ export enum TagRemarksEnum {
  * List of all block tools that can be used to efficiently break blocks.
  */
 export enum BlockToolsEnum {
-	SWORD = "aa",
-	AXE = "ab",
-	PICKAXE = "ac",
-	SHOVEL = "ad",
-	HOE = "ae",
-	ARMOR = "af",
-	CROPS = "ag",
-	SHEARS = "ah",
-	BUCKET = "ai",
-	BRUSH = "aj",
-	COMMANDS = "ak",
+	// Pickaxe tiers
+	PICKAXE_WOOD = "aa",
+	PICKAXE_STONE = "ab",
+	PICKAXE_IRON = "ac",
+	PICKAXE_DIAMOND = "ad",
+
+	// Axe tiers
+	AXE_WOOD = "ba",
+	AXE_STONE = "bb",
+	AXE_IRON = "bc",
+	AXE_DIAMOND = "bd",
+
+	// Shovel -- doesn't have tiers because all shovels can break the same blocks
+	SHOVEL = "ca",
+
+	// Hoe -- doesn't have tiers because all hoes can break the same blocks
+	HOE = "da",
+
+	// Sword -- doesn't have tiers because all swords can break the same blocks
+	SWORD = "ea",
+
+	// Miscellaneous
+	IGNITABLE = "fa",
+	CROPS = "fb",
+	SHEARS = "fc",
+	BUCKET = "fd",
+	BRUSH = "fe",
+	COMMANDS = "ff",
+
 	UNDEFINED = "zz",
 }
 
