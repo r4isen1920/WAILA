@@ -108,20 +108,49 @@ export class EntityHandler {
 		const interactionTagDefinitions: Map<string, TagsInterface> = new Map();
 		entityInteractionsData.filter(tagDef => {
 			const typedTag = tagDef as TagsInterface;
-			const positiveMatch =
-				typedTag.target.some(item => item === typeId || item === namespaceRemoved) ||
-				typedTag.target.some(item => !item.startsWith("!") && typeId.includes(item)) ||
-				typedTag.target.some(item => !item.startsWith("!") && namespaceRemoved.includes(item));
-			if (!positiveMatch) return false;
+			let hasApplicablePositiveRule = false;
+			let hasBlockingNegativeRule = false;
 
-			const negativeMatch = typedTag.target.some(
-				item => item.startsWith("!") &&
-					(item.substring(1) === typeId ||
-						item.substring(1) === namespaceRemoved ||
-						typeId.includes(item.substring(1)) ||
-						namespaceRemoved.includes(item.substring(1)))
-			);
-			return !negativeMatch;
+			for (const targetMatcher of typedTag.target) {
+				if (typeof targetMatcher === 'string') {
+					const isNegation = targetMatcher.startsWith("!");
+					const ruleContent = isNegation ? targetMatcher.substring(1) : targetMatcher;
+
+					let currentRuleMatchesEntity = false;
+					// Condition 1: Exact match on full typeId. (e.g. ruleContent "minecraft:creeper" matches typeId "minecraft:creeper")
+					if (ruleContent === typeId) {
+						currentRuleMatchesEntity = true;
+					// Condition 2: Rule is namespace-less.
+					} else if (!ruleContent.includes(':')) {
+						// Condition 2a: Exact match on name part. (e.g. ruleContent "creeper" matches namespaceRemoved "creeper")
+						if (ruleContent === namespaceRemoved) {
+							currentRuleMatchesEntity = true;
+						// Condition 2b: typeId includes ruleContent. (e.g. ruleContent "pig" in typeId "minecraft:pig")
+						// This also covers cases where namespaceRemoved includes ruleContent if typeId itself is namespace-less.
+						} else if (typeId.includes(ruleContent)) {
+							currentRuleMatchesEntity = true;
+						}
+					}
+
+					if (currentRuleMatchesEntity) {
+						if (isNegation) {
+							hasBlockingNegativeRule = true;
+							break; // This tagDef is blocked by a negative string rule.
+						} else {
+							hasApplicablePositiveRule = true;
+							// Continue checking other matchers for potential negations.
+						}
+					}
+				}
+				// Object-based target matchers (e.g., { tag: "..." }) are ignored for entities.
+			}
+
+			if (hasBlockingNegativeRule) {
+				return false; // Blocked by a negative rule.
+			}
+			// To be included, a tag must have at least one positive rule that matched,
+			// and no negative rules that matched from its string targets.
+			return hasApplicablePositiveRule;
 		}).forEach(tagDef => {
 			const typedTag = tagDef as TagsInterface;
 			interactionTagDefinitions.set(typedTag.name.toUpperCase(), typedTag);

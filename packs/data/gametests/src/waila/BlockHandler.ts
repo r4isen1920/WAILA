@@ -253,28 +253,69 @@ export class BlockHandler {
 	/**
 	 * Parses block tools data to determine which tools work with this block and returns a formatted icon string.
 	 */
-	static getBlockToolIcons(blockId: string, player: Player): string {
+	static getBlockToolIcons(block: Block, player: Player): string {
+		const blockId = block.typeId;
 		const namespaceRemoved = blockId.replace(/:.*/, "");
+		const blockTags = block.getTags();
 
-		const matchedTagsData = blockTools.filter((tag) => {
-			const typedTag = tag as TagsInterface;
-			const positiveMatch =
-				typedTag.target.some((item) => item === blockId || item === namespaceRemoved) ||
-				typedTag.target.some((item) => !item.startsWith("!") && blockId.includes(item)) ||
-				typedTag.target.some((item) => !item.startsWith("!") && namespaceRemoved.includes(item));
+		const matchedTagsData = blockTools.filter((tagRuleEntry) => {
+			const typedTagRule = tagRuleEntry as TagsInterface;
 
-			if (!positiveMatch) return false;
+			let hasApplicablePositiveRule = false;
+			let hasBlockingNegativeRule = false;
 
-			// Check for negations
-			const negativeMatch = typedTag.target.some(
-				(item) =>
-					item.startsWith("!") &&
-					(item.substring(1) === blockId ||
-						item.substring(1) === namespaceRemoved ||
-						blockId.includes(item.substring(1)) ||
-						namespaceRemoved.includes(item.substring(1)))
-			);
-			return !negativeMatch;
+			for (const targetMatcher of typedTagRule.target) {
+				if (typeof targetMatcher === 'string') {
+					const isNegation = targetMatcher.startsWith("!");
+					const ruleContent = isNegation ? targetMatcher.substring(1) : targetMatcher;
+
+					let currentRuleMatchesBlock = false;
+					// Condition 1: Exact match on full ID. (e.g. ruleContent "minecraft:stone" matches blockId "minecraft:stone")
+					if (ruleContent === blockId) {
+						currentRuleMatchesBlock = true;
+					// Condition 2: Rule is namespace-less.
+					} else if (!ruleContent.includes(':')) {
+						// Condition 2a: Exact match on name part. (e.g. ruleContent "stone" matches namespaceRemoved "stone")
+						if (ruleContent === namespaceRemoved) {
+							currentRuleMatchesBlock = true;
+						// Condition 2b: blockId includes ruleContent. (e.g. ruleContent "log" in blockId "minecraft:oak_log")
+						} else if (blockId.includes(ruleContent)) {
+							currentRuleMatchesBlock = true;
+						}
+					}
+
+					if (currentRuleMatchesBlock) {
+						if (isNegation) {
+							hasBlockingNegativeRule = true;
+							break; // This tagRuleEntry is blocked by a negative string rule.
+						} else {
+							hasApplicablePositiveRule = true;
+							// Continue checking other matchers for potential negations.
+						}
+					}
+				} else if (typeof targetMatcher === 'object' && targetMatcher.tag) {
+					const requiredTagRule = targetMatcher.tag;
+					const isNegation = requiredTagRule.startsWith("!");
+					const actualTag = isNegation ? requiredTagRule.substring(1) : requiredTagRule;
+
+					if (blockTags.includes(actualTag)) {
+						if (isNegation) {
+							hasBlockingNegativeRule = true;
+							break; // This tagRuleEntry is blocked by a negative tag rule.
+						} else {
+							hasApplicablePositiveRule = true;
+							// Continue checking other matchers for potential negations.
+						}
+					}
+				}
+			}
+
+			if (hasBlockingNegativeRule) {
+				return false; // Blocked by a negative rule.
+			}
+			// To be included, a tag must have at least one positive rule that matched,
+			// and no negative rules that matched.
+			return hasApplicablePositiveRule;
 		});
 
 		let playerMainHandItemTags: string[] = [];
@@ -322,6 +363,13 @@ export class BlockHandler {
 					}
 				}
 			}
+
+			// If this tag's ID starts with the first letter of any previous processed tag, skip it
+			const firstLetter = iconId.charAt(0);
+			if (processedTags.some(tag => tag.id.startsWith(firstLetter))) {
+				continue;
+			}
+
 			processedTags.push({ id: iconId, remark: remarkIcon });
 			if (processedTags.length >= 2) break; // Max 2 tags
 		}
@@ -377,9 +425,9 @@ export class BlockHandler {
 	/**
 	 * Creates block render data for UI display
 	 */
-	static createRenderData(block: Block, blockId: string, player: Player): BlockRenderDataInterface {
+	static createRenderData(block: Block, player: Player): BlockRenderDataInterface {
 		return {
-			toolIcons: this.getBlockToolIcons(blockId, player),
+			toolIcons: this.getBlockToolIcons(block, player),
 			blockStates: this.getBlockStates(block),
 			inventory: this.getBlockInventory(block),
 		};

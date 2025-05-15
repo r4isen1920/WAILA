@@ -202,7 +202,7 @@ class WAILA {
 			const blockId = lookAtObject.hitIdentifier;
 
 			resolvedIcon = BlockHandler.resolveIcon(blockId);
-			const blockRenderData = BlockHandler.createRenderData(block, blockId, player);
+			const blockRenderData = BlockHandler.createRenderData(block, player);
 
 			if (hitNamespace === "minecraft:") {
 				const nameAlias = nameAliasTypes[blockId.replace(hitNamespace, "")];

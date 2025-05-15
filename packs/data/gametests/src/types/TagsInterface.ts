@@ -10,16 +10,17 @@ export default interface TagsInterface {
 	 */
 	name: string;
 	/**
-	 * List of item identifiers that this tag applies to.
-	 * When the player views on object, we will check if the object is in this list.
-	 * If it is, we will display the tag.
+	 * List of item identifiers or block tags that this tag applies to.
+	 * Tag will be displayed when player views a matching object.
 	 * 
-	 * A string value can be formatted as follows:
-	 * - the type identifier string with namespace (e.g., `"minecraft:stone"`), this will match exactly the block/item for this particular namespace only
-	 * - the type identifier string without namespace (e.g., `"stone"`), this will match all namespaces that have this block/item
-	 * - prepend `!` to the type identifier string (e.g., `"!stone"`), this will ignore all objects that match this type identifier
+	 * Format options:
+	 * - `"minecraft:stone"` - exact match with namespace
+	 * - `"stone"` - matches all namespaces with this identifier
+	 * - `"!stone"` - ignores objects matching this identifier
+	 * - `{ tag: "namespace:tag_name" }` - matches objects with this tag **(blocks only)**
+	 * - `{ tag: "!namespace:tag_name" }` - ignores objects with this tag **(blocks only)**
 	 */
-	target: string[];
+	target: (string | { tag: string })[];
 	/**
 	 * Remark conditions for this tag.
 	 * This is used to determine what remarks to display for this tag.
@@ -29,7 +30,7 @@ export default interface TagsInterface {
 }
 
 /**
- * A type which represents the remarks for a tag.
+ * A type which represents the possible remarks for a tag.
  */
 type TagRemarksInterface = {
 	/** The conditions to apply for this particular remark condition. */
