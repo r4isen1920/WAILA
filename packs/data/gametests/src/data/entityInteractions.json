@@ -7,7 +7,7 @@
 		"name": "is_tradeable",
 		"remarks": {
 			"correct": {
-				"itemIds": ["emerald"]
+				"itemIds": ["minecraft:emerald"]
 			}
 		},
 		"target": ["merchant", "wandering_trader", "villager"]
@@ -16,7 +16,7 @@
 		"name": "is_rideable",
 		"remarks": {
 			"correct": {
-				"itemIds": ["saddle"]
+				"itemIds": ["minecraft:saddle"]
 			}
 		},
 		"target": [
@@ -46,50 +46,220 @@
 	},
 	{
 		"name": "golden_apple",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:golden_apple"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:golden_apple"]
+			}
+		},
 		"target": ["horse", "donkey"]
 	},
 	{
 		"name": "wheat",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:wheat"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:wheat"]
+			}
+		},
 		"target": ["cow", "goat", "mooshroom", "sheep"]
 	},
 	{
 		"name": "potato",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:potato"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:potato"]
+			}
+		},
 		"target": ["pig", "!piglin"]
 	},
 	{
 		"name": "seeds",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:wheat_seeds"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:wheat_seeds"]
+			}
+		},
 		"target": ["chicken", "parrot"]
 	},
 	{
 		"name": "fish",
+		"remarks": {
+			"correct": {
+				"itemIds": [
+					"minecraft:cod",
+					"minecraft:salmon",
+					"minecraft:tropical_fish"
+				]
+			},
+			"incorrect": {
+				"itemIds": [
+					"!minecraft:cod",
+					"!minecraft:salmon",
+					"!minecraft:tropical_fish"
+				]
+			}
+		},
 		"target": ["cat", "ocelot"]
 	},
 	{
 		"name": "hay_bale",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:hay_block"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:hay_block"]
+			}
+		},
 		"target": ["llama"]
 	},
 	{
 		"name": "flowers",
+		"remarks": {
+			"correct": {
+				"itemIds": [
+					"minecraft:poppy",
+					"minecraft:blue_orchid",
+					"minecraft:allium",
+					"minecraft:azure_bluet",
+					"minecraft:red_tulip",
+					"minecraft:orange_tulip",
+					"minecraft:white_tulip",
+					"minecraft:pink_tulip",
+					"minecraft:oxeye_daisy",
+					"minecraft:cornflower",
+					"minecraft:lily_of_the_valley",
+					"minecraft:dandelion",
+					"minecraft:wither_rose",
+					"minecraft:sunflower",
+					"minecraft:lilac",
+					"minecraft:rose_bush",
+					"minecraft:peony",
+					"minecraft:flowering_azalea",
+					"minecraft:azalea_leaves_flowered",
+					"minecraft:mangrove_propagule",
+					"minecraft:pitcher_plant",
+					"minecraft:torchflower",
+					"minecraft:cherry_leaves",
+					"minecraft:pink_petals",
+					"minecraft:wildflowers",
+					"minecraft:cactus_flower"
+				]
+			},
+			"incorrect": {
+				"itemIds": [
+					"!minecraft:poppy",
+					"!minecraft:blue_orchid",
+					"!minecraft:allium",
+					"!minecraft:azure_bluet",
+					"!minecraft:red_tulip",
+					"!minecraft:orange_tulip",
+					"!minecraft:white_tulip",
+					"!minecraft:pink_tulip",
+					"!minecraft:oxeye_daisy",
+					"!minecraft:cornflower",
+					"!minecraft:lily_of_the_valley",
+					"!minecraft:dandelion",
+					"!minecraft:wither_rose",
+					"!minecraft:sunflower",
+					"!minecraft:lilac",
+					"!minecraft:rose_bush",
+					"!minecraft:peony",
+					"!minecraft:flowering_azalea",
+					"!minecraft:azalea_leaves_flowered",
+					"!minecraft:mangrove_propagule",
+					"!minecraft:pitcher_plant",
+					"!minecraft:torchflower",
+					"!minecraft:cherry_leaves",
+					"!minecraft:pink_petals",
+					"!minecraft:wildflowers",
+					"!minecraft:cactus_flower"
+				]
+			}
+		},
 		"target": ["bee", "rabbit"]
 	},
 	{
 		"name": "fungi",
-		"target": ["hoglin", "strider"]
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:crimson_fungus"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:crimson_fungus"]
+			}
+		},
+		"target": ["hoglin"]
+	},
+	{
+		"name": "fungi",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:warped_fungus"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:warped_fungus"]
+			}
+		},
+		"target": ["strider"]
 	},
 	{
 		"name": "slimeball",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:slimeball"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:slimeball"]
+			}
+		},
 		"target": ["frog"]
 	},
 	{
 		"name": "cactus",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:cactus"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:cactus"]
+			}
+		},
 		"target": ["camel"]
 	},
 	{
 		"name": "torchflower",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:torchflower"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:torchflower"]
+			}
+		},
 		"target": ["sniffer"]
 	},
 	{
 		"name": "spider_eye",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:spider_eye"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:spider_eye"]
+			}
+		},
 		"target": ["armadillo"]
 	}
 ]

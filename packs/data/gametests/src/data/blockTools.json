@@ -121,77 +121,6 @@
 		]
 	},
 	{
-		"name": "axe_wood",
-		"remarks": {
-			"correct": {
-				"tags": ["minecraft:is_axe"]
-			},
-			"incorrect": {
-				"tags": ["!minecraft:is_axe"]
-			}
-		},
-		"target": [
-			{ "tag": "minecraft:is_axe_item_destructible" },
-
-			{ "tag": "!minecraft:stone_tier_destructible" },
-			{ "tag": "!minecraft:iron_tier_destructible" },
-			{ "tag": "!minecraft:diamond_tier_destructible" },
-
-			{ "tag": "!minecraft:is_pickaxe_item_destructible" }
-		]
-	},
-	{
-		"name": "axe_stone",
-		"remarks": {
-			"correct": {
-				"itemIds": ["minecraft:stone_axe"]
-			},
-			"incorrect": {
-				"itemIds": ["minecraft:wooden_axe", "!minecraft:stone_axe"]
-			}
-		},
-		"target": [
-			{ "tag": "minecraft:is_axe_item_destructible" },
-			{ "tag": "minecraft:stone_tier_destructible" },
-
-			{ "tag": "!minecraft:is_pickaxe_item_destructible" }
-		]
-	},
-	{
-		"name": "axe_iron",
-		"remarks": {
-			"correct": {
-				"itemIds": ["minecraft:iron_axe", "minecraft:golden_axe"]
-			},
-			"incorrect": {
-				"itemIds": ["!minecraft:iron_axe", "!minecraft:golden_axe"]
-			}
-		},
-		"target": [
-			{ "tag": "minecraft:is_axe_item_destructible" },
-			{ "tag": "minecraft:iron_tier_destructible" },
-
-			{ "tag": "!minecraft:is_pickaxe_item_destructible" }
-		]
-	},
-	{
-		"name": "axe_diamond",
-		"remarks": {
-			"correct": {
-				"itemIds": ["minecraft:diamond_axe", "minecraft:netherite_axe"]
-			},
-			"incorrect": {
-				"itemIds": ["!minecraft:diamond_axe", "!minecraft:netherite_axe"]
-			}
-		},
-		"target": [
-			{ "tag": "minecraft:is_axe_item_destructible" },
-			{ "tag": "minecraft:diamond_tier_destructible" },
-
-			{ "tag": "!minecraft:is_pickaxe_item_destructible" }
-		]
-	},
-	{
 		"name": "shovel",
 		"remarks": {
 			"correct": {
@@ -294,6 +223,79 @@
 		"target": [
 			{ "tag": "minecraft:is_pickaxe_item_destructible" },
 			{ "tag": "minecraft:diamond_tier_destructible" }
+		]
+	},
+	{
+		"name": "axe_wood",
+		"remarks": {
+			"correct": {
+				"tags": ["minecraft:is_axe"],
+				"itemIds": ["axe"]
+			},
+			"incorrect": {
+				"tags": ["!minecraft:is_axe"],
+				"itemIds": ["!axe"]
+			}
+		},
+		"target": [
+			{ "tag": "minecraft:is_axe_item_destructible" },
+
+			{ "tag": "!minecraft:stone_tier_destructible" },
+			{ "tag": "!minecraft:iron_tier_destructible" },
+			{ "tag": "!minecraft:diamond_tier_destructible" },
+
+			{ "tag": "!minecraft:is_pickaxe_item_destructible" }
+		]
+	},
+	{
+		"name": "axe_stone",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:stone_axe"]
+			},
+			"incorrect": {
+				"itemIds": ["minecraft:wooden_axe", "!minecraft:stone_axe"]
+			}
+		},
+		"target": [
+			{ "tag": "minecraft:is_axe_item_destructible" },
+			{ "tag": "minecraft:stone_tier_destructible" },
+
+			{ "tag": "!minecraft:is_pickaxe_item_destructible" }
+		]
+	},
+	{
+		"name": "axe_iron",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:iron_axe", "minecraft:golden_axe"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:iron_axe", "!minecraft:golden_axe"]
+			}
+		},
+		"target": [
+			{ "tag": "minecraft:is_axe_item_destructible" },
+			{ "tag": "minecraft:iron_tier_destructible" },
+
+			{ "tag": "!minecraft:is_pickaxe_item_destructible" }
+		]
+	},
+	{
+		"name": "axe_diamond",
+		"remarks": {
+			"correct": {
+				"itemIds": ["minecraft:diamond_axe", "minecraft:netherite_axe"]
+			},
+			"incorrect": {
+				"itemIds": ["!minecraft:diamond_axe", "!minecraft:netherite_axe"]
+			}
+		},
+		"target": [
+			{ "tag": "minecraft:is_axe_item_destructible" },
+			{ "tag": "minecraft:diamond_tier_destructible" },
+
+			{ "tag": "!minecraft:is_pickaxe_item_destructible" }
 		]
 	},
 	{
