@@ -2,7 +2,6 @@
 /publish
 /.regolith
 
-/.vscode
 node_modules/
 
 *.txt
@@ -12,5 +11,3 @@ node_modules/
 *.mcworld
 *.mcpack
 *.mcaddon
-
-packs/RP/ui/beacon_screen.json
