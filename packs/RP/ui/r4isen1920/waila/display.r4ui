@@ -283,6 +283,7 @@
 		]
 	},
 
+	//! Deprecated in favor of "item_aux_inv_renderer" !//
 	"item_aux_renderer": {
 		"type": "custom",
 		"renderer": "inventory_item_renderer",
@@ -292,6 +293,63 @@
 		"property_bag": {
 			"#item_id_aux": "$item_aux"
 		}
+	},
+
+	//* Author: NguyenDuck (https://github.com/NguyenDuck) *//
+	"item_aux_inv_renderer@common.empty_panel": {
+		"controls": [
+			{
+				"inv": {
+					"type": "custom",
+					"renderer": "inventory_item_renderer",
+					"size": ["100%", "100%"],
+					"anchor_from": "top_left",
+					"anchor_to": "top_left",
+					"layer": "($layer + 1)",
+					"controls": [
+						{
+							"stack": {
+								"type": "stack_panel",
+								"size": [0, 0],
+								"collection_name": "hotbar_items",
+								"controls": [
+									{
+										"slot@common.empty_panel": {
+											"collection_index": 17,
+											"bindings": [
+												{
+													"binding_type": "collection",
+													"binding_name": "#item_id_aux",
+													"binding_collection_name": "hotbar_items"
+												}
+											]
+										}
+									}
+								],
+								"bindings": [
+									{
+										"binding_type": "view",
+										"source_control_name": "slot",
+										"resolve_sibling_scope": true,
+										"source_property_name": "#item_id_aux",
+										"target_property_name": "#item_id_aux"
+									}
+								]
+							}
+						}
+					],
+					"bindings": [
+						{
+							"binding_type": "view",
+							"source_control_name": "stack",
+							"resolve_sibling_scope": true,
+							"source_property_name": "#item_id_aux",
+							"target_property_name": "#item_id_aux"
+						}
+					]
+				}
+			}
+		]
 	},
 
 	"entity_portrait_renderer": {
@@ -408,21 +466,10 @@
 
 														"controls": [
 															{
-																"block@r4isen1920_waila_display.item_aux_renderer": {
-																	"$item_aux": "((('%.10s' * ($var_title_text - ('%.7s' * $var_title_text))) - ':') * 1)",
+																"block@r4isen1920_waila_display.item_aux_inv_renderer": {
 																	"size": ["100%", "100%"],
 
-																	"visible": "($tooltip_renderer_type = 'A:')",
-																	"ignored": "($ignore_block_icon and ($var_subtitle_text > 'textures/'))"
-																}
-															},
-															{
-																"item@r4isen1920_waila_display.image": {
-																	"texture": "$var_subtitle_text",
-																	"size": ["100%", "100%"],
-
-																	"visible": "($tooltip_renderer_type = 'A:')",
-																	"ignored": "($ignore_block_icon and not ($var_subtitle_text > 'textures/'))"
+																	"visible": "($tooltip_renderer_type = 'A:')"
 																}
 															},
 															{

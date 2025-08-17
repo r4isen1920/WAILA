@@ -1,23 +1,20 @@
-import { Block, BlockInventoryComponent, BlockTypes, EntityComponentTypes, Player, EntityEquippableComponent, EquipmentSlot } from "@minecraft/server";
+import { Block, BlockInventoryComponent, EntityComponentTypes, Player, EntityEquippableComponent, EquipmentSlot, ItemStack, world, ItemLockMode } from "@minecraft/server";
 import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import { LookAtBlockInterface } from "../types/LookAtObjectInterface";
-import NamespaceInterface from "../types/NamespaceInterface";
 import { BlockRenderDataInterface } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
 import TagsInterface from "../types/TagsInterface";
 import { BlockToolsEnum, TagRemarksEnum } from "../types/TagsEnum";
 
 import blockTools from "../data/blockTools.json";
-import blockIds from "../data/blockIds.json";
-import namespaces from "../data/namespaces.json";
 
 //#region Block
 /**
  * Handles block-specific operations for WAILA
  */
 export class BlockHandler {
-	private static logger = Logger.getLogger("BlockHandler");
+	private static readonly logger = Logger.getLogger("BlockHandler");
 
 	/**
 	 * Helper function to check if a single value matches a condition rule.
@@ -71,183 +68,62 @@ export class BlockHandler {
 	}
 
 	/**
-	 * Returns either the item aux or the icon texture path. Prefers the icon texture path if its rendered as an item.
+	 * Places the block into a hidden slot in the player's inventory to display it in the UI.
 	 */
-	static resolveIcon(blockId: string): string | number {
-		const namespacesType = namespaces as Record<string, NamespaceInterface>;
-		const [blockNamespace, blockName] = blockId.split(":");
+	static resolveIcon(player: Player, block: Block): void;
+	/**
+	 * Places the item stack into a hidden slot in the player's inventory to display it in the UI.
+	 */
+	static resolveIcon(player: Player, item: ItemStack): void;
+	static resolveIcon(player: Player, blockOrItem: Block | ItemStack): void {
+		const SLOT_INDEX = 17;
 
-		const namespaceData = namespacesType[blockNamespace];
-		const texturePath = namespaceData?.textures?.root || "";
+		const playerContainer = player.getComponent(EntityComponentTypes.Inventory)?.container;
+		if (!playerContainer) return;
 
-		// Handle cases where namespace or texture list is missing or empty
-		if (!namespaceData?.textures?.list || namespaceData.textures.list.length === 0) {
-			const isInBlockCatalog = BlockTypes.get(blockId) !== undefined;
-			if (isInBlockCatalog) {
-				// It's a block, but no texture list to find a specific item icon. Use aux.
-				this.logger.debug(`resolveIcon (early exit): No texture list for ${blockNamespace}. Block ${blockId} is in catalog. Using aux.`);
-				return this.getItemAux(blockId);
+		const ownedItemHolder = player.getDynamicProperty("r4isen1920_waila:item_holder_id");
+		if (!ownedItemHolder) {
+			const itemHolder = player.dimension.spawnEntity('r4isen1920_waila:item_holder', player.location);
+			const itemHolderContainer = itemHolder.getComponent(EntityComponentTypes.Inventory)?.container;
+			if (itemHolderContainer) {
+				playerContainer.moveItem(SLOT_INDEX, 0, itemHolderContainer);
+				player.setDynamicProperty("r4isen1920_waila:item_holder_id", itemHolder.id);
 			} else {
-				// It's an item (not a block), and no texture list. Assume direct name mapping.
-				this.logger.debug(`resolveIcon (early exit): No texture list for ${blockNamespace}. Item ${blockId} not in catalog. Using default name.`);
-				return `${texturePath}${blockName}`;
+				itemHolder.triggerEvent("r4isen1920_waila:instant_despawn");
 			}
 		}
 
-		const rawTextureList = namespaceData.textures.list; // Can be (string | { [key: string]: string })[]
-		let foundItemTexture: string | null = null;
-
-		// 1. Direct match phase
-		// Priority 1: Object key match (e.g., { "bed": "bed_white" })
-		for (const entry of rawTextureList) {
-			if (typeof entry === 'object' && entry !== null && Object.prototype.hasOwnProperty.call(entry, blockName)) {
-				foundItemTexture = entry[blockName];
-				break;
-			}
+		const item = blockOrItem instanceof Block
+			? blockOrItem.getItemStack(1)
+			: blockOrItem;
+		if (item) {
+			item.lockMode = ItemLockMode.slot;
+			item.keepOnDeath = true;
+			item.nameTag = "§7 §r";
 		}
-
-		// Priority 2: Direct string match (e.g., "apple")
-		if (foundItemTexture === null) {
-			for (const entry of rawTextureList) {
-				if (typeof entry === 'string' && entry === blockName) {
-					foundItemTexture = blockName;
-					break;
-				}
-			}
-		}
-
-		// 2. Complex match phase (if no direct match found)
-		if (foundItemTexture === null) {
-			const blockNameParts = blockName.split('_');
-
-			// Only attempt complex match if blockName has multiple parts (e.g., "oak_log")
-			if (blockNameParts.length > 1) {
-				// Prepare a flat list of all available texture strings for complex matching
-				const textureStringsForComplexMatch: string[] = [];
-				for (const entry of rawTextureList) {
-					if (typeof entry === 'string') {
-						textureStringsForComplexMatch.push(entry);
-					} else if (typeof entry === 'object' && entry !== null) {
-						textureStringsForComplexMatch.push(...Object.values(entry));
-					}
-				}
-
-				for (const textureString of textureStringsForComplexMatch) { // Iterate over normalized strings
-					const textureFileName = textureString.split('/').pop() ?? textureString;
-					const textureParts = textureFileName.split('_');
-
-					let matchCount = 0;
-					let totalMatchedLength = 0;
-					const matchedTextureIndices = new Set<number>();
-					const matchedBlockIndices = new Set<number>();
-
-					// First pass: Check for exact part matches
-					for (let i = 0; i < blockNameParts.length; i++) {
-						const blockPart = blockNameParts[i];
-						for (let j = 0; j < textureParts.length; j++) {
-							if (matchedTextureIndices.has(j)) continue;
-
-							const texturePart = textureParts[j];
-							if (blockPart === texturePart) {
-								matchCount++;
-								totalMatchedLength += blockPart.length;
-								matchedTextureIndices.add(j);
-								matchedBlockIndices.add(i);
-								break;
-							}
-						}
-					}
-
-					// Second pass: Check for common prefix matches for parts not already matched
-					const minPrefixLength = 4;
-					for (let i = 0; i < blockNameParts.length; i++) {
-						if (matchedBlockIndices.has(i)) continue;
-						const blockPart = blockNameParts[i];
-						for (let j = 0; j < textureParts.length; j++) {
-							if (matchedTextureIndices.has(j)) continue;
-							const texturePart = textureParts[j];
-
-							let commonPrefixLen = 0;
-							const lenToCompare = Math.min(blockPart.length, texturePart.length);
-							for (let k = 0; k < lenToCompare; k++) {
-								if (blockPart[k] === texturePart[k]) commonPrefixLen++;
-								else break;
-							}
-
-							if (commonPrefixLen >= minPrefixLength) {
-								matchCount++;
-								totalMatchedLength += commonPrefixLen;
-								matchedTextureIndices.add(j);
-								matchedBlockIndices.add(i);
-								break;
-							}
-						}
-					}
-
-					const originalBlockNameLength = blockName.replace(/_/g, '').length;
-					const textureNameLength = textureFileName.replace(/_/g, '').length; // Use textureFileName
-
-					if (originalBlockNameLength === 0 || textureNameLength === 0) continue; // Avoid division by zero
-
-					const lengthRatio = Math.min(originalBlockNameLength, textureNameLength) /
-						Math.max(originalBlockNameLength, textureNameLength);
-
-					// Thresholds for considering a complex match valid
-					const minMatchCountForComplex = 2;
-					const minTotalMatchedLengthRatio = 0.8;
-					const minMatchCountRatio = blockNameParts.length > 0 ? 0.8 : 1.0; // Ensure all parts match if only one part
-					const minLengthRatioSimilarity = 0.7;
-
-					const isSufficientlyCompleteMatch = matchCount >= blockNameParts.length;
-					const isStrongPartialMatch =
-						matchCount >= minMatchCountForComplex &&
-						totalMatchedLength >= originalBlockNameLength * minTotalMatchedLengthRatio &&
-						matchCount >= blockNameParts.length * minMatchCountRatio;
-
-					if ((isSufficientlyCompleteMatch || isStrongPartialMatch) && lengthRatio >= minLengthRatioSimilarity) {
-						foundItemTexture = textureString; // Use the full texture string from the list
-						break;
-					}
-				}
-			}
-		}
-
-		const isInBlockCatalog = BlockTypes.get(blockId) !== undefined;
-		// Render as an item if:
-		// 1. A specific item texture was found (foundItemTexture is not null).
-		// OR
-		// 2. The blockId does not correspond to a placeable block (i.e., it's an item like a sword or apple).
-		const shouldRenderAsItem = foundItemTexture !== null || !isInBlockCatalog;
-
-		this.logger.debug(
-			`resolveIcon: blockId='${blockId}', namespace='${blockNamespace}', name='${blockName}', ` +
-			`foundTexture='${foundItemTexture}', inCatalog=${isInBlockCatalog}, renderAsItem=${shouldRenderAsItem}`
-		);
-
-		if (shouldRenderAsItem) {
-			// If foundItemTexture is null at this point, it implies !isInBlockCatalog was true (it's an item),
-			// and no specific texture (direct or complex match) was found.
-			// In this scenario, blockName itself is used as the texture file name.
-			return `${texturePath}${foundItemTexture ?? blockName}`;
-		} else {
-			// This case is reached if:
-			// - foundItemTexture is null (no suitable item texture was found through direct or complex matching)
-			// - AND isInBlockCatalog is true (it's a placeable block).
-			// Fall back to using the block's auxiliary value for rendering.
-			return this.getItemAux(blockId);
-		}
+		playerContainer.setItem(SLOT_INDEX, item);
 	}
 
 	/**
-	 * Gets the AUX value for a block ID
+	 * Resets the icon for the specified player. This clears whatever item we put in the hidden slot.
 	 */
-	static getItemAux(blockId: string): number {
-		const blockIdsType: { [key: string]: string | number } = blockIds;
-		const auxValue = blockIdsType[blockId];
-		if (auxValue === undefined) {
-			return NaN;
+	static resetIcon(player: Player): void {
+		const SLOT_INDEX = 17;
+
+		const playerContainer = player.getComponent(EntityComponentTypes.Inventory)?.container;
+		if (!playerContainer) return;
+
+		const ownedItemHolder = player.getDynamicProperty("r4isen1920_waila:item_holder_id");
+		if (typeof ownedItemHolder === "string") {
+			const itemHolder = world.getEntity(ownedItemHolder);
+			if (itemHolder && itemHolder.isValid) {
+				const itemHolderContainer = itemHolder.getComponent(EntityComponentTypes.Inventory)?.container;
+				itemHolderContainer?.moveItem(0, SLOT_INDEX, playerContainer);
+				itemHolder.triggerEvent("r4isen1920_waila:instant_despawn");
+			}
+			player.setDynamicProperty("r4isen1920_waila:item_holder_id", undefined);
+			return;
 		}
-		return Number(auxValue) * 65536;
 	}
 
 	/**

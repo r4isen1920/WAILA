@@ -12,22 +12,19 @@
 import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, MemoryTier, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
 import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
 
-import nameAliases from "../data/nameAliases.json";
-import namespaces from "../data/namespaces.json";
-
 import { LookAtBlockInterface, LookAtEntityInterface, LookAtItemEntityInterface, LookAtObjectInterface } from "../types/LookAtObjectInterface";
 import { BlockRenderDataInterface, EntityRenderDataInterface, LookAtObjectMetadata } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
-import NamespaceInterface from "../types/NamespaceInterface";
+import AfterWorldLoad from "../Init";
 
 
 
 //#region WAILA
 class WAILA {
 	private static instance: WAILA;
-	private readonly log = Logger.getLogger("Waila");
+	private readonly log = Logger.getLogger("WAILA");
 	private readonly MAX_DISTANCE = 8;
 	private playerPreviousLookState: Map<string, boolean> = new Map();
 
@@ -37,9 +34,12 @@ class WAILA {
 		const additionalTickInterval = MemoryTier.SuperHigh - system.serverSystemInfo.memoryTier;
 		const tickInterval = 1 + additionalTickInterval;
 
-		system.runInterval(() => this.toAllPlayers(), tickInterval);
+		AfterWorldLoad(() => {
+			world.gameRules.showTags = false;
 
-		this.log.info(`WAILA loaded and running at ${tickInterval} tick(s) at a time.`);
+			system.runInterval(() => this.toAllPlayers(), tickInterval);
+			this.log.info(`WAILA loaded and running at ${tickInterval} tick(s) at a time.`);
+		});
 	}
 
 	public static getInstance(): WAILA {
@@ -137,15 +137,11 @@ class WAILA {
 		let resultDisplayName: string = lookAtObject.hitIdentifier;
 		let nameTagContextTranslationKey_local: string | undefined = undefined;
 		let itemContextIdentifier_local: string | undefined = undefined;
-		let resolvedIcon: string | number = NaN;
-
-		const nameAliasTypes: { [key: string]: string } = nameAliases;
 
 		if (lookAtObject.type === LookAtObjectType.ENTITY) {
 			const entity = (lookAtObject as LookAtEntityInterface).entity;
 			const entityNameTag = entity.nameTag;
 			const entityTypeId = entity.typeId;
-			const cleanEntityTypeId = entityTypeId.replace(/minecraft:/gm, '');
 
 			const entityRenderData = EntityHandler.createRenderData(
 				entity,
@@ -159,7 +155,7 @@ class WAILA {
 
 			if (entityNameTag && entityNameTag.length > 0) {
 				resultDisplayName = entityNameTag;
-				nameTagContextTranslationKey_local = `entity.${cleanEntityTypeId}.name`;
+				nameTagContextTranslationKey_local = entity.localizationKey;
 			} else {
 				if (humanoidLikeEntities.includes(entityTypeId)) {
 					if (entityTypeId === "minecraft:player" && entity instanceof Player) {
@@ -174,12 +170,10 @@ class WAILA {
 					const itemStack = itemEntity.itemStack;
 					if (itemStack) {
 						itemContextIdentifier_local = itemStack.typeId;
-						resolvedIcon = BlockHandler.resolveIcon(itemStack.typeId);
+						BlockHandler.resolveIcon(player, itemStack);
 					}
-				} else if (entityTypeId === "minecraft:npc") {
-					resultDisplayName = 'npcscreen.npc';
 				} else {
-					resultDisplayName = `entity.${cleanEntityTypeId}.name`;
+					resultDisplayName = entity.localizationKey;
 				}
 			}
 
@@ -187,7 +181,7 @@ class WAILA {
 				type: lookAtObject.type,
 				hitIdentifier: entityTypeId,
 				namespace: hitNamespace,
-				icon: resolvedIcon, // NaN for non-item entities, aux value for item entities
+				icon: '000000000',
 				displayName: resultDisplayName,
 				renderData: entityRenderData,
 				...(nameTagContextTranslationKey_local && { nameTagContextTranslationKey: nameTagContextTranslationKey_local }),
@@ -199,23 +193,15 @@ class WAILA {
 			const block = (lookAtObject as LookAtBlockInterface).block;
 			const blockId = lookAtObject.hitIdentifier;
 
-			resolvedIcon = BlockHandler.resolveIcon(blockId);
+			BlockHandler.resolveIcon(player, block);
 			const blockRenderData = BlockHandler.createRenderData(block, player);
-
-			if (hitNamespace === "minecraft:") {
-				const nameAlias = nameAliasTypes[blockId.replace(hitNamespace, "")];
-				resultDisplayName = `${nameAlias?.startsWith("item.") ? "" : "tile."}${!nameAlias ? blockId.replace(hitNamespace, "") : nameAlias
-					}.name`;
-			} else {
-				resultDisplayName = `${lookAtObject.type}.${blockId}.name`;
-			}
 
 			return {
 				type: lookAtObject.type,
 				hitIdentifier: blockId,
 				namespace: hitNamespace,
-				icon: resolvedIcon,
-				displayName: resultDisplayName,
+				icon: '000000000',
+				displayName: block.localizationKey,
 				renderData: blockRenderData
 			};
 		}
@@ -242,6 +228,8 @@ class WAILA {
 		}
 
 		player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
+
+		BlockHandler.resetIcon(player);
 	}
 
 	/**
@@ -433,13 +421,9 @@ class WAILA {
 			}
 		}
 
-		const namespacesType = namespaces as Record<string, NamespaceInterface>;
-		const namespaceKey = Object.keys(namespacesType).find(ns => metadata.namespace.startsWith(ns));
-		const namespaceText =
-			namespaceKey ? namespacesType[namespaceKey].display_name :
-				metadata.namespace.length > 3 ?
-					metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps() :
-					metadata.namespace.replace(":", "").toUpperCase();
+		const namespaceText = metadata.namespace.length > 3
+			? metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps()
+			: metadata.namespace.replace(":", "").toUpperCase();
 
 		// Build the complete title
 		const parseStr: RawMessage[] = [

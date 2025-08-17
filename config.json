@@ -66,7 +66,7 @@
                     {
                         "filter": "packer",
                         "settings": {
-                            "output": "Mindustry-${git.tag ?? 'test'}-dev.mcaddon"
+                            "output": "WAILA-${git.tag ?? 'test'}-dev.mcaddon"
                         }
                     }
                 ]
@@ -83,7 +83,7 @@
                     {
                         "filter": "packer",
                         "settings": {
-                            "output": "Mindustry-${git.tag ?? 'test'}.mcaddon"
+                            "output": "WAILA-${git.tag ?? 'test'}.mcaddon"
                         }
                     }
                 ]
@@ -131,7 +131,7 @@
                                 "minify": true
                             },
                             "modules": [
-                                "@minecraft/server@2.0.0",
+                                "@minecraft/server@2.1.0",
                                 "@minecraft/server-ui@2.0.0"
                             ],
                             "outfile": "BP/scripts/main.js"
@@ -154,7 +154,7 @@
                             "debugBuild": true,
                             "injectSourceMapping": true,
                             "modules": [
-                                "@minecraft/server@2.0.0",
+                                "@minecraft/server@2.1.0",
                                 "@minecraft/server-ui@2.0.0"
                             ],
                             "outfile": "BP/scripts/main.js"
