@@ -508,9 +508,8 @@
 											"offset": [1, 0],
 
 											"controls": [
-												//* _r4ui:A:-00000NaN:zz,t;zz,z: ...
-												//* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:zz,t;zz,z: ...
 
+												//* _r4ui:A:zz,t;zz,z: ...
 												{
 													"hover_name_and_namespace@r4isen1920_waila_display.label": {
 														"anchor_from": "top_left",
@@ -522,7 +521,7 @@
 														"variables": [
 															{
 																"requires": "($tooltip_renderer_type = 'A:')",
-																"$text": "('' + ($var_title_text - ('%.28s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
+																"$text": "('' + ($var_title_text - ('%.18s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
 															},
 															{
 																"requires": "(not ($tooltip_renderer_type = 'A:'))",
@@ -533,7 +532,6 @@
 												},
 
 												//* _r4ui:B:yyyyyyyyyyyyyyyyyyyydddddddddd ...
-
 												{
 													"entity_metadatas@common.empty_panel": {
 														"anchor_from": "top_left",
@@ -1400,7 +1398,7 @@
 											/* デフォルトのプレースホルダーアイコンを設定 */
 											"$texture|default": "pack_icon",
 
-											//* _r4ui:A:-00000NaN:zz,t;zz,z: ...
+											//* _r4ui:A:zz,t;zz,z: ...
 											//* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:zz,t;zz,z: ...
 
 											"$tooltip_renderer_type": "('%.2s' * ($var_title_text - ('%.6s' * $var_title_text)))",
@@ -1415,7 +1413,7 @@
 														"variables": [
 															{
 																"requires": "($tooltip_renderer_type = 'A:')",
-																"$texture": "(('textures/r4isen1920/waila/icons/tags/tile/' + ('%.2s' * ($var_title_text - ('%.18s' * $var_title_text)))) - ':')"
+																"$texture": "(('textures/r4isen1920/waila/icons/tags/tile/' + ('%.2s' * ($var_title_text - ('%.8s' * $var_title_text)))) - ':')"
 															},
 															{
 																"requires": "(not ($tooltip_renderer_type = 'A:'))",
@@ -1436,7 +1434,7 @@
 																	"variables": [
 																		{
 																			"requires": "($tooltip_renderer_type = 'A:')",
-																			"$texture": "(('textures/r4isen1920/waila/icons/tags/' + ('%.1s' * ($var_title_text - ('%.21s' * $var_title_text)))) - ':')"
+																			"$texture": "(('textures/r4isen1920/waila/icons/tags/' + ('%.1s' * ($var_title_text - ('%.11s' * $var_title_text)))) - ':')"
 																		},
 																		{
 																			"requires": "(not ($tooltip_renderer_type = 'A:'))",
@@ -1459,7 +1457,7 @@
 														"variables": [
 															{
 																"requires": "($tooltip_renderer_type = 'A:')",
-																"$texture": "(('textures/r4isen1920/waila/icons/tags/tile/' + ('%.2s' * ($var_title_text - ('%.23s' * $var_title_text)))) - ':')"
+																"$texture": "(('textures/r4isen1920/waila/icons/tags/tile/' + ('%.2s' * ($var_title_text - ('%.13s' * $var_title_text)))) - ':')"
 															},
 															{
 																"requires": "(not ($tooltip_renderer_type = 'A:'))",
@@ -1480,7 +1478,7 @@
 																	"variables": [
 																		{
 																			"requires": "($tooltip_renderer_type = 'A:')",
-																			"$texture": "(('textures/r4isen1920/waila/icons/tags/' + ('%.1s' * ($var_title_text - ('%.26s' * $var_title_text)))) - ':')"
+																			"$texture": "(('textures/r4isen1920/waila/icons/tags/' + ('%.1s' * ($var_title_text - ('%.16s' * $var_title_text)))) - ':')"
 																		},
 																		{
 																			"requires": "(not ($tooltip_renderer_type = 'A:'))",

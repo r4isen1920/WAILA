@@ -253,7 +253,7 @@ export class BlockHandler {
 		const tag1 = processedTags[0] || { id: BlockToolsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED };
 		const tag2 = processedTags[1] || { id: BlockToolsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED };
 
-		return `:${tag1.id},${tag1.remark};${tag2.id},${tag2.remark}:`;
+		return `${tag1.id},${tag1.remark};${tag2.id},${tag2.remark}:`;
 	}
 
 	/**

@@ -181,7 +181,6 @@ class WAILA {
 				type: lookAtObject.type,
 				hitIdentifier: entityTypeId,
 				namespace: hitNamespace,
-				icon: '000000000',
 				displayName: resultDisplayName,
 				renderData: entityRenderData,
 				...(nameTagContextTranslationKey_local && { nameTagContextTranslationKey: nameTagContextTranslationKey_local }),
@@ -200,7 +199,6 @@ class WAILA {
 				type: lookAtObject.type,
 				hitIdentifier: blockId,
 				namespace: hitNamespace,
-				icon: '000000000',
 				displayName: block.localizationKey,
 				renderData: blockRenderData
 			};
@@ -309,29 +307,17 @@ class WAILA {
 	 * Generates UI components for the title display
 	 */
 	private generateUIComponents(player: Player, metadata: LookAtObjectMetadata): { title: RawMessage[], subtitle: RawMessage[] } {
-		// Set up subtitle
-		// Show entityId in subtitle only if it's not an item entity (item entities use main icon)
-		// For blocks/item entities, subtitle can show texture path if icon is a string (custom), or empty if icon is number (handled by font)
-		const parseStrSubtitle: RawMessage[] =
-			(metadata.type === LookAtObjectType.ENTITY && !metadata.itemContextIdentifier) ?
-				[{ text: (metadata.renderData as EntityRenderDataInterface).entityId || "" }] :
-				[{ text: typeof metadata.icon === "string" && metadata.icon.startsWith('textures/') ? metadata.icon : "" }];
-
+		const parseStrSubtitle: RawMessage[] = [{ text: (metadata.renderData as EntityRenderDataInterface).entityId || "" }];
 		const isTileOrItemEntity = metadata.type === LookAtObjectType.TILE ||
 			(metadata.type === LookAtObjectType.ENTITY && !!metadata.itemContextIdentifier);
 
 		const prefixType = isTileOrItemEntity ? "A" : "B";
 
-		let iconOrHealthArmor = "";
+		let healthOrArmor = "";
 		let finalTagIcons = "";
 		let effectsStr = "";
 
 		if (isTileOrItemEntity) {
-			// metadata.icon is already the resolved aux value for both blocks and items in itemEntities
-			iconOrHealthArmor = typeof metadata.icon === 'number' ?
-				`${metadata.icon >= 0 ? "" : "-"}${String(Math.abs(metadata.icon)).padStart(metadata.icon >= 0 ? 9 : 8, "0")}` :
-				"000000000"; // Should not happen if logic is correct, but fallback
-
 			if (metadata.type === LookAtObjectType.TILE) {
 				const blockData = metadata.renderData as BlockRenderDataInterface;
 				finalTagIcons = blockData.toolIcons;
@@ -340,11 +326,10 @@ class WAILA {
 			}
 		} else { // Non-item Entities
 			const entityData = metadata.renderData as EntityRenderDataInterface;
-			iconOrHealthArmor = `${entityData.healthRenderer}${entityData.armorRenderer}`;
+			healthOrArmor = `${entityData.healthRenderer}${entityData.armorRenderer}`;
 			finalTagIcons = entityData.tagIcons;
 
-			effectsStr = `${entityData.effectsRenderer.effectString}e${entityData.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, "0")
-				}`;
+			effectsStr = `${entityData.effectsRenderer.effectString}e${entityData.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, "0")}`;
 		}
 
 		const nameElements: RawMessage[] = [];
@@ -428,7 +413,7 @@ class WAILA {
 		// Build the complete title
 		const parseStr: RawMessage[] = [
 			{ text: `_r4ui:${prefixType}:` },
-			{ text: iconOrHealthArmor },
+			{ text: healthOrArmor },
 			{ text: finalTagIcons },
 			{ text: effectsStr },
 			...nameElements,

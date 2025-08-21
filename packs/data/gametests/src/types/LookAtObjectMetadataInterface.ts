@@ -14,11 +14,6 @@ export interface LookAtObjectMetadata {
 	 */
 	hitIdentifier: string;
 	/**
-	 * This can either be an item aux value or a texture path.
-	 * For item entities, this represents the icon of the item they hold.
-	 */
-	icon: string | number;
-	/**
 	 * The primary display name or translation key for the object.
 	 * If an entity has a nameTag, this will be the nameTag.
 	 * For item entities, this would be 'entity.item.name'.
