@@ -307,7 +307,7 @@ class WAILA {
 				const blockData = metadata.renderData as BlockRenderDataInterface;
 				finalTagIcons = blockData.toolIcons;
 			} else { // Item Entity
-				finalTagIcons = `:zz,f;zz,f:`; // Item entities don't have specific "tool" icons in this context
+				finalTagIcons = `zz,f;zz,f:`; // Item entities don't have specific "tool" icons in this context
 			}
 		} else { // Non-item Entities
 			const entityData = metadata.renderData as EntityRenderDataInterface;
