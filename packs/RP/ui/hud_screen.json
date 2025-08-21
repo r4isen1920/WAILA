@@ -15,7 +15,13 @@
 						"binding_type": "global",
 						"binding_name": "#hud_title_text_string",
 						"binding_name_override": "#text"
-					},
+					}
+				]
+			},
+			{
+				"array_name": "bindings",
+				"operation": "insert_back",
+				"value": [
 					{
 						"binding_type": "view",
 						"source_property_name": "(not ('%.6s' * #text = '_r4ui:'))",
