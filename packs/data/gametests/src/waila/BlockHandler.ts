@@ -93,8 +93,15 @@ export class BlockHandler {
 			}
 		}
 
+		const ITEM_MAPPING: { [key: string]: ItemStack } = {
+			'minecraft:bubble_column': new ItemStack('minecraft:water_bucket'),
+			'minecraft:flowing_lava': new ItemStack('minecraft:lava_bucket'),
+			'minecraft:flowing_water': new ItemStack('minecraft:water_bucket'),
+			'minecraft:water': new ItemStack('minecraft:water_bucket'),
+			'minecraft:lava': new ItemStack('minecraft:lava_bucket')
+		};
 		const item = blockOrItem instanceof Block
-			? blockOrItem.getItemStack(1)
+			? (ITEM_MAPPING[blockOrItem.typeId] ?? blockOrItem.getItemStack(1))
 			: blockOrItem;
 		if (item) {
 			item.lockMode = ItemLockMode.slot;

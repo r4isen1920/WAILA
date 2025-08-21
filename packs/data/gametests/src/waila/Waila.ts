@@ -9,7 +9,7 @@
  *
  */
 
-import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, MemoryTier, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
+import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
 import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
 
 import { LookAtBlockInterface, LookAtEntityInterface, LookAtItemEntityInterface, LookAtObjectInterface } from "../types/LookAtObjectInterface";
@@ -31,14 +31,11 @@ class WAILA {
 	private constructor() {
 		Logger.setLevel(LogLevel.Trace);
 
-		const additionalTickInterval = MemoryTier.SuperHigh - system.serverSystemInfo.memoryTier;
-		const tickInterval = 1 + additionalTickInterval;
-
 		AfterWorldLoad(() => {
 			world.gameRules.showTags = false;
 
-			system.runInterval(() => this.toAllPlayers(), tickInterval);
-			this.log.info(`WAILA loaded and running at ${tickInterval} tick(s) at a time.`);
+			system.runInterval(() => this.toAllPlayers(), 3);
+			this.log.info(`WAILA loaded and running.`);
 		});
 	}
 
@@ -273,6 +270,7 @@ class WAILA {
 			fadeOutDuration: 0,
 			stayDuration: TicksPerSecond * 60,
 		});
+		system.runTimeout(() => BlockHandler.resetIcon(player), 2);
 	}
 
 	/**

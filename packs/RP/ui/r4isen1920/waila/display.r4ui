@@ -320,7 +320,8 @@
 												{
 													"binding_type": "collection",
 													"binding_name": "#item_id_aux",
-													"binding_collection_name": "hotbar_items"
+													"binding_collection_name": "hotbar_items",
+													"binding_condition": "visibility_changed"
 												}
 											]
 										}
@@ -379,7 +380,7 @@
 		"size": ["100%cm", "100%cm"],
 
 		/* 他のすべての上に設定 */
-		"$layer": 100,
+		"$layer": 1,
 		"layer": "$layer",
 
 		/* 変数を初期化 */
@@ -508,7 +509,6 @@
 											"offset": [1, 0],
 
 											"controls": [
-
 												//* _r4ui:A:zz,t;zz,z: ...
 												{
 													"hover_name_and_namespace@r4isen1920_waila_display.label": {
