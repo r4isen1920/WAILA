@@ -371,7 +371,7 @@
 			},
 			{
 				"requires": "(not (($var_title_text - '__r4ui:humanoid.') = $var_title_text))",
-				"$offset": [0, -5]
+				"$offset": [0, -2.5]
 			}
 		]
 	},

@@ -146,32 +146,19 @@ class WAILA {
 				entityTypeId === "minecraft:player"
 			);
 
-			const humanoidLikeEntities = [
-				"minecraft:player"
-			];
-
 			if (entityNameTag && entityNameTag.length > 0) {
 				resultDisplayName = entityNameTag;
 				nameTagContextTranslationKey_local = entity.localizationKey;
 			} else {
-				if (humanoidLikeEntities.includes(entityTypeId)) {
-					if (entityTypeId === "minecraft:player" && entity instanceof Player) {
-						resultDisplayName = `__r4ui:humanoid.${entity.name}`;
-					} else {
-						// For non-player humanoids without a nameTag
-						resultDisplayName = "__r4ui:humanoid_translate_type";
-					}
-				} else if (entityTypeId === "minecraft:item") {
-					resultDisplayName = "entity.item.name";
+				if (entityTypeId === "minecraft:item") {
 					const itemEntity = lookAtObject as LookAtItemEntityInterface;
 					const itemStack = itemEntity.itemStack;
 					if (itemStack) {
 						itemContextIdentifier_local = itemStack.typeId;
 						BlockHandler.resolveIcon(player, itemStack);
 					}
-				} else {
-					resultDisplayName = entity.localizationKey;
 				}
+				resultDisplayName = entity.localizationKey;
 			}
 
 			return {
@@ -331,19 +318,14 @@ class WAILA {
 		}
 
 		const nameElements: RawMessage[] = [];
+		if (metadata.hitIdentifier === "minecraft:player") {
+			nameElements.push({ text: '__r4ui:humanoid.' });
+		}
 		if (metadata.nameTagContextTranslationKey) {
 			// Entity with nameTag: {nameTag} (entity.type.name)
 			nameElements.push({ text: `${metadata.displayName} §7(` }); // metadata.displayName is the nameTag
 			nameElements.push({ translate: metadata.nameTagContextTranslationKey });
 			nameElements.push({ text: ")§r" });
-		} else if (metadata.displayName === "__r4ui:humanoid_translate_type") {
-			// Non-player humanoid without nameTag: "__r4ui:humanoid." + translate<entity_type>
-			nameElements.push({ text: "__r4ui:humanoid." });
-			const cleanHitIdentifier = metadata.hitIdentifier.replace(/minecraft:/gm, '');
-			nameElements.push({ translate: `entity.${cleanHitIdentifier}.name` });
-		} else if (metadata.displayName.startsWith("__r4ui:humanoid.")) {
-			// Player without nameTag: "__r4ui:humanoid.PlayerName"
-			nameElements.push({ text: metadata.displayName });
 		} else {
 			nameElements.push({ translate: metadata.displayName }); // Standard translation key or 'entity.item.name'
 		}
