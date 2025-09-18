@@ -18,6 +18,7 @@ import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectT
 import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
 import AfterWorldLoad from "../Init";
+import { Registry } from "bedrock-add-on-registry";
 
 
 
@@ -386,9 +387,15 @@ class WAILA {
 			}
 		}
 
-		const namespaceText = metadata.namespace.length > 3
-			? metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps()
-			: metadata.namespace.replace(":", "").toUpperCase();
+		const namespaceText = ((): string => {
+			const value = Registry[metadata.namespace.replace(":", "")];
+			if (value) {
+				return value.name;
+			}
+			return metadata.namespace.length > 3
+				? metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps()
+				: metadata.namespace.replace(":", "").toUpperCase();
+		})();
 
 		// Build the complete title
 		const parseStr: RawMessage[] = [

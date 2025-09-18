@@ -10,7 +10,8 @@
     "@minecraft/math": "^2.2.8",
     "@minecraft/server": "^2.1.0",
     "@minecraft/server-ui": "^1.2.0",
-    "@minecraft/vanilla-data": "^1.21.20"
+    "@minecraft/vanilla-data": "^1.21.20",
+    "bedrock-add-on-registry": "github:Bedrock-OSS/add-on-registry"
   },
   "devDependencies": {
     "@eslint/js": "^9.26.0",
