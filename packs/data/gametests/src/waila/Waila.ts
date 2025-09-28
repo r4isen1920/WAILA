@@ -398,7 +398,9 @@ class Waila {
 		const namespaceText = ((): string => {
 			const value = Registry[metadata.namespace.replace(":", "")];
 			if (value) {
-				return value.name;
+				return !player.isSneaking
+					? value.name
+					: `${value.name}\nby ${value.creator}`;
 			}
 			return metadata.namespace.length > 3
 				? metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps()
