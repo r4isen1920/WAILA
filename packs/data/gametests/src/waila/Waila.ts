@@ -338,8 +338,7 @@ class Waila {
 		if (metadata.hitIdentifier === "minecraft:player") {
 			nameElements.push({ text: '__r4ui:humanoid.' });
 		}
-		if (metadata.nameTagContextTranslationKey) {
-			// Entity with nameTag: {nameTag} (entity.type.name)
+		if (metadata.nameTagContextTranslationKey && metadata.hitIdentifier !== "minecraft:player") {
 			nameElements.push({ text: `${metadata.displayName} §7(` }); // metadata.displayName is the nameTag
 			nameElements.push({ translate: metadata.nameTagContextTranslationKey });
 			nameElements.push({ text: ")§r" });
