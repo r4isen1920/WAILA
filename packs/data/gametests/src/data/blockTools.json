@@ -2,11 +2,11 @@
 	{
 		"name": "commands",
 		"target": [
-			"barrier",
-			"command_block",
-			"light_block",
-			"structure_air",
-			"structure_block"
+			"minecraft:barrier",
+			"minecraft:command_block",
+			"minecraft:light_block",
+			"minecraft:structure_air",
+			"minecraft:structure_block"
 		]
 	},
 	{
@@ -20,11 +20,12 @@
 			}
 		},
 		"target": [
-			"bubble",
-			"lava",
-			"powder_snow",
-			"water",
-			"!coral"
+			"minecraft:bubble_column",
+			"minecraft:flowing_lava",
+			"minecraft:flowing_water",
+			"minecraft:lava",
+			"minecraft:powder_snow",
+			"minecraft:water"
 		]
 	},
 	{
@@ -113,11 +114,16 @@
 			{ "tag": "!minecraft:is_axe_item_destructible" },
 			{ "tag": "!minecraft:is_pickaxe_item_destructible" },
 
-			"farmland",
 			"leaves",
-			"sculk",
-			"sponge",
-			"wart_block"
+			"minecraft:calibrated_sculk_sensor",
+			"minecraft:farmland",
+			"minecraft:sculk",
+			"minecraft:sculk_catalyst",
+			"minecraft:sculk_sensor",
+			"minecraft:sculk_shrieker",
+			"minecraft:sculk_vein",
+			"minecraft:wart_block",
+			"minecraft:wet_sponge"
 		]
 	},
 	{
@@ -137,10 +143,12 @@
 			{ "tag": "!minecraft:is_pickaxe_item_destructible" },
 
 			"concrete_powder",
-			"farmland",
 			"grass",
-			"sand",
-			"snow",
+			"minecraft:farmland",
+			"minecraft:red_sand",
+			"minecraft:sand",
+			"minecraft:snow",
+			"minecraft:snow_layer",
 			"!dry_grass",
 			"!short_grass",
 			"!tall_grass",
@@ -303,31 +311,37 @@
 		"target": [
 			{ "tag": "plant" },
 
-			"beetroot",
-			"berries",
-			"berry",
-			"cactus",
-			"carrot",
-			"chorus_flower",
-			"chorus_fruit",
-			"chorus_plant",
-			"cocoa",
-			"crop",
+			"minecraft:beetroot",
+			"minecraft:cactus",
+			"minecraft:carrot",
+			"minecraft:chorus_flower",
+			"minecraft:chorus_fruit",
+			"minecraft:chorus_plant",
+			"minecraft:cocoa",
+			"minecraft:cocoa_beans",
+			"minecraft:crimson_fungus",
+			"minecraft:kelp",
+			"minecraft:melon_block",
+			"minecraft:melon_steam",
+			"minecraft:nether_wart",
+			"minecraft:pitcher_crop",
+			"minecraft:pitcher_plant",
+			"minecraft:potatoes",
+			"minecraft:pumpkin",
+			"minecraft:pumpkin_stem",
+			"minecraft:reeds", // sugar cane!
+			"minecraft:sea_pickle",
+			"minecraft:sweet_berry_bush",
+			"minecraft:torchflower",
+			"minecraft:torchflower_crop",
+			"minecraft:warped_fungus",
+			"minecraft:wheat",
+			"leaves",
 			"flower",
-			"fungus",
-			"kelp",
-			"melon",
 			"mushroom",
-			"nether_wart",
-			"pickle",
-			"pitcher",
-			"potato",
-			"pumpkin",
 			"sapling",
-			"seed",
-			"sugar_cane",
-			"torchflower",
-			"wheat"
+			"!grass",
+			"!pot"
 		]
 	}
 ]
