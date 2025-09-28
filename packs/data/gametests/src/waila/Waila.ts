@@ -11,14 +11,15 @@
 
 import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
 import { Logger, LogLevel, PlayerPulseScheduler } from "@bedrock-oss/bedrock-boost";
+import { Registry } from "@bedrock-oss/add-on-registry";
 
 import { LookAtBlockInterface, LookAtEntityInterface, LookAtItemEntityInterface, LookAtObjectInterface } from "../types/LookAtObjectInterface";
 import { BlockRenderDataInterface, EntityRenderDataInterface, LookAtObjectMetadata } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
+import nameAliases from "../data/nameAliases.json";
 import AfterWorldLoad from "../Init";
-import { Registry } from "@bedrock-oss/add-on-registry";
 
 
 //#region WAILA
@@ -188,11 +189,18 @@ class Waila {
 			BlockHandler.resolveIcon(player, block);
 			const blockRenderData = BlockHandler.createRenderData(block, player);
 
+			const nameAlias = (nameAliases as { [key: string]: string })[blockId.replace(hitNamespace, '')];
+			if (nameAlias) {
+				resultDisplayName = `${nameAlias}.name`;
+			} else {
+				resultDisplayName = block.localizationKey;
+			}
+
 			return {
 				type: lookAtObject.type,
 				hitIdentifier: blockId,
 				namespace: hitNamespace,
-				displayName: block.localizationKey,
+				displayName: resultDisplayName,
 				renderData: blockRenderData
 			};
 		}
