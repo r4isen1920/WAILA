@@ -184,12 +184,12 @@ class Waila {
 
 		if (lookAtObject.type === LookAtObjectType.TILE) {
 			const block = (lookAtObject as LookAtBlockInterface).block;
-			const blockId = lookAtObject.hitIdentifier;
+			const blockId = block.typeId;
 
 			BlockHandler.resolveIcon(player, block);
 			const blockRenderData = BlockHandler.createRenderData(block, player);
 
-			const nameAlias = (nameAliases as { [key: string]: string })[blockId.replace(hitNamespace, '')];
+			const nameAlias = (nameAliases as { [key: string]: string })[blockId.replace(/.*:/g, '')];
 			if (nameAlias) {
 				resultDisplayName = `${nameAlias}.name`;
 			} else {
