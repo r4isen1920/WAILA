@@ -10,7 +10,7 @@
  */
 
 import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
-import { Logger, LogLevel } from "@bedrock-oss/bedrock-boost";
+import { Logger, LogLevel, PlayerPulseScheduler } from "@bedrock-oss/bedrock-boost";
 
 import { LookAtBlockInterface, LookAtEntityInterface, LookAtItemEntityInterface, LookAtObjectInterface } from "../types/LookAtObjectInterface";
 import { BlockRenderDataInterface, EntityRenderDataInterface, LookAtObjectMetadata } from "../types/LookAtObjectMetadataInterface";
@@ -18,33 +18,41 @@ import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectT
 import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
 import AfterWorldLoad from "../Init";
-import { Registry } from "bedrock-add-on-registry";
-
+import { Registry } from "@bedrock-oss/add-on-registry";
 
 
 //#region WAILA
-class WAILA {
-	private static instance: WAILA;
+class Waila {
+	private static instance: Waila;
 	private readonly log = Logger.getLogger("WAILA");
 	private readonly MAX_DISTANCE = 8;
 	private playerPreviousLookState: Map<string, boolean> = new Map();
 
 	private constructor() {
-		Logger.setLevel(LogLevel.Trace);
+		Logger.setLevel(LogLevel.Debug);
 
 		AfterWorldLoad(() => {
 			world.gameRules.showTags = false;
 
-			system.runInterval(() => this.toAllPlayers(), 3);
+			const pulse = new PlayerPulseScheduler((player) => {
+				const isEnabled = player.getDynamicProperty("r4isen1920_waila:isEnabled");
+				if (isEnabled === undefined || isEnabled === true) {
+					this.toAllPlayers();
+				} else {
+					this.clearUI(player);
+				}
+			}, 3);
+			pulse.start();
+
 			this.log.info(`WAILA loaded and running.`);
 		});
 	}
 
-	public static getInstance(): WAILA {
-		if (!WAILA.instance) {
-			WAILA.instance = new WAILA();
+	public static getInstance(): Waila {
+		if (!Waila.instance) {
+			Waila.instance = new Waila();
 		}
-		return WAILA.instance;
+		return Waila.instance;
 	}
 
 	/**
@@ -428,5 +436,4 @@ class WAILA {
 	}
 }
 
-// Initialize the singleton instance to start the process
-WAILA.getInstance();
+Waila.getInstance();
