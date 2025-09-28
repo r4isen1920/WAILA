@@ -42,12 +42,11 @@
 				"value": [
 					{
 						"r4isen1920_waila_display@common.empty_panel": {
-							"anchor_from": "top_middle",
-							"anchor_to": "top_middle",
+							"anchor_from": "$anchor",
+							"anchor_to": "$anchor",
 
-							"size": [200, "100%c"],
-							"max_size": [200, "50%"],
-							"offset": "$offset",
+							"size": ["100%c", "100%c"],
+							"offset": [0, 0],
 
 							"factory": {
 								"name": "hud_title_text_factory",
@@ -59,11 +58,11 @@
 							"variables": [
 								{
 									"requires": "$touch",
-									"$offset": [0, 20]
+									"$anchor": "top_right"
 								},
 								{
 									"requires": "(not $touch)",
-									"$offset": [0, 4]
+									"$anchor": "top_middle"
 								}
 							]
 						}
