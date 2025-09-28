@@ -273,7 +273,11 @@ export class BlockHandler {
 			const blockStates = Object.keys(states).sort();
 			if (blockStates.length === 0) return "";
 			return `\n${blockStates
-				.map((state) => `§7${state.replace(/.+:/g, "")}: ${states[state]}§r`)
+				.map((state) => {
+					const value = states[state];
+					const valueColor = typeof value === "number" ? "§3" : typeof value === "boolean" ? (value ? "§a" : "§c") : "§e";
+					return `§7"${state}" -> ${valueColor}${value}§r`;
+				})
 				.join("\n")}`;
 		} catch {
 			return "";
