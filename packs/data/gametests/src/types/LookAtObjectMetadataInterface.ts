@@ -38,6 +38,11 @@ export interface LookAtObjectMetadata {
 	 * this holds the type identifier of the actual item (e.g., "minecraft:diamond_sword").
 	 */
 	itemContextIdentifier?: string;
+	/**
+	 * If the looked-at block is an item frame (minecraft:frame or minecraft:glow_frame),
+	 * this holds the translation key for the item inside the frame.
+	 */
+	itemInsideFrameTranslationKey?: string
 }
 
 /**

@@ -9,7 +9,7 @@
  *
  */
 
-import { EntityComponentTypes, EquipmentSlot, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
+import { EntityComponentTypes, EquipmentSlot, ItemStack, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
 import { Logger, LogLevel, PlayerPulseScheduler } from "@bedrock-oss/bedrock-boost";
 import { Registry } from "@bedrock-oss/add-on-registry";
 
@@ -196,12 +196,32 @@ class Waila {
 				resultDisplayName = block.localizationKey;
 			}
 
+			let itemInsideFrameTranslationKey_local: string | undefined = undefined;
+			const itemFrameIds = ['minecraft:frame', 'minecraft:glow_frame'];
+			const hitIdentifier = lookAtObject.hitIdentifier; // the hitIdentifier and the actual block typeId may be different
+			// if hitIdentifier is also an item frame, that means the item frame is empty--don't bother checking
+			if (itemFrameIds.includes(blockId) && !itemFrameIds.includes(hitIdentifier)) {
+				const nA = (nameAliases as { [key: string]: string })[hitIdentifier.replace(/.*:/g, '')];
+				if (nA) {
+					itemInsideFrameTranslationKey_local = `${nA}.name`;
+				} else {
+					itemInsideFrameTranslationKey_local = (() => {
+						let tryCreateItem: ItemStack | undefined = undefined;
+						try {
+							tryCreateItem = new ItemStack(hitIdentifier);
+						} catch { /** empty */ }
+						return tryCreateItem?.localizationKey;
+					})();
+				}
+			}
+
 			return {
 				type: lookAtObject.type,
 				hitIdentifier: blockId,
 				namespace: hitNamespace,
 				displayName: resultDisplayName,
-				renderData: blockRenderData
+				renderData: blockRenderData,
+				...(itemInsideFrameTranslationKey_local && { itemInsideFrameTranslationKey: itemInsideFrameTranslationKey_local })
 			};
 		}
 
@@ -344,6 +364,11 @@ class Waila {
 			nameElements.push({ text: ")§r" });
 		} else {
 			nameElements.push({ translate: metadata.displayName }); // Standard translation key or 'entity.item.name'
+		}
+		if (metadata.itemInsideFrameTranslationKey) {
+			nameElements.push({ text: `\n§7[` });
+			nameElements.push({ translate: metadata.itemInsideFrameTranslationKey });
+			nameElements.push({ text: "]§r" });
 		}
 		nameElements.push({ text: "§r" });
 
