@@ -38,7 +38,7 @@ class Waila {
 			const pulse = new PlayerPulseScheduler((player) => {
 				const isEnabled = player.getDynamicProperty("r4isen1920_waila:isEnabled");
 				if (isEnabled === undefined || isEnabled === true) {
-					this.toAllPlayers();
+					this.toPlayer(player);
 				} else {
 					this.clearUI(player);
 				}
@@ -57,19 +57,17 @@ class Waila {
 	}
 
 	/**
-	 * Requests the process for each player in the world.
+	 * Requests the process for a player in the world.
 	 */
-	private toAllPlayers(): void {
-		world.getAllPlayers().forEach((player) => {
-			const lookAtObject = this.fetchLookAt(player, this.MAX_DISTANCE);
+	private toPlayer(player: Player): void {
+		const lookAtObject = this.fetchLookAt(player, this.MAX_DISTANCE);
 
-			if (lookAtObject.hitIdentifier === undefined) {
-				lookAtObject.hitIdentifier = "__r4ui:none";
-				player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
-			}
+		if (lookAtObject.hitIdentifier === undefined) {
+			lookAtObject.hitIdentifier = "__r4ui:none";
+			player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
+		}
 
-			this.displayUI(player, lookAtObject);
-		});
+		this.displayUI(player, lookAtObject);
 	}
 
 	//#region Fetch
