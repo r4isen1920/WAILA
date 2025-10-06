@@ -7,6 +7,8 @@ on:
 
 permissions:
   contents: write
+  issues: read
+  pull-requests: read
 
 jobs:
   build-dev:
@@ -53,9 +55,101 @@ jobs:
         with:
           name: release-build
           path: ./release-files
+      - name: Generate release notes (issues/PRs since last tag)
+        id: generate_release_notes
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          result-encoding: string
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const currentRef = context.ref || '';
+            const currentTag = currentRef.replace('refs/tags/', '');
+
+            const itemLine = (n, title, url, user) => `- #${n} ${title} by @${user} (${url})`;
+
+            const tagsRes = await github.rest.repos.listTags({ owner, repo, per_page: 100 });
+            const tags = tagsRes.data || [];
+            const idx = tags.findIndex(t => t.name === currentTag);
+            const prevTagObj = idx >= 0 && idx + 1 < tags.length ? tags[idx + 1] : (tags.length > 1 && tags[0].name !== currentTag ? tags[0] : null);
+
+            let sinceISO;
+            let compareLine = '';
+            if (prevTagObj) {
+              try {
+                const commit = await github.rest.repos.getCommit({ owner, repo, ref: prevTagObj.commit.sha });
+                sinceISO = commit.data.commit.author?.date || commit.data.commit.committer?.date;
+                compareLine = `Changes since ${prevTagObj.name}: https://github.com/${owner}/${repo}/compare/${prevTagObj.name}...${currentTag}`;
+              } catch (e) {
+                // Fallback to 30 days ago if commit lookup fails
+                sinceISO = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+              }
+            } else {
+              // No previous tag found: default to last 30 days
+              sinceISO = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
+            }
+
+            const sinceDate = new Date(sinceISO);
+
+            // Fetch issues (state: all) updated since, then split into categories and exclude PRs
+            const allIssues = await github.paginate(
+              github.rest.issues.listForRepo,
+              { owner, repo, state: 'all', since: sinceISO, per_page: 100 }
+            );
+            const isIssue = (it) => !it.pull_request; // issues endpoint returns PRs too
+            const issuesClosed = allIssues.filter(it => isIssue(it) && it.state === 'closed' && it.closed_at && new Date(it.closed_at) >= sinceDate);
+            const issuesOpened = allIssues.filter(it => isIssue(it) && new Date(it.created_at) >= sinceDate);
+            const issuesUpdated = allIssues.filter(it => isIssue(it) && new Date(it.updated_at) >= sinceDate);
+
+            // Fetch closed PRs and filter by merged_at within window
+            const closedPRs = await github.paginate(
+              github.rest.pulls.list,
+              { owner, repo, state: 'closed', per_page: 100 }
+            );
+            const prsMerged = closedPRs.filter(pr => pr.merged_at && new Date(pr.merged_at) >= sinceDate);
+
+            const lines = [];
+            lines.push(`# Release ${currentTag}`);
+            if (compareLine) lines.push('', compareLine);
+            lines.push('', '## Pull requests merged');
+            if (prsMerged.length) {
+              for (const pr of prsMerged) {
+                lines.push(itemLine(pr.number, pr.title, pr.html_url, pr.user?.login || 'unknown'));
+              }
+            } else {
+              lines.push('- None');
+            }
+            lines.push('', '## Issues closed');
+            if (issuesClosed.length) {
+              for (const it of issuesClosed) {
+                lines.push(itemLine(it.number, it.title, it.html_url, it.user?.login || 'unknown'));
+              }
+            } else {
+              lines.push('- None');
+            }
+            lines.push('', '## Issues opened');
+            if (issuesOpened.length) {
+              for (const it of issuesOpened) {
+                lines.push(itemLine(it.number, it.title, it.html_url, it.user?.login || 'unknown'));
+              }
+            } else {
+              lines.push('- None');
+            }
+            lines.push('', '## Issues updated');
+            if (issuesUpdated.length) {
+              for (const it of issuesUpdated) {
+                lines.push(itemLine(it.number, it.title, it.html_url, it.user?.login || 'unknown'));
+              }
+            } else {
+              lines.push('- None');
+            }
+
+            return lines.join('\n');
       - name: List downloaded files
         run: ls -la ./release-files/
       - uses: softprops/action-gh-release@v1
         with:
           fail_on_unmatched_files: true
           files: ./release-files/*.mcaddon
+          body: ${{ steps.generate_release_notes.outputs.result }}
