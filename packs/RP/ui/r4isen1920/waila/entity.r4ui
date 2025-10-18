@@ -44,7 +44,7 @@
 
 								"controls": [
 									{
-										"icon@r4isen1920_waila_display.image": {
+										"icon@r4isen1920_waila_common.image": {
 											"texture": "('textures/ui/' + $data_a + '_effect')",
 											"keep_ratio": true,
 
@@ -73,7 +73,7 @@
 
 											"controls": [
 												{
-													"name@r4isen1920_waila_display.label": {
+													"name@r4isen1920_waila_common.label": {
 														"text": "$data_b",
 														"font_scale_factor": 0.88,
 														"localize": true,
@@ -97,7 +97,7 @@
 													}
 												},
 												{
-													"amplifier@r4isen1920_waila_display.label": {
+													"amplifier@r4isen1920_waila_common.label": {
 														"text": "$text",
 														"font_scale_factor": 0.88,
 														"color": "$color",
@@ -139,7 +139,7 @@
 										}
 									},
 									{
-										"duration@r4isen1920_waila_display.label": {
+										"duration@r4isen1920_waila_common.label": {
 											"text": "#text",
 											"color": "$7_color_format",
 
@@ -180,7 +180,7 @@
 
 								"controls": [
 									{
-										"icon@r4isen1920_waila_display.image": {
+										"icon@r4isen1920_waila_common.image": {
 											"texture": "('textures/ui/' + $data_a + '_effect')",
 											"keep_ratio": true,
 
@@ -190,7 +190,7 @@
 
 											"controls": [
 												{
-													"amplifier@r4isen1920_waila_display.label": {
+													"amplifier@r4isen1920_waila_common.label": {
 														"anchor_from": "bottom_right",
 														"anchor_to": "bottom_right",
 														"offset": [1, 1],
@@ -1039,7 +1039,7 @@
 
 								"controls": [
 									{
-										"label@r4isen1920_waila_display.label": {
+										"label@r4isen1920_waila_common.label": {
 											"text": "..."
 										}
 									}
