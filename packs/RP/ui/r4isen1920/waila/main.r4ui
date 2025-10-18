@@ -1,0 +1,324 @@
+{
+	/* r4isen1920によって作成されました | MITライセンス */
+
+	"namespace": "r4isen1920_waila_main",
+
+	"main@common.empty_panel": {
+		"size": ["100%cm", "100%cm"],
+
+		/* 他のすべての上に設定 */
+		"$layer": 1,
+		"layer": "$layer",
+
+		"$var_title_text": "($var_title_text1 - '__r4ui:anchor.top_left__' - '__r4ui:anchor.top_middle__' - '__r4ui:anchor.top_right__' - '__r4ui:anchor.left_middle__' - '__r4ui:anchor.center__' - '__r4ui:anchor.right_middle__' - '__r4ui:anchor.bottom_left__' - '__r4ui:anchor.bottom_middle__' - '__r4ui:anchor.bottom_right__')",		
+
+		"controls": [
+			{
+				"bg": {
+					"type": "image",
+					"texture": "textures/ui/purpleBorder",
+
+					"keep_ratio": false,
+					"bilinear": false,
+					"alpha": 0.75,
+
+					"size": ["100%c + 10px", "100%c + 8px"],
+					"layer": "($layer + 1)",
+
+					"controls": [
+						{
+							"hori": {
+								"type": "stack_panel",
+								"orientation": "horizontal",
+
+								"size": ["100%c", "100%cm"],
+								"min_size": ["100%c", 20],
+								"use_child_anchors": true,
+
+								"$tooltip_renderer_type": "('%.2s' * ($var_title_text - ('%.6s' * $var_title_text)))",
+
+								"controls": [
+									{
+										"icon_panel": {
+											"type": "stack_panel",
+											"orientation": "horizontal",
+
+											"anchor_from": "top_left",
+											"anchor_to": "top_left",
+											"size": ["100%c", "100%cm"],
+											"offset": [0, "150%y"],
+											"use_child_anchors": true,
+
+											"$set_ignored|default": false,
+
+											"$ignore_block_icon|default": false,
+											"$ignore_entity_icon|default": false,
+
+											"variables": [
+												{
+													"requires": "(('%.10s' * ($var_title_text - ('%.7s' * $var_title_text))) = ':-00000NaN')",
+													"$ignore_block_icon": true
+												},
+												{
+													"requires": "($var_subtitle_text = '0000000000000')",
+													"$ignore_entity_icon": true
+												},
+
+												/* 無視されるケースを処理 -- アイコンが無効な場合は非表示 */
+												{
+													"requires": "($ignore_block_icon and ($tooltip_renderer_type = 'A:'))",
+													"$set_ignored": true
+												},
+												{
+													"requires": "($ignore_entity_icon and not ($tooltip_renderer_type = 'A:'))",
+													"$set_ignored": true
+												}
+											],
+
+											"controls": [
+												{
+													"left_padding@common.empty_panel": {
+														"size": [0.75, 1],
+
+														/* エンティティ画像テクスチャにのみ表示 */
+														"visible": "(not ($tooltip_renderer_type = 'A:'))",
+														"ignored": "$ignore_entity_icon"
+													}
+												},
+												{
+													"renderer@common.empty_panel": {
+														"size": [20, 20],
+														"ignored": "$set_ignored",
+
+														"controls": [
+															{
+																"block@r4isen1920_waila_tile.item_aux_inv_renderer": {
+																	"size": ["100%", "100%"],
+
+																	"visible": "($tooltip_renderer_type = 'A:')"
+																}
+															},
+															{
+																"entity@r4isen1920_waila_entity.entity_portrait_renderer": {
+																	"size": ["100% - 5px", "100%x"],
+
+																	"visible": "(not ($tooltip_renderer_type = 'A:'))",
+																	"ignored": "$ignore_entity_icon"
+																}
+															}
+														]
+													}
+												},
+												{
+													"right_padding@common.empty_panel": {
+														"size": [5.25, 1],
+														"ignored": "$set_ignored"
+													}
+												},
+
+												{
+													/* 内部エラーを避けるためにダミー要素を追加し、このスタックパネルを満たしたままにする */
+													"empty@common.empty_panel": {
+														"size": [1, 1],
+														"ignored": "(not $set_ignored)"
+													}
+												}
+											]
+										}
+									},
+									{
+										"information_panel@common.empty_panel": {
+											"anchor_from": "top_left",
+											"anchor_to": "top_left",
+											"size": ["100%cm", "100%cm"],
+											"offset": [1, 0],
+
+											"controls": [
+												//* _r4ui:A:zz,t;zz,z: ...
+												{
+													"hover_name_and_namespace@r4isen1920_waila_common.label": {
+														"anchor_from": "top_left",
+														"anchor_to": "top_left",
+														"min_size": ["default", 20],
+
+														"text": "$text",
+
+														"variables": [
+															{
+																"requires": "($tooltip_renderer_type = 'A:')",
+																"$text": "('' + ($var_title_text - ('%.18s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
+															},
+															{
+																"requires": "(not ($tooltip_renderer_type = 'A:'))",
+																"$text": "('' + ($var_title_text - ('%.324s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:humanoid.')"
+															}
+														]
+													}
+												},
+
+												//* _r4ui:B:yyyyyyyyyyyyyyyyyyyydddddddddd ...
+												{
+													"entity_metadatas@common.empty_panel": {
+														"anchor_from": "top_left",
+														"anchor_to": "top_left",
+														"size": ["100%c", "100%c - 10px"],
+														"offset": [0, 11],
+
+														/* エンティティをレンダリングしていない場合は無視 */
+														"ignored": "($tooltip_renderer_type = 'A:')",
+
+														"controls": [
+															{
+																"verti": {
+																	"type": "stack_panel",
+																	"orientation": "vertical",
+
+																	"anchor_from": "top_left",
+																	"anchor_to": "top_left",
+																	"size": ["100%cm", "100%c"],
+
+																	"controls": [
+																		{
+																			"top_padding@common.empty_panel": {
+																				"size": [1, 0.5]
+																			}
+																		},
+
+																		{
+																			"health_0@r4isen1920_waila_entity.health_renderer_0": {}
+																		},
+																		{
+																			"health_1@r4isen1920_waila_entity.health_renderer_1": {}
+																		},
+
+																		{
+																			"armor@r4isen1920_waila_entity.armor_renderer": {}
+																		},
+
+																		{
+																			"effects_padding_top@common.empty_panel": {
+																				"size": "$size",
+																				"$size|default": [1, 0.5],
+																				"variables": [
+																					{
+																						"requires": "(('' + ('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))) = 'x')",
+																						"$size": [1, 9]
+																					},
+																					{
+																						"requires": "(('' + ('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))) = 'y')",
+																						"$size": [1, 9]
+																					}
+																				],
+
+																				"ignored": "(('%.3s' * ($var_title_text - ('%.321s' * $var_title_text))) = 'e00')"
+																			}
+																		},
+																		{
+																			"effects@r4isen1920_waila_entity.effects_renderer": {} 
+																		},
+
+																		{
+																			"bottom_padding@common.empty_panel": {
+																				"size": [1, 0.5]
+																			}
+																		}
+																	],
+
+																	"ignored": "(('' + ('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))) = 'y')"
+																}
+															}
+														]
+													}
+												}
+											]
+										}
+									},
+									{
+										"tags_panel@r4isen1920_waila_tile.block_tags": {} 
+									}
+								]
+							}
+						}
+					],
+
+					"ignored": "(not ('%.6s' * $var_title_text = '_r4ui:'))"
+				}
+			}
+		]
+	},
+
+	"centerer@common.empty_panel": {
+		"$s_anchor|default": "top_middle",
+
+		"size": ["100%", "100%"],
+
+		/* 変数を初期化 */
+		"$var_title_text1": "$title_text",
+		"$var_subtitle_text": "$subtitle_text",
+
+		"variables": [
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.top_left__') = $var_title_text1))",
+				"$s_anchor": "top_left"
+			},
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.top_middle__') = $var_title_text1))",
+				"$s_anchor": "top_middle"
+			},
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.top_right__') = $var_title_text1))",
+				"$s_anchor": "top_right"
+			},
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.left_middle__') = $var_title_text1))",
+				"$s_anchor": "left_middle"
+			},
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.center__') = $var_title_text1))",
+				"$s_anchor": "center"
+			},
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.right_middle__') = $var_title_text1))",
+				"$s_anchor": "right_middle"
+			},
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.bottom_left__') = $var_title_text1))",
+				"$s_anchor": "bottom_left"
+			},
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.bottom_middle__') = $var_title_text1))",
+				"$s_anchor": "bottom_middle"
+			},
+			{
+				"requires": "(not (($var_title_text1 - '__r4ui:anchor.bottom_right__') = $var_title_text1))",
+				"$s_anchor": "bottom_right"
+			}
+		],
+
+		"controls": [
+			{
+				"main@r4isen1920_waila_main.main": {
+					"anchor_from": "$s_anchor",
+					"anchor_to": "$s_anchor",
+
+					"$offset|default": [0, 0],
+					"offset": "$offset",
+
+					"variables": [
+						// special offset for legacy top middle positions on touch
+						// this is to ensure that the WAILA doesn't overlap with the pause menu buttons
+						{
+							"requires": "($s_anchor = 'top_middle' and $touch)",
+							"$offset": [ 0, 20 ]
+						},
+						// offset to avoid clipping with the hotbar
+						{
+							"requires": "($s_anchor = 'bottom_middle')",
+							"$offset": [ 0, -46 ]
+						}
+					]
+				}
+			}
+		]
+	}
+}

@@ -41,7 +41,7 @@
 				"operation": "insert_front",
 				"value": [
 					{
-						"r4isen1920_waila_display@common.empty_panel": {
+						"waila@common.empty_panel": {
 							"$anchor": "center",
 							"anchor_from": "$anchor",
 							"anchor_to": "$anchor",
@@ -52,7 +52,7 @@
 							"factory": {
 								"name": "hud_title_text_factory",
 								"control_ids": {
-									"hud_title_text": "disp@r4isen1920_waila_display.centerer"
+									"hud_title_text": "disp@r4isen1920_waila_main.centerer"
 								}
 							}
 						}

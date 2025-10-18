@@ -1,0 +1,45 @@
+{
+	/* r4isen1920によって作成されました | MITライセンス */
+
+	"namespace": "r4isen1920_waila_common",
+
+	"label": {
+		"type": "label",
+
+		"size": ["default", "default"],
+		"font_scale_factor": 1.0,
+		"localize": false,
+		"shadow": true,
+		"enable_profanity_filter": false,
+
+		"layer": "($layer + 1)"
+	},
+
+	"image": {
+		"type": "image",
+
+		"force_texture_reload": true,
+		"allow_debug_missing_texture": false,
+
+		"layer": "($layer + 1)"
+	},
+
+	"icon_renderer@common.empty_panel": {
+		// this panel just re-centers the image
+		"size": ["100%c - 0.5px", "100%c - 0.5px"],
+
+		"controls": [
+			{
+				"icon@image": {
+					"texture": "('textures/r4isen1920/waila/icons/' + $texture)",
+					"ignored": "(($texture = 'x') or ($texture = 'y'))",
+
+					"size": [9, 9],
+					"uv_size": [9, 9],
+
+					"layer": 101
+				}
+			}
+		]
+	}
+}
