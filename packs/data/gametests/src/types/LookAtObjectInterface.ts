@@ -1,3 +1,14 @@
+/**
+ *
+ * @author
+ * r4isen1920
+ * https://mcpedl.com/user/r4isen1920
+ *
+ * @license
+ * MIT License
+ *
+ */
+
 import { Block, Entity, ItemStack } from "@minecraft/server";
 import { LookAtObjectTypeEnum } from "./LookAtObjectTypeEnum";
 

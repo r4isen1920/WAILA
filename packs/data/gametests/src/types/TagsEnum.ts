@@ -1,3 +1,14 @@
+/**
+ *
+ * @author
+ * r4isen1920
+ * https://mcpedl.com/user/r4isen1920
+ *
+ * @license
+ * MIT License
+ *
+ */
+
 
 /**
  * List of remarks that can be used to describe the state of a tag.

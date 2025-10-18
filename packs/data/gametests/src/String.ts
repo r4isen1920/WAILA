@@ -1,3 +1,13 @@
+/**
+ *
+ * @author
+ * r4isen1920
+ * https://mcpedl.com/user/r4isen1920
+ *
+ * @license
+ * MIT License
+ *
+ */
 
 declare global {
    interface String {

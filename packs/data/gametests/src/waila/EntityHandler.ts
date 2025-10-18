@@ -1,3 +1,14 @@
+/**
+ *
+ * @author
+ * r4isen1920
+ * https://mcpedl.com/user/r4isen1920
+ *
+ * @license
+ * MIT License
+ *
+ */
+
 import { Effect, Entity, EntityComponentTypes, EntityEquippableComponent, EntityHealthComponent, EntityItemComponent, EquipmentSlot, Player, TicksPerSecond } from "@minecraft/server";
 import { LookAtEntityInterface, LookAtItemEntityInterface } from "../types/LookAtObjectInterface";
 import { EffectsRendererType, EntityRenderDataInterface } from "../types/LookAtObjectMetadataInterface";
