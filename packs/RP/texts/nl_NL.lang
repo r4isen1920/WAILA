@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Zie waar u naar kijkt, zoals weergegeven in de HUD. Gemaakt door r4isen1920.
+pack.description=Bekijk wat je ziet in de HUD. Gemaakt door r4isen1920.
+
+waila.settings.title=WAILA Instellingen
+waila.settings.title_for=WAILA-instellingen voor %s
+waila.settings.footer.self_adjusting=Deze instellingen zijn alleen van toepassing op §ejouw eigen§r WAILA-weergave
+waila.settings.footer.other_player=Deze instellingen worden opgeslagen voor §e%s§r
+waila.settings.submit=Opslaan
+waila.settings.isEnabled.label=WAILA inschakelen
+waila.settings.isEnabled.description=Indien ingeschakeld, wordt de WAILA HUD op het scherm weergegeven.
+waila.settings.displayExtendedInfo.label=Meer info weergeven tijdens sluipen
+waila.settings.displayExtendedInfo.description=Indien ingeschakeld, wordt meer informatie (bijv. blokstaten) getoond wanneer de speler sluipt.
+waila.settings.maxDisplayDistance.label=Weergaveafstand
+waila.settings.maxDisplayDistance.description=De afstand in blokken vanaf de speler voor het object dat op het scherm moet worden weergegeven.
+waila.settings.displayPosition.label=Positie Weergeven
+waila.settings.displayPosition.description=Kies waar de WAILA HUD op het scherm verschijnt. Kan ongewenste overlap veroorzaken met andere HUD-elementen.
+waila.settings.displayPosition.option.top_left=Linksboven
+waila.settings.displayPosition.option.top_middle=Bovenmidden
+waila.settings.displayPosition.option.top_right=Rechtsboven
+waila.settings.displayPosition.option.left_middle=Middenlinks
+waila.settings.displayPosition.option.center=Centrum
+waila.settings.displayPosition.option.right_middle=Middenrechts
+waila.settings.displayPosition.option.bottom_left=Linksonder
+waila.settings.displayPosition.option.bottom_middle=Ondermidden
+waila.settings.displayPosition.option.bottom_right=Rechtsonder

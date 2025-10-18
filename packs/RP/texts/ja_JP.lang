@@ -1,2 +1,25 @@
-pack.name=§7[v5.0]§r ワイラ [RP]
-pack.description=HUD に表示されているものを確認します。 r4isen1920 によって作成されました。
+pack.name=§7[v5.0]§r WAILA [RP]
+pack.description=HUDに表示される内容をご覧ください。r4isen1920によって作成されました。
+
+waila.settings.title=WAILA設定
+waila.settings.title_for=WAILAの%sの設定
+waila.settings.footer.self_adjusting=これらの設定は§eあなた自身§rのWAILA表示にのみ影響します
+waila.settings.footer.other_player=これらの設定は§e%s§rのために保存されます
+waila.settings.submit=保存
+waila.settings.isEnabled.label=WAILAを有効にする
+waila.settings.isEnabled.description=有効にすると、WAILA HUDが画面に表示されます。
+waila.settings.displayExtendedInfo.label=スニーク時に詳細情報を表示
+waila.settings.displayExtendedInfo.description=有効にすると、プレイヤーがスニークしているときにより多くの情報（例えば、ブロックの状態）が表示されます。
+waila.settings.maxDisplayDistance.label=表示距離
+waila.settings.maxDisplayDistance.description=画面にオブジェクトを表示するための、プレイヤーからのブロック単位での距離。
+waila.settings.displayPosition.label=表示位置
+waila.settings.displayPosition.description=WAILA HUDを画面のどこに表示するかを選択します。他のHUD要素との望ましくない重なりが生じる可能性があります。
+waila.settings.displayPosition.option.top_left=左上
+waila.settings.displayPosition.option.top_middle=上中央
+waila.settings.displayPosition.option.top_right=右上
+waila.settings.displayPosition.option.left_middle=左中央
+waila.settings.displayPosition.option.center=中央
+waila.settings.displayPosition.option.right_middle=右中央
+waila.settings.displayPosition.option.bottom_left=左下
+waila.settings.displayPosition.option.bottom_middle=下中央
+waila.settings.displayPosition.option.bottom_right=右下

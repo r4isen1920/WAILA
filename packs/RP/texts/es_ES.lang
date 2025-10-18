@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Vea lo que está mirando como se muestra en el HUD. Creado por r4isen1920.
+pack.description=Mira lo que estás mirando como se muestra en el HUD. Creado por r4isen1920.
+
+waila.settings.title=Ajustes de WAILA
+waila.settings.title_for=Ajustes de WAILA para %s
+waila.settings.footer.self_adjusting=Estos ajustes solo afectan a §etu propia§r visualización de WAILA
+waila.settings.footer.other_player=Estos ajustes se guardarán para §e%s§r
+waila.settings.submit=Guardar
+waila.settings.isEnabled.label=Activar WAILA
+waila.settings.isEnabled.description=Si está activado, el HUD de WAILA se mostrará en la pantalla.
+waila.settings.displayExtendedInfo.label=Mostrar más información al agacharse
+waila.settings.displayExtendedInfo.description=Si está activado, se mostrará más información (p. ej., los estados de los bloques) cuando el jugador esté agachado.
+waila.settings.maxDisplayDistance.label=Distancia de visualización
+waila.settings.maxDisplayDistance.description=La distancia en bloques desde el jugador para que el objeto se muestre en la pantalla.
+waila.settings.displayPosition.label=Posición de visualización
+waila.settings.displayPosition.description=Elige dónde aparece el HUD de WAILA en la pantalla. Puede causar una superposición no deseada con otros elementos del HUD.
+waila.settings.displayPosition.option.top_left=Esquina superior izquierda
+waila.settings.displayPosition.option.top_middle=Parte superior central
+waila.settings.displayPosition.option.top_right=Esquina superior derecha
+waila.settings.displayPosition.option.left_middle=Parte central izquierda
+waila.settings.displayPosition.option.center=Centro
+waila.settings.displayPosition.option.right_middle=Parte central derecha
+waila.settings.displayPosition.option.bottom_left=Esquina inferior izquierda
+waila.settings.displayPosition.option.bottom_middle=Parte inferior central
+waila.settings.displayPosition.option.bottom_right=Esquina inferior derecha

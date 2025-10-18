@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Se vad du tittar på som visas i HUD. Skapad av r4isen1920.
+pack.description=Se vad du tittar på, som visas i HUD:en. Skapad av r4isen1920.
+
+waila.settings.title=WAILA-inställningar
+waila.settings.title_for=WAILA-inställningar för %s
+waila.settings.footer.self_adjusting=Dessa inställningar påverkar endast §editt eget§r WAILA-gränssnitt
+waila.settings.footer.other_player=Dessa inställningar sparas för §e%s§r
+waila.settings.submit=Spara
+waila.settings.isEnabled.label=Aktivera WAILA
+waila.settings.isEnabled.description=Om aktiverat visas WAILA-gränssnittet på skärmen.
+waila.settings.displayExtendedInfo.label=Visa mer info när du smyger
+waila.settings.displayExtendedInfo.description=Om aktiverat visas mer information (t.ex. blocktillstånd) när spelaren smyger.
+waila.settings.maxDisplayDistance.label=Visningsavstånd
+waila.settings.maxDisplayDistance.description=Avståndet i block från spelaren för objektet som ska visas på skärmen.
+waila.settings.displayPosition.label=Visningsposition
+waila.settings.displayPosition.description=Välj var WAILA-gränssnittet ska visas på skärmen. Kan orsaka oönskad överlappning med andra HUD-element.
+waila.settings.displayPosition.option.top_left=Övre vänstra
+waila.settings.displayPosition.option.top_middle=Övre mitten
+waila.settings.displayPosition.option.top_right=Övre högra
+waila.settings.displayPosition.option.left_middle=Vänster mitten
+waila.settings.displayPosition.option.center=Centrum
+waila.settings.displayPosition.option.right_middle=Höger mitten
+waila.settings.displayPosition.option.bottom_left=Nedre vänstra
+waila.settings.displayPosition.option.bottom_middle=Nedre mitten
+waila.settings.displayPosition.option.bottom_right=Nedre högra

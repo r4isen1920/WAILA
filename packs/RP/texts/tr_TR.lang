@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=HUD'da görüntülendiği şekliyle neye baktığınızı görün. r4isen1920 tarafından düzenlendi.
+pack.description=Baktığınız şeyi HUD'da görüntülendiği gibi görün. r4isen1920 tarafından oluşturuldu.
+
+waila.settings.title=WAILA Ayarları
+waila.settings.title_for=%s için WAILA Ayarları
+waila.settings.footer.self_adjusting=Bu ayarlar yalnızca §esizin kendi§r WAILA ekranınızı etkiler
+waila.settings.footer.other_player=Bu ayarlar §e%s§r için kaydedilecek
+waila.settings.submit=Kaydet
+waila.settings.isEnabled.label=WAILA'yı Etkinleştir
+waila.settings.isEnabled.description=Etkinleştirilirse, WAILA HUD'u ekranda görüntülenecektir.
+waila.settings.displayExtendedInfo.label=Gizlice Bakarken Daha Fazla Bilgi Görüntüle
+waila.settings.displayExtendedInfo.description=Etkinleştirilirse, oyuncu gizlice bakarken daha fazla bilgi (örneğin, blok durumları) gösterilecektir.
+waila.settings.maxDisplayDistance.label=Görüntüleme Mesafesi
+waila.settings.maxDisplayDistance.description=Nesnenin ekranda görüntülenmesi için oyuncudan blok cinsinden mesafe.
+waila.settings.displayPosition.label=Konumu Görüntüle
+waila.settings.displayPosition.description=WAILA HUD'unun ekranda nerede görüneceğini seçin. Diğer HUD öğeleriyle istenmeyen örtüşmelere neden olabilir.
+waila.settings.displayPosition.option.top_left=Sol Üst
+waila.settings.displayPosition.option.top_middle=Üst Orta
+waila.settings.displayPosition.option.top_right=Sağ Üst
+waila.settings.displayPosition.option.left_middle=Sol Orta
+waila.settings.displayPosition.option.center=Orta
+waila.settings.displayPosition.option.right_middle=Sağ Orta
+waila.settings.displayPosition.option.bottom_left=Sol Alt
+waila.settings.displayPosition.option.bottom_middle=Alt Orta
+waila.settings.displayPosition.option.bottom_right=Sağ Alt

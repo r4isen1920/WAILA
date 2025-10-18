@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Tekintse meg, hogy mit néz a HUD-ban. Készítette: r4isen1920.
+pack.description=Nézd meg, amit a HUD-on látsz. Készítette: r4isen1920.
+
+waila.settings.title=WAILA Beállítások
+waila.settings.title_for=WAILA beállítások ehhez: %s
+waila.settings.footer.self_adjusting=Ezek a beállítások csak a §ete saját§r WAILA kijelződet befolyásolják
+waila.settings.footer.other_player=Ezek a beállítások el lesznek mentve ehhez: §e%s§r
+waila.settings.submit=Mentés
+waila.settings.isEnabled.label=WAILA engedélyezése
+waila.settings.isEnabled.description=Ha engedélyezve van, a WAILA HUD meg fog jelenni a képernyőn.
+waila.settings.displayExtendedInfo.label=Több információ megjelenítése guggoláskor
+waila.settings.displayExtendedInfo.description=Ha engedélyezve van, több információ (pl. blokk állapotok) lesz megjelenítve, amikor a játékos guggol.
+waila.settings.maxDisplayDistance.label=Megjelenítési távolság
+waila.settings.maxDisplayDistance.description=A távolság blokkokban a játékostól, hogy az objektum megjelenjen a képernyőn.
+waila.settings.displayPosition.label=Pozíció megjelenítése
+waila.settings.displayPosition.description=Válaszd ki, hogy a WAILA HUD hol jelenjen meg a képernyőn. Nem kívánt átfedést okozhat más HUD elemekkel.
+waila.settings.displayPosition.option.top_left=Bal felső
+waila.settings.displayPosition.option.top_middle=Felső középső
+waila.settings.displayPosition.option.top_right=Jobb felső
+waila.settings.displayPosition.option.left_middle=Bal középső
+waila.settings.displayPosition.option.center=Középen
+waila.settings.displayPosition.option.right_middle=Jobb középső
+waila.settings.displayPosition.option.bottom_left=Bal alsó
+waila.settings.displayPosition.option.bottom_middle=Alsó középső
+waila.settings.displayPosition.option.bottom_right=Jobb alsó

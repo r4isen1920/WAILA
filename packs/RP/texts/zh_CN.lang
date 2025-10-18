@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=查看 HUD 中显示的内容。由 r4isen1920 创建。
+pack.description=在HUD中显示你所看到的内容。由r4isen1920创建。
+
+waila.settings.title=WAILA设置
+waila.settings.title_for=WAILA的 %s 设置
+waila.settings.footer.self_adjusting=这些设置仅影响§e您自己§r的WAILA显示
+waila.settings.footer.other_player=这些设置将被保存为§e%s§r
+waila.settings.submit=保存
+waila.settings.isEnabled.label=启用 WAILA
+waila.settings.isEnabled.description=如果启用，WAILA HUD将显示在屏幕上。
+waila.settings.displayExtendedInfo.label=潜行时显示更多信息
+waila.settings.displayExtendedInfo.description=如果启用，当玩家潜行时，将显示更多信息（例如，方块状态）。
+waila.settings.maxDisplayDistance.label=显示距离
+waila.settings.maxDisplayDistance.description=从玩家到屏幕上显示对象的距离（以方块为单位）。
+waila.settings.displayPosition.label=显示位置
+waila.settings.displayPosition.description=选择WAILA HUD在屏幕上出现的位置。 可能会导致与其他HUD元素不希望的重叠。
+waila.settings.displayPosition.option.top_left=左上
+waila.settings.displayPosition.option.top_middle=顶部中间
+waila.settings.displayPosition.option.top_right=右上
+waila.settings.displayPosition.option.left_middle=左中
+waila.settings.displayPosition.option.center=中心
+waila.settings.displayPosition.option.right_middle=右中
+waila.settings.displayPosition.option.bottom_left=左下
+waila.settings.displayPosition.option.bottom_middle=底部中间
+waila.settings.displayPosition.option.bottom_right=右下

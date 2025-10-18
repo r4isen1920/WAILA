@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Se hva du ser på som vist i HUD. Laget av r4isen1920.
+pack.description=Se hva du ser på, vist i HUD-en. Laget av r4isen1920.
+
+waila.settings.title=WAILA-innstillinger
+waila.settings.title_for=WAILA-innstillinger for %s
+waila.settings.footer.self_adjusting=Disse innstillingene påvirker bare §edin egen§r WAILA-visning
+waila.settings.footer.other_player=Disse innstillingene lagres for §e%s§r
+waila.settings.submit=Lagre
+waila.settings.isEnabled.label=Aktiver WAILA
+waila.settings.isEnabled.description=Hvis aktivert, vil WAILA HUD-en vises på skjermen.
+waila.settings.displayExtendedInfo.label=Vis mer info når du sniker
+waila.settings.displayExtendedInfo.description=Hvis aktivert, vil mer informasjon (f.eks. blokktilstander) vises når spilleren sniker.
+waila.settings.maxDisplayDistance.label=Visningsavstand
+waila.settings.maxDisplayDistance.description=Avstanden i blokker fra spilleren for objektet som skal vises på skjermen.
+waila.settings.displayPosition.label=Visningsposisjon
+waila.settings.displayPosition.description=Velg hvor WAILA HUD-en skal vises på skjermen. Kan forårsake uønsket overlapping med andre HUD-elementer.
+waila.settings.displayPosition.option.top_left=Øverst til venstre
+waila.settings.displayPosition.option.top_middle=Øverst i midten
+waila.settings.displayPosition.option.top_right=Øverst til høyre
+waila.settings.displayPosition.option.left_middle=Midten til venstre
+waila.settings.displayPosition.option.center=Midten
+waila.settings.displayPosition.option.right_middle=Midten til høyre
+waila.settings.displayPosition.option.bottom_left=Nederst til venstre
+waila.settings.displayPosition.option.bottom_middle=Nederst i midten
+waila.settings.displayPosition.option.bottom_right=Nederst til høyre

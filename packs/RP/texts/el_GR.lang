@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Δείτε τι βλέπετε όπως εμφανίζεται στο HUD. Δημιουργήθηκε από r4isen1920.
+pack.description=Δείτε τι κοιτάτε όπως εμφανίζεται στο HUD. Δημιουργήθηκε από τον r4isen1920.
+
+waila.settings.title=Ρυθμίσεις WAILA
+waila.settings.title_for=Ρυθμίσεις WAILA για %s
+waila.settings.footer.self_adjusting=Αυτές οι ρυθμίσεις επηρεάζουν μόνο την §eδική σας§r οθόνη WAILA
+waila.settings.footer.other_player=Αυτές οι ρυθμίσεις θα αποθηκευτούν για §e%s§r
+waila.settings.submit=Αποθήκευση
+waila.settings.isEnabled.label=Ενεργοποίηση WAILA
+waila.settings.isEnabled.description=Εάν είναι ενεργοποιημένο, το WAILA HUD θα εμφανίζεται στην οθόνη.
+waila.settings.displayExtendedInfo.label=Εμφάνιση Περισσότερων Πληροφοριών Όταν Είσαι Κρυφός
+waila.settings.displayExtendedInfo.description=Εάν είναι ενεργοποιημένο, θα εμφανίζονται περισσότερες πληροφορίες (π.χ. καταστάσεις μπλοκ) όταν ο παίκτης είναι κρυφός.
+waila.settings.maxDisplayDistance.label=Εμφάνιση Απόστασης
+waila.settings.maxDisplayDistance.description=Η απόσταση σε μπλοκ από τον παίκτη για το αντικείμενο που θα εμφανίζεται στην οθόνη.
+waila.settings.displayPosition.label=Εμφάνιση Θέσης
+waila.settings.displayPosition.description=Επιλέξτε πού εμφανίζεται το WAILA HUD στην οθόνη. Μπορεί να προκαλέσει ανεπιθύμητη επικάλυψη με άλλα στοιχεία HUD.
+waila.settings.displayPosition.option.top_left=Επάνω Αριστερά
+waila.settings.displayPosition.option.top_middle=Επάνω Κέντρο
+waila.settings.displayPosition.option.top_right=Επάνω Δεξιά
+waila.settings.displayPosition.option.left_middle=Αριστερά Στη Μέση
+waila.settings.displayPosition.option.center=Κέντρο
+waila.settings.displayPosition.option.right_middle=Δεξιά Στη Μέση
+waila.settings.displayPosition.option.bottom_left=Κάτω Αριστερά
+waila.settings.displayPosition.option.bottom_middle=Κάτω Στη Μέση
+waila.settings.displayPosition.option.bottom_right=Κάτω Δεξιά

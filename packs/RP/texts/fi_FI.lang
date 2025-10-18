@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Katso, mitä katsot HUD-näytössä. Luonut r4isen1920.
+pack.description=Näe mitä katselet HUDissa. Tekijä r4isen1920.
+
+waila.settings.title=WAILA-asetukset
+waila.settings.title_for=WAILA-asetukset kohteelle %s
+waila.settings.footer.self_adjusting=Nämä asetukset vaikuttavat vain §eoomaan§r WAILA-näkymääsi
+waila.settings.footer.other_player=Nämä asetukset tallennetaan kohteelle §e%s§r
+waila.settings.submit=Tallenna
+waila.settings.isEnabled.label=Ota WAILA käyttöön
+waila.settings.isEnabled.description=Jos käytössä, WAILA HUD näkyy ruudulla.
+waila.settings.displayExtendedInfo.label=Näytä Lisätietoja Kyykkiessä
+waila.settings.displayExtendedInfo.description=Jos käytössä, enemmän tietoja (esim. lohkotilat) näytetään, kun pelaaja kyykkii.
+waila.settings.maxDisplayDistance.label=Näyttöetäisyys
+waila.settings.maxDisplayDistance.description=Etäisyys kuutioissa pelaajasta, jotta kohde näkyy ruudulla.
+waila.settings.displayPosition.label=Näytön Sijainti
+waila.settings.displayPosition.description=Valitse, missä WAILA HUD näkyy ruudulla. Voi aiheuttaa ei-toivottua päällekkäisyyttä muiden HUD-elementtien kanssa.
+waila.settings.displayPosition.option.top_left=Ylä vasen
+waila.settings.displayPosition.option.top_middle=Ylä keski
+waila.settings.displayPosition.option.top_right=Ylä oikea
+waila.settings.displayPosition.option.left_middle=Vasen keski
+waila.settings.displayPosition.option.center=Keskusta
+waila.settings.displayPosition.option.right_middle=Oikea keski
+waila.settings.displayPosition.option.bottom_left=Ala vasen
+waila.settings.displayPosition.option.bottom_middle=Ala keski
+waila.settings.displayPosition.option.bottom_right=Ala oikea

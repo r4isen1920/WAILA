@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Посмотрите, на что вы смотрите, как отображается в HUD. Создано r4isen1920.
+pack.description=Узнайте, на что вы смотрите, как отображается в HUD. Создано r4isen1920.
+
+waila.settings.title=Настройки WAILA
+waila.settings.title_for=Настройки WAILA для %s
+waila.settings.footer.self_adjusting=Эти настройки влияют только на §eваш собственный§r дисплей WAILA
+waila.settings.footer.other_player=Эти настройки будут сохранены для §e%s§r
+waila.settings.submit=Сохранить
+waila.settings.isEnabled.label=Включить WAILA
+waila.settings.isEnabled.description=Если включено, HUD WAILA будет отображаться на экране.
+waila.settings.displayExtendedInfo.label=Отображать больше информации при крадущемся режиме
+waila.settings.displayExtendedInfo.description=Если включено, будет отображаться больше информации (например, состояния блоков), когда игрок находится в крадущемся режиме.
+waila.settings.maxDisplayDistance.label=Дистанция отображения
+waila.settings.maxDisplayDistance.description=Расстояние в блоках от игрока, на котором объект будет отображаться на экране.
+waila.settings.displayPosition.label=Позиция отображения
+waila.settings.displayPosition.description=Выберите, где HUD WAILA появится на экране. Может вызвать нежелательное перекрытие с другими элементами HUD.
+waila.settings.displayPosition.option.top_left=Сверху слева
+waila.settings.displayPosition.option.top_middle=Сверху посередине
+waila.settings.displayPosition.option.top_right=Сверху справа
+waila.settings.displayPosition.option.left_middle=Слева посередине
+waila.settings.displayPosition.option.center=В центре
+waila.settings.displayPosition.option.right_middle=Справа посередине
+waila.settings.displayPosition.option.bottom_left=Снизу слева
+waila.settings.displayPosition.option.bottom_middle=Снизу посередине
+waila.settings.displayPosition.option.bottom_right=Снизу справа

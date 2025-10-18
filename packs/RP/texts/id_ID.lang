@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Lihat apa yang Anda lihat seperti yang ditampilkan di HUD. Dibuat oleh r4isen1920.
+pack.description=Lihat apa yang sedang Anda lihat seperti yang ditampilkan di HUD. Dibuat oleh r4isen1920.
+
+waila.settings.title=Pengaturan WAILA
+waila.settings.title_for=Pengaturan WAILA untuk %s
+waila.settings.footer.self_adjusting=Pengaturan ini hanya memengaruhi tampilan WAILA §eAnda sendiri§r
+waila.settings.footer.other_player=Pengaturan ini akan disimpan untuk §e%s§r
+waila.settings.submit=Simpan
+waila.settings.isEnabled.label=Aktifkan WAILA
+waila.settings.isEnabled.description=Jika diaktifkan, HUD WAILA akan ditampilkan di layar.
+waila.settings.displayExtendedInfo.label=Tampilkan Lebih Banyak Info Saat Mengendap-endap
+waila.settings.displayExtendedInfo.description=Jika diaktifkan, lebih banyak informasi (mis., status blok) akan ditampilkan saat pemain mengendap-endap.
+waila.settings.maxDisplayDistance.label=Tampilkan Jarak
+waila.settings.maxDisplayDistance.description=Jarak dalam blok dari pemain agar objek ditampilkan di layar.
+waila.settings.displayPosition.label=Tampilkan Posisi
+waila.settings.displayPosition.description=Pilih di mana HUD WAILA muncul di layar. Dapat menyebabkan tumpang tindih yang tidak diinginkan dengan elemen HUD lainnya.
+waila.settings.displayPosition.option.top_left=Kiri Atas
+waila.settings.displayPosition.option.top_middle=Tengah Atas
+waila.settings.displayPosition.option.top_right=Kanan Atas
+waila.settings.displayPosition.option.left_middle=Kiri Tengah
+waila.settings.displayPosition.option.center=Tengah
+waila.settings.displayPosition.option.right_middle=Kanan Tengah
+waila.settings.displayPosition.option.bottom_left=Kiri Bawah
+waila.settings.displayPosition.option.bottom_middle=Tengah Bawah
+waila.settings.displayPosition.option.bottom_right=Kanan Bawah

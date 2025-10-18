@@ -1,2 +1,25 @@
 pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Pozrite sa, na čo sa pozeráte, ako je to zobrazené na HUD. Vytvoril r4isen1920.
+pack.description=Pozrite sa, na čo sa pozeráte, ako sa zobrazuje v HUD. Vytvoril r4isen1920.
+
+waila.settings.title=Nastavenia WAILA
+waila.settings.title_for=Nastavenia WAILA pre %s
+waila.settings.footer.self_adjusting=Tieto nastavenia ovplyvňujú iba §evlastné§r zobrazenie WAILA
+waila.settings.footer.other_player=Tieto nastavenia budú uložené pre §e%s§r
+waila.settings.submit=Uložiť
+waila.settings.isEnabled.label=Povoliť WAILA
+waila.settings.isEnabled.description=Ak je povolené, WAILA HUD sa zobrazí na obrazovke.
+waila.settings.displayExtendedInfo.label=Zobraziť viac informácií pri plížení
+waila.settings.displayExtendedInfo.description=Ak je povolené, pri plížení hráča sa zobrazia ďalšie informácie (napr. stavy blokov).
+waila.settings.maxDisplayDistance.label=Vzdialenosť zobrazenia
+waila.settings.maxDisplayDistance.description=Vzdialenosť v blokoch od hráča, pre ktorú sa má objekt zobraziť na obrazovke.
+waila.settings.displayPosition.label=Pozícia zobrazenia
+waila.settings.displayPosition.description=Vyberte, kde sa má WAILA HUD zobraziť na obrazovke. Môže spôsobiť nežiaduce prekrývanie s inými prvkami HUD.
+waila.settings.displayPosition.option.top_left=Hore vľavo
+waila.settings.displayPosition.option.top_middle=Hore v strede
+waila.settings.displayPosition.option.top_right=Hore vpravo
+waila.settings.displayPosition.option.left_middle=V strede vľavo
+waila.settings.displayPosition.option.center=V strede
+waila.settings.displayPosition.option.right_middle=V strede vpravo
+waila.settings.displayPosition.option.bottom_left=Dole vľavo
+waila.settings.displayPosition.option.bottom_middle=Dole v strede
+waila.settings.displayPosition.option.bottom_right=Dole vpravo

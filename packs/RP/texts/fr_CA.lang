@@ -1,2 +1,25 @@
-pack.name=§7[v5.0]§r WAILA [RP]
-pack.description=Voyez ce que vous regardez comme affiché dans le HUD. Créé par r4isen1920.
+pack.name=§7[v5.0]§r WAILA [PR]
+pack.description=Voyez ce que vous regardez tel qu'il est affiché dans l'ATH. Créé par r4isen1920.
+
+waila.settings.title=Paramètres de WAILA
+waila.settings.title_for=Paramètres de WAILA pour %s
+waila.settings.footer.self_adjusting=Ces paramètres affectent seulement §evotre propre§r affichage WAILA
+waila.settings.footer.other_player=Ces paramètres seront sauvegardés pour §e%s§r
+waila.settings.submit=Sauvegarder
+waila.settings.isEnabled.label=Activer WAILA
+waila.settings.isEnabled.description=Si activé, l'ATH WAILA sera affiché à l'écran.
+waila.settings.displayExtendedInfo.label=Afficher plus d'infos en étant accroupi
+waila.settings.displayExtendedInfo.description=Si activé, plus d'informations (ex: états des blocs) seront affichées lorsque le joueur est accroupi.
+waila.settings.maxDisplayDistance.label=Distance d'affichage
+waila.settings.maxDisplayDistance.description=La distance en blocs à partir du joueur pour que l'objet soit affiché à l'écran.
+waila.settings.displayPosition.label=Position d'affichage
+waila.settings.displayPosition.description=Choisissez où l'ATH WAILA apparaît à l'écran. Peut causer un chevauchement indésirable avec d'autres éléments de l'ATH.
+waila.settings.displayPosition.option.top_left=Haut Gauche
+waila.settings.displayPosition.option.top_middle=Haut Centre
+waila.settings.displayPosition.option.top_right=Haut Droite
+waila.settings.displayPosition.option.left_middle=Gauche Centre
+waila.settings.displayPosition.option.center=Centre
+waila.settings.displayPosition.option.right_middle=Droite Centre
+waila.settings.displayPosition.option.bottom_left=Bas Gauche
+waila.settings.displayPosition.option.bottom_middle=Bas Centre
+waila.settings.displayPosition.option.bottom_right=Bas Droite
