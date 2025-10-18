@@ -127,6 +127,9 @@ export class BlockHandler {
 				const itemHolderContainer = itemHolder.getComponent(EntityComponentTypes.Inventory)?.container;
 				itemHolderContainer?.moveItem(0, SLOT_INDEX, playerContainer);
 				itemHolder.triggerEvent("r4isen1920_waila:instant_despawn");
+			} else {
+				this.logger.error(`Inventory lost for slot ${SLOT_INDEX}`);
+				playerContainer.setItem(SLOT_INDEX, undefined);
 			}
 			player.setDynamicProperty("r4isen1920_waila:item_holder_id", undefined);
 			return;

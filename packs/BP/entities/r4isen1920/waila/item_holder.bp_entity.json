@@ -64,6 +64,11 @@
         "allow_name_tag_renaming": false
       },
 
+      "minecraft:tick_world": {
+        "never_despawn": true,
+        "radius": 2
+      },
+
       "minecraft:is_hidden_when_invisible": {}
     },
 
