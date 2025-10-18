@@ -22,6 +22,9 @@ import nameAliases from "../data/nameAliases.json";
 import AfterWorldLoad from "../Init";
 import { WailaSettings } from "./Settings";
 
+import ignoredBlockRender from "../data/ignoredBlockRender.json";
+
+
 
 //#region WAILA
 class Waila {
@@ -100,7 +103,7 @@ class Waila {
 				maxDistance: max_dist,
 			});
 
-			if (blockLookAt?.block) {
+			if (blockLookAt?.block && !ignoredBlockRender.some(b => b.includes(blockLookAt.block.typeId))) {
 				const lookAtBlock = BlockHandler.createLookupData(blockLookAt.block);
 				lookAtBlock.itemHeld = playerEquippedItem;
 				return lookAtBlock;
