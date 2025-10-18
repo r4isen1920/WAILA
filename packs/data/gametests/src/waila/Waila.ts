@@ -87,16 +87,10 @@ export default class Waila {
 			player,
 			WailaSettings.get(player, "maxDisplayDistance"),
 		);
-
-		const foundBlock = (lookAtObject as LookAtBlockInterface).block;
 		lookAtObject.viewAdditionalProperties =
 			WailaSettings.get(player, "displayExtendedInfo") &&
 			// check if there are actually block states to show before attempting an update
-			(
-				foundBlock
-					? Object.keys(foundBlock.permutation.getAllStates()).length > 0
-					: true
-			) &&
+			Object.keys((lookAtObject as LookAtBlockInterface)?.block?.permutation.getAllStates() ?? {}).length > 0 &&
 			player.isSneaking;
 
 		if (lookAtObject.hitIdentifier === undefined) {
