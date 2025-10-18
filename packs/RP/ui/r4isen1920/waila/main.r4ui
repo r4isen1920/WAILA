@@ -134,23 +134,59 @@
 											"offset": [1, 0],
 
 											"controls": [
-												//* _r4ui:A:zz,t;zz,z: ...
 												{
-													"hover_name_and_namespace@r4isen1920_waila_common.label": {
+													"label_stack": {
+														"type": "stack_panel",
+														"orientation": "vertical",
+
 														"anchor_from": "top_left",
 														"anchor_to": "top_left",
-														"min_size": ["default", 20],
+														"size": ["100%cm", "100%c"],
 
-														"text": "$text",
-
-														"variables": [
+														"controls": [
+															//* _r4ui:A:zz,t;zz,z: ...
 															{
-																"requires": "($tooltip_renderer_type = 'A:')",
-																"$text": "('' + ($var_title_text - ('%.18s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
+																"hover_name_and_namespace@r4isen1920_waila_common.label": {
+																	"min_size": ["default", 20],
+
+																	"text": "$text",
+																	"variables": [
+																		{
+																			"requires": "($tooltip_renderer_type = 'A:')",
+																			"$text": "('' + ($var_title_text - ('%.18s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
+																		},
+																		{
+																			"requires": "(not ($tooltip_renderer_type = 'A:'))",
+																			"$text": "('' + ($var_title_text - ('%.324s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:humanoid.')"
+																		}
+																	]
+																}
 															},
+
 															{
-																"requires": "(not ($tooltip_renderer_type = 'A:'))",
-																"$text": "('' + ($var_title_text - ('%.324s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:humanoid.')"
+																"block_states@common.empty_panel": {
+																	"size": ["100%cm", "100%cm"],
+																	"controls": [
+																		{
+																			"border@r4isen1920_waila_common.image": {
+																				"size": ["100%c + 4px", "100%c + 4px"],
+																				"texture": "textures/r4isen1920/waila/border",
+
+																				"controls": [
+																					{
+																						"list@r4isen1920_waila_common.label": {
+																							"text": "($var_subtitle_text - '__r4ui:block_states__')",
+																							"font_scale_factor": 0.75
+																						}
+																					}
+																				],
+
+																				"ignored": "(not ($tooltip_renderer_type = 'A:'))"
+																			}
+																		}
+																	],
+																	"ignored": "(($var_subtitle_text - '__r4ui:block_states__') = $var_subtitle_text)"
+																}
 															}
 														]
 													}
