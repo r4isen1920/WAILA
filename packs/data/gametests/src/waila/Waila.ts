@@ -20,13 +20,13 @@ import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
 import nameAliases from "../data/nameAliases.json";
 import AfterWorldLoad from "../Init";
+import { WailaSettings } from "./Settings";
 
 
 //#region WAILA
 class Waila {
 	private static instance: Waila;
 	private readonly log = Logger.getLogger("WAILA");
-	private readonly MAX_DISTANCE = 8;
 	private playerPreviousLookState: Map<string, boolean> = new Map();
 
 	private constructor() {
@@ -36,7 +36,7 @@ class Waila {
 			world.gameRules.showTags = false;
 
 			const pulse = new PlayerPulseScheduler((player) => {
-				const isEnabled = player.getDynamicProperty("r4isen1920_waila:isEnabled");
+				const isEnabled = WailaSettings.get(player, 'isEnabled');
 				if (isEnabled === undefined || isEnabled === true) {
 					this.toPlayer(player);
 				} else {
@@ -60,7 +60,8 @@ class Waila {
 	 * Requests the process for a player in the world.
 	 */
 	private toPlayer(player: Player): void {
-		const lookAtObject = this.fetchLookAt(player, this.MAX_DISTANCE);
+		const lookAtObject = this.fetchLookAt(player, WailaSettings.get(player, 'maxDisplayDistance'));
+		lookAtObject.viewAdditionalProperties = WailaSettings.get(player, 'displayExtendedInfo') === true && player.isSneaking;
 
 		if (lookAtObject.hitIdentifier === undefined) {
 			lookAtObject.hitIdentifier = "__r4ui:none";
@@ -88,7 +89,6 @@ class Waila {
 			if (entityLookAt.length > 0 && entityLookAt[0]?.entity) {
 				const entity = entityLookAt[0].entity;
 				const lookAtEntity = EntityHandler.createLookupData(entity);
-				lookAtEntity.viewAdditionalProperties = player.isSneaking;
 				lookAtEntity.itemHeld = playerEquippedItem;
 				return lookAtEntity;
 			}
@@ -102,7 +102,6 @@ class Waila {
 
 			if (blockLookAt?.block) {
 				const lookAtBlock = BlockHandler.createLookupData(blockLookAt.block);
-				lookAtBlock.viewAdditionalProperties = player.isSneaking;
 				lookAtBlock.itemHeld = playerEquippedItem;
 				return lookAtBlock;
 			}
@@ -111,7 +110,6 @@ class Waila {
 			return {
 				type: undefined,
 				hitIdentifier: "__r4ui:none",
-				viewAdditionalProperties: player.isSneaking,
 				itemHeld: playerEquippedItem
 			};
 		} catch (e) {
@@ -121,7 +119,6 @@ class Waila {
 			return {
 				type: undefined,
 				hitIdentifier: "__r4ui:none",
-				viewAdditionalProperties: player.isSneaking,
 				itemHeld: "__r4ui:none"
 			};
 		}
@@ -370,7 +367,7 @@ class Waila {
 		}
 		nameElements.push({ text: "§r" });
 
-		const blockStatesText = metadata.type === LookAtObjectType.TILE && player.isSneaking
+		const blockStatesText = metadata.type === LookAtObjectType.TILE && player.isSneaking && WailaSettings.get(player, 'displayExtendedInfo')
 			? (metadata.renderData as BlockRenderDataInterface).blockStates
 			: "";
 
@@ -428,7 +425,7 @@ class Waila {
 		const namespaceText = ((): string => {
 			const value = Registry[metadata.namespace.replace(":", "")];
 			if (value) {
-				return !player.isSneaking
+				return (!player.isSneaking || !WailaSettings.get(player, 'displayExtendedInfo'))
 					? value.name
 					: `${value.name}\nby ${value.creator}`;
 			}
@@ -452,6 +449,9 @@ class Waila {
 			{ translate: namespaceText },
 			{ text: '§r' },
 		];
+
+		// Add some setting flags
+		parseStr.push({ text: `__r4ui:anchor.${WailaSettings.get(player, 'displayPosition')}__` });
 
 		const filteredTitle = parseStr.filter(
 			part => !(typeof part === "object" && "text" in part && part.text === "")

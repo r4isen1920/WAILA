@@ -1,5 +1,5 @@
 import "./String";
-import "./waila/Commands";
+import "./waila/Settings";
 import "./waila/Waila";
 
 import { init } from "@bedrock-oss/stylish";

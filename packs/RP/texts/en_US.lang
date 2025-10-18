@@ -1,2 +1,25 @@
 pack.name=§7[v4.2]§r WAILA [RP]
 pack.description=See what you are looking at as displayed in the HUD. Created by r4isen1920.
+
+waila.settings.title=WAILA Settings
+waila.settings.title_for=WAILA Settings for %s
+waila.settings.footer.self_adjusting=These settings affect only §eyour own§r WAILA display
+waila.settings.footer.other_player=These settings will be saved for §e%s§r
+waila.settings.submit=Save
+waila.settings.isEnabled.label=Enable WAILA
+waila.settings.isEnabled.description=If enabled, the WAILA HUD will be displayed on screen.
+waila.settings.displayExtendedInfo.label=Display More Info When Sneaking
+waila.settings.displayExtendedInfo.description=If enabled, more information (e.g., block states) will be shown when the player is sneaking.
+waila.settings.maxDisplayDistance.label=Display Distance
+waila.settings.maxDisplayDistance.description=The distance in blocks from the player for the object to be displayed on screen.
+waila.settings.displayPosition.label=Display Position
+waila.settings.displayPosition.description=Choose where the WAILA HUD appears on screen. May cause undesired overlap with other HUD elements.
+waila.settings.displayPosition.option.top_left=Top Left
+waila.settings.displayPosition.option.top_middle=Top Middle
+waila.settings.displayPosition.option.top_right=Top Right
+waila.settings.displayPosition.option.left_middle=Left Middle
+waila.settings.displayPosition.option.center=Center
+waila.settings.displayPosition.option.right_middle=Right Middle
+waila.settings.displayPosition.option.bottom_left=Bottom Left
+waila.settings.displayPosition.option.bottom_middle=Bottom Middle
+waila.settings.displayPosition.option.bottom_right=Bottom Right
