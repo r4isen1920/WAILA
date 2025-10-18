@@ -9,9 +9,25 @@
  *
  */
 
-import { Effect, Entity, EntityComponentTypes, EntityEquippableComponent, EntityHealthComponent, EntityItemComponent, EquipmentSlot, Player, TicksPerSecond } from "@minecraft/server";
-import { LookAtEntityInterface, LookAtItemEntityInterface } from "../types/LookAtObjectInterface";
-import { EffectsRendererType, EntityRenderDataInterface } from "../types/LookAtObjectMetadataInterface";
+import {
+	Effect,
+	Entity,
+	EntityComponentTypes,
+	EntityEquippableComponent,
+	EntityHealthComponent,
+	EntityItemComponent,
+	EquipmentSlot,
+	Player,
+	TicksPerSecond,
+} from "@minecraft/server";
+import {
+	LookAtEntityInterface,
+	LookAtItemEntityInterface,
+} from "../types/LookAtObjectInterface";
+import {
+	EffectsRendererType,
+	EntityRenderDataInterface,
+} from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
 import { EntityInteractionsEnum, TagRemarksEnum } from "../types/TagsEnum";
 import TagsInterface from "../types/TagsInterface";
@@ -29,8 +45,11 @@ export class EntityHandler {
 	 * Helper function to check if a single value matches a condition rule.
 	 * Mirrors the logic used for TagsInterface.target matching.
 	 */
-	private static checkRemarkConditionRule(value: string, rule: string): boolean {
-		const valueNamePart = value.includes(':') ? value.split(':')[1] : value;
+	private static checkRemarkConditionRule(
+		value: string,
+		rule: string,
+	): boolean {
+		const valueNamePart = value.includes(":") ? value.split(":")[1] : value;
 		const isNegatedRule = rule.startsWith("!");
 		const actualRule = isNegatedRule ? rule.substring(1) : rule;
 
@@ -41,16 +60,16 @@ export class EntityHandler {
 			positiveMatchFound = true;
 		}
 		// Case 2: Rule is namespace-less and is an exact match for the name part of the value (e.g., rule="stone", value="minecraft:stone")
-		else if (!actualRule.includes(':') && actualRule === valueNamePart) {
+		else if (!actualRule.includes(":") && actualRule === valueNamePart) {
 			positiveMatchFound = true;
 		}
 		// Case 3: Rule is namespace-less and the full value string includes the rule (e.g., rule="pickaxe", value="minecraft:diamond_pickaxe")
-		else if (!actualRule.includes(':') && value.includes(actualRule)) {
+		else if (!actualRule.includes(":") && value.includes(actualRule)) {
 			positiveMatchFound = true;
 		}
 		// Case 4: Rule is namespace-less and the name part of the value includes the rule (e.g., rule="axe", value="minecraft:diamond_pickaxe" -> namePart "diamond_pickaxe")
 		// This also covers cases where value itself is namespace-less and includes the rule.
-		else if (!actualRule.includes(':') && valueNamePart.includes(actualRule)) {
+		else if (!actualRule.includes(":") && valueNamePart.includes(actualRule)) {
 			positiveMatchFound = true;
 		}
 
@@ -61,7 +80,9 @@ export class EntityHandler {
 	 * Creates lookup data for an entity
 	 */
 	static createLookupData(entity: Entity): LookAtEntityInterface {
-		const healthComponent = entity.getComponent(EntityComponentTypes.Health) as EntityHealthComponent | undefined;
+		const healthComponent = entity.getComponent(EntityComponentTypes.Health) as
+			| EntityHealthComponent
+			| undefined;
 
 		const lookupData: LookAtEntityInterface = {
 			type: LookAtObjectTypeEnum.ENTITY,
@@ -72,9 +93,10 @@ export class EntityHandler {
 		};
 
 		try {
-			lookupData.effectsData = entity.getEffects()
-				.filter(effect => effect.duration !== -1 && effect.amplifier !== -1)
-				.map(effect => ({
+			lookupData.effectsData = entity
+				.getEffects()
+				.filter((effect) => effect.duration !== -1 && effect.amplifier !== -1)
+				.map((effect) => ({
 					id: effect.typeId,
 					amplifier: effect.amplifier,
 					duration: Math.floor(effect.duration / TicksPerSecond),
@@ -85,7 +107,9 @@ export class EntityHandler {
 
 		// Handle item entities
 		if (entity.typeId === "minecraft:item") {
-			const itemComponent = entity.getComponent(EntityComponentTypes.Item) as EntityItemComponent | undefined;
+			const itemComponent = entity.getComponent(EntityComponentTypes.Item) as
+				| EntityItemComponent
+				| undefined;
 			const itemData = lookupData as LookAtItemEntityInterface;
 
 			if (itemComponent?.itemStack) {
@@ -117,58 +141,65 @@ export class EntityHandler {
 		const namespaceRemoved = typeId.replace(/:.*/, "");
 
 		const interactionTagDefinitions: Map<string, TagsInterface> = new Map();
-		entityInteractionsData.filter(tagDef => {
-			const typedTag = tagDef as TagsInterface;
-			let hasApplicablePositiveRule = false;
-			let hasBlockingNegativeRule = false;
+		entityInteractionsData
+			.filter((tagDef) => {
+				const typedTag = tagDef as TagsInterface;
+				let hasApplicablePositiveRule = false;
+				let hasBlockingNegativeRule = false;
 
-			for (const targetMatcher of typedTag.target) {
-				if (typeof targetMatcher === 'string') {
-					const isNegation = targetMatcher.startsWith("!");
-					const ruleContent = isNegation ? targetMatcher.substring(1) : targetMatcher;
+				for (const targetMatcher of typedTag.target) {
+					if (typeof targetMatcher === "string") {
+						const isNegation = targetMatcher.startsWith("!");
+						const ruleContent = isNegation
+							? targetMatcher.substring(1)
+							: targetMatcher;
 
-					let currentRuleMatchesEntity = false;
-					// Condition 1: Exact match on full typeId. (e.g. ruleContent "minecraft:creeper" matches typeId "minecraft:creeper")
-					if (ruleContent === typeId) {
-						currentRuleMatchesEntity = true;
-					// Condition 2: Rule is namespace-less.
-					} else if (!ruleContent.includes(':')) {
-						// Condition 2a: Exact match on name part. (e.g. ruleContent "creeper" matches namespaceRemoved "creeper")
-						if (ruleContent === namespaceRemoved) {
+						let currentRuleMatchesEntity = false;
+						// Condition 1: Exact match on full typeId. (e.g. ruleContent "minecraft:creeper" matches typeId "minecraft:creeper")
+						if (ruleContent === typeId) {
 							currentRuleMatchesEntity = true;
-						// Condition 2b: typeId includes ruleContent. (e.g. ruleContent "pig" in typeId "minecraft:pig")
-						// This also covers cases where namespaceRemoved includes ruleContent if typeId itself is namespace-less.
-						} else if (typeId.includes(ruleContent)) {
-							currentRuleMatchesEntity = true;
+							// Condition 2: Rule is namespace-less.
+						} else if (!ruleContent.includes(":")) {
+							// Condition 2a: Exact match on name part. (e.g. ruleContent "creeper" matches namespaceRemoved "creeper")
+							if (ruleContent === namespaceRemoved) {
+								currentRuleMatchesEntity = true;
+								// Condition 2b: typeId includes ruleContent. (e.g. ruleContent "pig" in typeId "minecraft:pig")
+								// This also covers cases where namespaceRemoved includes ruleContent if typeId itself is namespace-less.
+							} else if (typeId.includes(ruleContent)) {
+								currentRuleMatchesEntity = true;
+							}
+						}
+
+						if (currentRuleMatchesEntity) {
+							if (isNegation) {
+								hasBlockingNegativeRule = true;
+								break; // This tagDef is blocked by a negative string rule.
+							} else {
+								hasApplicablePositiveRule = true;
+								// Continue checking other matchers for potential negations.
+							}
 						}
 					}
-
-					if (currentRuleMatchesEntity) {
-						if (isNegation) {
-							hasBlockingNegativeRule = true;
-							break; // This tagDef is blocked by a negative string rule.
-						} else {
-							hasApplicablePositiveRule = true;
-							// Continue checking other matchers for potential negations.
-						}
-					}
+					// Object-based target matchers (e.g., { tag: "..." }) are ignored for entities.
 				}
-				// Object-based target matchers (e.g., { tag: "..." }) are ignored for entities.
-			}
 
-			if (hasBlockingNegativeRule) {
-				return false; // Blocked by a negative rule.
-			}
-			// To be included, a tag must have at least one positive rule that matched,
-			// and no negative rules that matched from its string targets.
-			return hasApplicablePositiveRule;
-		}).forEach(tagDef => {
-			const typedTag = tagDef as TagsInterface;
-			interactionTagDefinitions.set(typedTag.name.toUpperCase(), typedTag);
-		});
+				if (hasBlockingNegativeRule) {
+					return false; // Blocked by a negative rule.
+				}
+				// To be included, a tag must have at least one positive rule that matched,
+				// and no negative rules that matched from its string targets.
+				return hasApplicablePositiveRule;
+			})
+			.forEach((tagDef) => {
+				const typedTag = tagDef as TagsInterface;
+				interactionTagDefinitions.set(typedTag.name.toUpperCase(), typedTag);
+			});
 
 		const componentDerivedTagNames: string[] = [];
-		const getComponentValue = <T>(ent: Entity, componentName: string): T | undefined => {
+		const getComponentValue = <T>(
+			ent: Entity,
+			componentName: string,
+		): T | undefined => {
 			try {
 				return ent.getComponent(componentName) as T | undefined;
 			} catch {
@@ -196,7 +227,10 @@ export class EntityHandler {
 			}
 		});
 
-		const allPotentialTagNames = new Set([...interactionTagDefinitions.keys(), ...componentDerivedTagNames]);
+		const allPotentialTagNames = new Set([
+			...interactionTagDefinitions.keys(),
+			...componentDerivedTagNames,
+		]);
 
 		if (allPotentialTagNames.has("IS_BABY")) {
 			allPotentialTagNames.delete("IS_RIDEABLE");
@@ -207,12 +241,20 @@ export class EntityHandler {
 
 		const orderedFinalTagNames: string[] = [];
 		for (const name of interactionTagDefinitions.keys()) {
-			if (allPotentialTagNames.has(name) && orderedFinalTagNames.length < 2 && !orderedFinalTagNames.includes(name)) {
+			if (
+				allPotentialTagNames.has(name) &&
+				orderedFinalTagNames.length < 2 &&
+				!orderedFinalTagNames.includes(name)
+			) {
 				orderedFinalTagNames.push(name);
 			}
 		}
 		for (const name of componentDerivedTagNames) {
-			if (allPotentialTagNames.has(name) && orderedFinalTagNames.length < 2 && !orderedFinalTagNames.includes(name)) {
+			if (
+				allPotentialTagNames.has(name) &&
+				orderedFinalTagNames.length < 2 &&
+				!orderedFinalTagNames.includes(name)
+			) {
 				orderedFinalTagNames.push(name);
 			}
 		}
@@ -222,7 +264,9 @@ export class EntityHandler {
 		let playerMainHandItemTags: string[] = [];
 		let playerMainHandItemTypeId: string = "__r4ui:none";
 		try {
-			const equipComponent = player.getComponent(EntityComponentTypes.Equippable) as EntityEquippableComponent | undefined;
+			const equipComponent = player.getComponent(
+				EntityComponentTypes.Equippable,
+			) as EntityEquippableComponent | undefined;
 			const mainHandItem = equipComponent?.getEquipment(EquipmentSlot.Mainhand);
 			if (mainHandItem) {
 				playerMainHandItemTags = mainHandItem.getTags();
@@ -235,7 +279,10 @@ export class EntityHandler {
 		// 5. Process the final selected tags for icon and remarks
 		const processedTagsOutput: { id: string; remark: string }[] = [];
 		for (const tagName of finalTagNamesForProcessing) {
-			const iconId = EntityInteractionsEnum[tagName as keyof typeof EntityInteractionsEnum] || EntityInteractionsEnum.UNDEFINED;
+			const iconId =
+				EntityInteractionsEnum[
+					tagName as keyof typeof EntityInteractionsEnum
+				] || EntityInteractionsEnum.UNDEFINED;
 			let remarkIcon = TagRemarksEnum.UNDEFINED;
 
 			const tagDefinitionForRemarks = interactionTagDefinitions.get(tagName);
@@ -245,18 +292,31 @@ export class EntityHandler {
 					const enumKeyCandidate = jsonRemarkKey.toUpperCase();
 
 					if (enumKeyCandidate in TagRemarksEnum) {
-						const remarkEnumValue = TagRemarksEnum[enumKeyCandidate as keyof typeof TagRemarksEnum];
-						const conditions = tagDefinitionForRemarks.remarks[jsonRemarkKey as keyof typeof tagDefinitionForRemarks.remarks]!;
+						const remarkEnumValue =
+							TagRemarksEnum[enumKeyCandidate as keyof typeof TagRemarksEnum];
+						const conditions =
+							tagDefinitionForRemarks.remarks[
+								jsonRemarkKey as keyof typeof tagDefinitionForRemarks.remarks
+							]!;
 						let conditionMet = false;
 
 						// Check itemIds condition against the player's mainhand item typeId
 						if (conditions.itemIds) {
-							conditionMet = conditions.itemIds.some(idRule => EntityHandler.checkRemarkConditionRule(playerMainHandItemTypeId, idRule));
+							conditionMet = conditions.itemIds.some((idRule) =>
+								EntityHandler.checkRemarkConditionRule(
+									playerMainHandItemTypeId,
+									idRule,
+								),
+							);
 						}
 
 						// Check tags condition (player's held item) if itemIds condition not met
 						if (!conditionMet && conditions.tags) {
-							conditionMet = conditions.tags.some(tagRule => playerMainHandItemTags.some(heldItemTag => EntityHandler.checkRemarkConditionRule(heldItemTag, tagRule)));
+							conditionMet = conditions.tags.some((tagRule) =>
+								playerMainHandItemTags.some((heldItemTag) =>
+									EntityHandler.checkRemarkConditionRule(heldItemTag, tagRule),
+								),
+							);
 						}
 
 						if (conditionMet) {
@@ -270,8 +330,14 @@ export class EntityHandler {
 		}
 
 		// Ensure two tags for formatting, using defaults if necessary
-		const tag1 = processedTagsOutput[0] || { id: EntityInteractionsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED }; // Corrected default id
-		const tag2 = processedTagsOutput[1] || { id: EntityInteractionsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED }; // Corrected default id
+		const tag1 = processedTagsOutput[0] || {
+			id: EntityInteractionsEnum.UNDEFINED,
+			remark: TagRemarksEnum.UNDEFINED,
+		}; // Corrected default id
+		const tag2 = processedTagsOutput[1] || {
+			id: EntityInteractionsEnum.UNDEFINED,
+			remark: TagRemarksEnum.UNDEFINED,
+		}; // Corrected default id
 
 		return `:${tag1.id},${tag1.remark};${tag2.id},${tag2.remark}:`;
 	}
@@ -279,7 +345,11 @@ export class EntityHandler {
 	/**
 	 * Creates health renderer string based on current and max health
 	 */
-	static healthRenderer(currentHealth: number, maxHealth: number, MAX_LENGTH: number = 40): string {
+	static healthRenderer(
+		currentHealth: number,
+		maxHealth: number,
+		MAX_LENGTH: number = 40,
+	): string {
 		let displayCurrent = currentHealth;
 		let displayMax = maxHealth;
 
@@ -295,7 +365,10 @@ export class EntityHandler {
 
 		const fullHearts = Math.floor(displayCurrent / 2);
 		const halfHearts = displayCurrent % 2;
-		const emptyHearts = Math.max(0, MAX_HEARTS_DISPLAY - fullHearts - halfHearts);
+		const emptyHearts = Math.max(
+			0,
+			MAX_HEARTS_DISPLAY - fullHearts - halfHearts,
+		);
 
 		let healthString =
 			healthIcons.full.repeat(fullHearts) +
@@ -316,7 +389,9 @@ export class EntityHandler {
 	 * Renders armor for a player or entity
 	 */
 	static armorRenderer(entity: Player | Entity): string {
-		const equipComponent = entity.getComponent(EntityComponentTypes.Equippable) as EntityEquippableComponent | undefined;
+		const equipComponent = entity.getComponent(
+			EntityComponentTypes.Equippable,
+		) as EntityEquippableComponent | undefined;
 		if (!equipComponent) return "dddddddddd";
 
 		const armorTypes: { [key: string]: number } = armor;
@@ -430,10 +505,12 @@ export class EntityHandler {
 			}
 
 			effectDuration /= TicksPerSecond;
-			const effectDurationMinutes = Math.min(99, Math.floor(effectDuration / 60));
+			const effectDurationMinutes = Math.min(
+				99,
+				Math.floor(effectDuration / 60),
+			);
 			const effectDurationSeconds = Math.floor(effectDuration % 60);
-			const effectCombinedDurationStr =
-				`${effectDurationMinutes.toString().padStart(2, "0")}:${effectDurationSeconds.toString().padStart(2, "0")}`;
+			const effectCombinedDurationStr = `${effectDurationMinutes.toString().padStart(2, "0")}:${effectDurationSeconds.toString().padStart(2, "0")}`;
 
 			effectString +=
 				`d${effectCombinedDurationStr}` +
@@ -446,8 +523,14 @@ export class EntityHandler {
 	/**
 	 * Creates entity render data for UI display
 	 */
-	static createRenderData(entity: Entity, player: Player, isPlayer: boolean): EntityRenderDataInterface {
-		const healthComponent = entity.getComponent(EntityComponentTypes.Health) as EntityHealthComponent | undefined;
+	static createRenderData(
+		entity: Entity,
+		player: Player,
+		isPlayer: boolean,
+	): EntityRenderDataInterface {
+		const healthComponent = entity.getComponent(EntityComponentTypes.Health) as
+			| EntityHealthComponent
+			| undefined;
 		const currentHp = Math.floor(healthComponent?.currentValue ?? 0);
 		const maxHp = Math.floor(healthComponent?.effectiveMax ?? 0);
 
@@ -462,7 +545,7 @@ export class EntityHandler {
 			healthRenderer = this.healthRenderer(
 				currentHp,
 				maxHp,
-				isPlayer ? 20 : 40
+				isPlayer ? 20 : 40,
 			);
 		} else if (maxHp > 40 && !isPlayer) {
 			healthRenderer = "xyyyyyyyyyyyyyyyyyyy"; // Special case for high HP non-players

@@ -1,167 +1,167 @@
 {
-    "author": "r4isen1920",
-    "name": "WAILA",
-    "packs": {
-        "behaviorPack": "./packs/BP",
-        "resourcePack": "./packs/RP"
-    },
-    "regolith": {
-        "dataPath": "./packs/data",
-        "filterDefinitions": {
-            "gametests": {
-                "url": "github.com/Bedrock-OSS/regolith-filters",
-                "version": "1.7.4"
-            },
-            "jsonte": {
-                "url": "github.com/MCDevKit/regolith-library",
-                "version": "2.15.0"
-            },
-            "packer": {
-                "url": "github.com/MCDevKit/regolith-library",
-                "version": "1.0.3"
-            }
-        },
-        "formatVersion": "1.2.0",
-        "profiles": {
-            "base": {
-                "export": {
-                    "readOnly": false,
-                    "target": "development"
-                },
-                "filters": [
-                    {
-                        "arguments": [
-                            "--cache-all",
-                            "--include",
-                            "data/jsonte/soundDurations.templ",
-                            "data/jsonte"
-                        ],
-                        "filter": "jsonte"
-                    }
-                ]
-            },
-            "build": {
-                "export": {
-                    "readOnly": false,
-                    "target": "local"
-                },
-                "filters": [
-                    {
-                        "profile": "build-dev"
-                    },
-                    {
-                        "profile": "build-release"
-                    }
-                ]
-            },
-            "build-dev": {
-                "export": {
-                    "readOnly": false,
-                    "target": "local"
-                },
-                "filters": [
-                    {
-                        "profile": "default"
-                    },
-                    {
-                        "filter": "packer",
-                        "settings": {
-                            "output": "WAILA-${git.tag ?? 'test'}-dev.mcaddon"
-                        }
-                    }
-                ]
-            },
-            "build-release": {
-                "export": {
-                    "readOnly": false,
-                    "target": "local"
-                },
-                "filters": [
-                    {
-                        "profile": "release"
-                    },
-                    {
-                        "filter": "packer",
-                        "settings": {
-                            "output": "WAILA-${git.tag ?? 'test'}.mcaddon"
-                        }
-                    }
-                ]
-            },
-            "default": {
-                "export": {
-                    "readOnly": false,
-                    "target": "development"
-                },
-                "filters": [
-                    {
-                        "profile": "base"
-                    },
-                    {
-                        "profile": "scripts-dev"
-                    }
-                ]
-            },
-            "release": {
-                "export": {
-                    "readOnly": false,
-                    "target": "development"
-                },
-                "filters": [
-                    {
-                        "profile": "base"
-                    },
-                    {
-                        "profile": "scripts"
-                    }
-                ]
-            },
-            "scripts": {
-                "export": {
-                    "readOnly": false,
-                    "target": "local"
-                },
-                "filters": [
-                    {
-                        "filter": "gametests",
-                        "settings": {
-                            "buildOptions": {
-                                "bundle": true,
-                                "dropLabels": ["DEBUG", "LOGGING"],
-                                "minify": true
-                            },
-                            "modules": [
-                                "@minecraft/server@2.1.0",
-                                "@minecraft/server-ui@2.0.0"
-                            ],
-                            "outfile": "BP/scripts/main.js"
-                        }
-                    }
-                ]
-            },
-            "scripts-dev": {
-                "export": {
-                    "readOnly": false,
-                    "target": "local"
-                },
-                "filters": [
-                    {
-                        "filter": "gametests",
-                        "settings": {
-                            "buildOptions": {
-                                "minify": false
-                            },
-                            "debugBuild": true,
-                            "injectSourceMapping": true,
-                            "modules": [
-                                "@minecraft/server@2.1.0",
-                                "@minecraft/server-ui@2.0.0"
-                            ],
-                            "outfile": "BP/scripts/main.js"
-                        }
-                    }
-                ]
-            }
-        }
-    }
+	"author": "r4isen1920",
+	"name": "WAILA",
+	"packs": {
+		"behaviorPack": "./packs/BP",
+		"resourcePack": "./packs/RP"
+	},
+	"regolith": {
+		"dataPath": "./packs/data",
+		"filterDefinitions": {
+			"gametests": {
+				"url": "github.com/Bedrock-OSS/regolith-filters",
+				"version": "1.7.4"
+			},
+			"jsonte": {
+				"url": "github.com/MCDevKit/regolith-library",
+				"version": "2.15.0"
+			},
+			"packer": {
+				"url": "github.com/MCDevKit/regolith-library",
+				"version": "1.0.3"
+			}
+		},
+		"formatVersion": "1.2.0",
+		"profiles": {
+			"base": {
+				"export": {
+					"readOnly": false,
+					"target": "development"
+				},
+				"filters": [
+					{
+						"arguments": [
+							"--cache-all",
+							"--include",
+							"data/jsonte/soundDurations.templ",
+							"data/jsonte"
+						],
+						"filter": "jsonte"
+					}
+				]
+			},
+			"build": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"profile": "build-dev"
+					},
+					{
+						"profile": "build-release"
+					}
+				]
+			},
+			"build-dev": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"profile": "default"
+					},
+					{
+						"filter": "packer",
+						"settings": {
+							"output": "WAILA-${git.tag ?? 'test'}-dev.mcaddon"
+						}
+					}
+				]
+			},
+			"build-release": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"profile": "release"
+					},
+					{
+						"filter": "packer",
+						"settings": {
+							"output": "WAILA-${git.tag ?? 'test'}.mcaddon"
+						}
+					}
+				]
+			},
+			"default": {
+				"export": {
+					"readOnly": false,
+					"target": "development"
+				},
+				"filters": [
+					{
+						"profile": "base"
+					},
+					{
+						"profile": "scripts-dev"
+					}
+				]
+			},
+			"release": {
+				"export": {
+					"readOnly": false,
+					"target": "development"
+				},
+				"filters": [
+					{
+						"profile": "base"
+					},
+					{
+						"profile": "scripts"
+					}
+				]
+			},
+			"scripts": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"filter": "gametests",
+						"settings": {
+							"buildOptions": {
+								"bundle": true,
+								"dropLabels": ["DEBUG", "LOGGING"],
+								"minify": true
+							},
+							"modules": [
+								"@minecraft/server@2.1.0",
+								"@minecraft/server-ui@2.0.0"
+							],
+							"outfile": "BP/scripts/main.js"
+						}
+					}
+				]
+			},
+			"scripts-dev": {
+				"export": {
+					"readOnly": false,
+					"target": "local"
+				},
+				"filters": [
+					{
+						"filter": "gametests",
+						"settings": {
+							"buildOptions": {
+								"minify": false
+							},
+							"debugBuild": true,
+							"injectSourceMapping": true,
+							"modules": [
+								"@minecraft/server@2.1.0",
+								"@minecraft/server-ui@2.0.0"
+							],
+							"outfile": "BP/scripts/main.js"
+						}
+					}
+				]
+			}
+		}
+	}
 }

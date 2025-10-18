@@ -9,8 +9,8 @@
  *
  */
 
-import { Logger } from '@bedrock-oss/bedrock-boost';
-import { BindThis, CustomCmd } from '@bedrock-oss/stylish';
+import { Logger } from "@bedrock-oss/bedrock-boost";
+import { BindThis, CustomCmd } from "@bedrock-oss/stylish";
 import {
 	CommandPermissionLevel,
 	CustomCommand,
@@ -21,63 +21,87 @@ import {
 	Player,
 	RawMessage,
 	system,
-} from '@minecraft/server';
-import { ModalFormData, ModalFormResponse } from '@minecraft/server-ui';
-import Waila from './Waila';
-
-
+} from "@minecraft/server";
+import { ModalFormData, ModalFormResponse } from "@minecraft/server-ui";
+import Waila from "./Waila";
 
 //#region API
 /**
  * Handles options and per-player settings for WAILA.
  */
 export class WailaSettings {
-	static readonly NAMESPACE = 'r4isen1920_waila';
-	static readonly log = Logger.getLogger('WailaSettings');
+	static readonly NAMESPACE = "r4isen1920_waila";
+	static readonly log = Logger.getLogger("WailaSettings");
 
 	/**
 	 * List of settings
 	 */
-	static readonly SETTINGS: { [key: string]: WailaSetting; } = {
+	static readonly SETTINGS: { [key: string]: WailaSetting } = {
 		isEnabled: {
-			type: 'boolean',
-			labelKey: 'waila.settings.isEnabled.label',
-			descriptionKey: 'waila.settings.isEnabled.description',
+			type: "boolean",
+			labelKey: "waila.settings.isEnabled.label",
+			descriptionKey: "waila.settings.isEnabled.description",
 			default: true,
 		},
 
 		displayExtendedInfo: {
-			type: 'boolean',
-			labelKey: 'waila.settings.displayExtendedInfo.label',
-			descriptionKey: 'waila.settings.displayExtendedInfo.description',
+			type: "boolean",
+			labelKey: "waila.settings.displayExtendedInfo.label",
+			descriptionKey: "waila.settings.displayExtendedInfo.description",
 			default: true,
 		},
 		maxDisplayDistance: {
-			type: 'number',
-			labelKey: 'waila.settings.maxDisplayDistance.label',
-			descriptionKey: 'waila.settings.maxDisplayDistance.description',
+			type: "number",
+			labelKey: "waila.settings.maxDisplayDistance.label",
+			descriptionKey: "waila.settings.maxDisplayDistance.description",
 			default: 8,
 			range: [1, 12],
 		},
 		displayPosition: {
-			type: 'enum',
-			labelKey: 'waila.settings.displayPosition.label',
-			descriptionKey: 'waila.settings.displayPosition.description',
-			default: 'top_middle',
+			type: "enum",
+			labelKey: "waila.settings.displayPosition.label",
+			descriptionKey: "waila.settings.displayPosition.description",
+			default: "top_middle",
 			options: [
-				{ value: 'top_left', labelKey: 'waila.settings.displayPosition.option.top_left' },
-				{ value: 'top_middle', labelKey: 'waila.settings.displayPosition.option.top_middle' },
-				{ value: 'top_right', labelKey: 'waila.settings.displayPosition.option.top_right' },
-				{ value: 'left_middle', labelKey: 'waila.settings.displayPosition.option.left_middle' },
-				{ value: 'center', labelKey: 'waila.settings.displayPosition.option.center' },
-				{ value: 'right_middle', labelKey: 'waila.settings.displayPosition.option.right_middle' },
-				{ value: 'bottom_left', labelKey: 'waila.settings.displayPosition.option.bottom_left' },
-				{ value: 'bottom_middle', labelKey: 'waila.settings.displayPosition.option.bottom_middle' },
-				{ value: 'bottom_right', labelKey: 'waila.settings.displayPosition.option.bottom_right' },
+				{
+					value: "top_left",
+					labelKey: "waila.settings.displayPosition.option.top_left",
+				},
+				{
+					value: "top_middle",
+					labelKey: "waila.settings.displayPosition.option.top_middle",
+				},
+				{
+					value: "top_right",
+					labelKey: "waila.settings.displayPosition.option.top_right",
+				},
+				{
+					value: "left_middle",
+					labelKey: "waila.settings.displayPosition.option.left_middle",
+				},
+				{
+					value: "center",
+					labelKey: "waila.settings.displayPosition.option.center",
+				},
+				{
+					value: "right_middle",
+					labelKey: "waila.settings.displayPosition.option.right_middle",
+				},
+				{
+					value: "bottom_left",
+					labelKey: "waila.settings.displayPosition.option.bottom_left",
+				},
+				{
+					value: "bottom_middle",
+					labelKey: "waila.settings.displayPosition.option.bottom_middle",
+				},
+				{
+					value: "bottom_right",
+					labelKey: "waila.settings.displayPosition.option.bottom_right",
+				},
 			],
 		},
 	};
-
 
 	/** Returns all setting keys. */
 	static keys(): string[] {
@@ -93,25 +117,32 @@ export class WailaSettings {
 	 * Get a single setting value for a player, normalized to the correct primitive type.
 	 * Falls back to the setting default when no value has been stored yet.
 	 */
-	static get(player: Player, key: 'isEnabled'): boolean;
-	static get(player: Player, key: 'displayExtendedInfo'): boolean;
-	static get(player: Player, key: 'maxDisplayDistance'): number;
-	static get(player: Player, key: 'displayPosition'): WailaDisplayPosition;
+	static get(player: Player, key: "isEnabled"): boolean;
+	static get(player: Player, key: "displayExtendedInfo"): boolean;
+	static get(player: Player, key: "maxDisplayDistance"): number;
+	static get(player: Player, key: "displayPosition"): WailaDisplayPosition;
 	static get(player: Player, key: string): WailaSettingPrimitive;
 	static get(player: Player, key: string): WailaSettingPrimitive {
 		const setting = this.SETTINGS[key];
 		if (!setting) throw new Error(`Unknown WAILA setting: ${key}`);
 		const stored = player.getDynamicProperty(this.propertyKey(key));
-		if (stored === undefined || stored === null) return setting.default as WailaSettingPrimitive;
+		if (stored === undefined || stored === null)
+			return setting.default as WailaSettingPrimitive;
 
 		switch (setting.type) {
-			case 'boolean':
-				return typeof stored === 'boolean' ? stored : (setting.default as boolean);
-			case 'number':
-				return typeof stored === 'number' ? stored : (setting.default as number);
-			case 'string':
-				return typeof stored === 'string' ? stored : (setting.default as string);
-			case 'enum':
+			case "boolean":
+				return typeof stored === "boolean"
+					? stored
+					: (setting.default as boolean);
+			case "number":
+				return typeof stored === "number"
+					? stored
+					: (setting.default as number);
+			case "string":
+				return typeof stored === "string"
+					? stored
+					: (setting.default as string);
+			case "enum":
 				return this.normalizeEnumStoredValue(setting, stored);
 		}
 	}
@@ -132,10 +163,12 @@ export class WailaSettings {
 	 */
 	static getAllTyped(player: Player): WailaSettingsValues {
 		return {
-			isEnabled: this.get(player, 'isEnabled') as boolean,
-			displayExtendedInfo: this.get(player, 'displayExtendedInfo') as boolean,
-			maxDisplayDistance: this.get(player, 'maxDisplayDistance') as number,
-			displayPosition: this.get(player, 'displayPosition') as WailaDisplayPosition | number,
+			isEnabled: this.get(player, "isEnabled") as boolean,
+			displayExtendedInfo: this.get(player, "displayExtendedInfo") as boolean,
+			maxDisplayDistance: this.get(player, "maxDisplayDistance") as number,
+			displayPosition: this.get(player, "displayPosition") as
+				| WailaDisplayPosition
+				| number,
 		};
 	}
 
@@ -167,22 +200,20 @@ export class WailaSettings {
 		}
 	}
 
-
-
-    //#region Utils
+	//#region Utils
 	private static propertyKey(settingKey: string) {
 		return `${this.NAMESPACE}:${settingKey}`;
 	}
 
 	private static normalizeEnumStoredValue(
 		setting: WailaSettingEnum,
-		stored: unknown
+		stored: unknown,
 	): string | number {
-		if (typeof stored === 'string') {
+		if (typeof stored === "string") {
 			const match = setting.options.find((opt) => opt.value === stored);
 			if (match) return match.value;
 		}
-		if (typeof stored === 'number') {
+		if (typeof stored === "number") {
 			const directMatch = setting.options.find((opt) => opt.value === stored);
 			if (directMatch) return directMatch.value;
 			const option = setting.options[stored];
@@ -191,23 +222,26 @@ export class WailaSettings {
 		return setting.default;
 	}
 
-	private static parseIncomingValue(setting: WailaSetting, rawValue: unknown): WailaSettingPrimitive | undefined {
+	private static parseIncomingValue(
+		setting: WailaSetting,
+		rawValue: unknown,
+	): WailaSettingPrimitive | undefined {
 		switch (setting.type) {
-			case 'boolean':
-				return typeof rawValue === 'boolean' ? rawValue : undefined;
-			case 'number':
-				return typeof rawValue === 'number' ? rawValue : undefined;
-			case 'string':
-				return typeof rawValue === 'string' ? rawValue : undefined;
-			case 'enum': {
+			case "boolean":
+				return typeof rawValue === "boolean" ? rawValue : undefined;
+			case "number":
+				return typeof rawValue === "number" ? rawValue : undefined;
+			case "string":
+				return typeof rawValue === "string" ? rawValue : undefined;
+			case "enum": {
 				// Accept index, label value, or already normalized value
-				if (typeof rawValue === 'number') {
+				if (typeof rawValue === "number") {
 					const byIndex = setting.options[rawValue];
 					if (byIndex) return byIndex.value;
 					const direct = setting.options.find((o) => o.value === rawValue);
 					return direct ? direct.value : undefined;
 				}
-				if (typeof rawValue === 'string') {
+				if (typeof rawValue === "string") {
 					const opt = setting.options.find((o) => o.value === rawValue);
 					return opt ? opt.value : undefined;
 				}
@@ -219,8 +253,6 @@ export class WailaSettings {
 	}
 }
 
-
-
 //#region CustomCmd
 /**
  * Handles the command to display the WAILA options UI.
@@ -228,16 +260,16 @@ export class WailaSettings {
 @CustomCmd
 export class WailaCommand implements CustomCommand {
 	static readonly NAMESPACE = WailaSettings.NAMESPACE;
-    static readonly log = Logger.getLogger('WailaCommand');
+	static readonly log = Logger.getLogger("WailaCommand");
 
-	readonly name = WailaCommand.NAMESPACE + ':waila';
+	readonly name = WailaCommand.NAMESPACE + ":waila";
 	readonly description = `Shows the WAILA options`; //? Localization support for command description is not yet supported for some reason !!!1!!1
 	readonly permissionLevel = CommandPermissionLevel.Any;
 	readonly cheatsRequired = false;
 
 	readonly optionalParameters = [
 		{
-			name: 'player',
+			name: "player",
 			type: CustomCommandParamType.PlayerSelector,
 		},
 	];
@@ -252,39 +284,43 @@ export class WailaCommand implements CustomCommand {
 		) {
 			return {
 				status: CustomCommandStatus.Failure,
-				message: 'This command can only be run on a player',
+				message: "This command can only be run on a player",
 			};
 		}
 
-        if (player && player.length === 0) {
-            return {
-                status: CustomCommandStatus.Failure,
-                message: 'No targets matched the selector.',
-            };
-        }
+		if (player && player.length === 0) {
+			return {
+				status: CustomCommandStatus.Failure,
+				message: "No targets matched the selector.",
+			};
+		}
 
-        if (player && player.length > 1) {
-            return {
-                status: CustomCommandStatus.Failure,
-                message: 'Please select only one player to edit WAILA settings for.',
-            };
-        }
+		if (player && player.length > 1) {
+			return {
+				status: CustomCommandStatus.Failure,
+				message: "Please select only one player to edit WAILA settings for.",
+			};
+		}
 
-        if (player &&
-            player?.[0].id !== sourceEntity.id && // editing another player's settings
-            sourceEntity.commandPermissionLevel < CommandPermissionLevel.Admin
-        ) {
-            return {
-                status: CustomCommandStatus.Failure,
-                message: 'You do not have permission to edit other players\' WAILA settings.',
-            };
-        }
+		if (
+			player &&
+			player?.[0].id !== sourceEntity.id && // editing another player's settings
+			sourceEntity.commandPermissionLevel < CommandPermissionLevel.Admin
+		) {
+			return {
+				status: CustomCommandStatus.Failure,
+				message:
+					"You do not have permission to edit other players' WAILA settings.",
+			};
+		}
 
 		system.run(() => {
 			WailaSettingsUI.showUI(sourceEntity, player?.[0]);
 		});
 
-        WailaCommand.log.info(`Displayed to: ${sourceEntity.name}, editing: ${player?.[0].name ?? 'self'}`);
+		WailaCommand.log.info(
+			`Displayed to: ${sourceEntity.name}, editing: ${player?.[0].name ?? "self"}`,
+		);
 
 		return {
 			status: CustomCommandStatus.Success,
@@ -292,8 +328,6 @@ export class WailaCommand implements CustomCommand {
 		};
 	}
 }
-
-
 
 //#region UI
 export class WailaSettingsUI {
@@ -310,8 +344,13 @@ export class WailaSettingsUI {
 		}
 
 		const form = new ModalFormData()
-			.title(this.str('waila.settings.title' + (player.id !== target.id ? '_for' : ''), target))
-			.submitButton(this.str('waila.settings.submit'));
+			.title(
+				this.str(
+					"waila.settings.title" + (player.id !== target.id ? "_for" : ""),
+					target,
+				),
+			)
+			.submitButton(this.str("waila.settings.submit"));
 
 		const entries = WailaSettings.entries();
 		const controlIndexByKey: Record<string, number> = {};
@@ -324,13 +363,19 @@ export class WailaSettingsUI {
 			controlIndexByKey[key] = nextIndex;
 
 			switch (setting.type) {
-				case 'boolean': {
-					const defaultValue = typeof currentValue === 'boolean' ? currentValue : (setting.default as boolean);
+				case "boolean": {
+					const defaultValue =
+						typeof currentValue === "boolean"
+							? currentValue
+							: (setting.default as boolean);
 					form.toggle(this.str(setting.labelKey), { defaultValue });
 					break;
 				}
-				case 'number': {
-					const defaultValue = typeof currentValue === 'number' ? currentValue : (setting.default as number);
+				case "number": {
+					const defaultValue =
+						typeof currentValue === "number"
+							? currentValue
+							: (setting.default as number);
 					form.slider(
 						this.str(setting.labelKey),
 						setting.range[0],
@@ -338,20 +383,27 @@ export class WailaSettingsUI {
 						{
 							valueStep: setting.step ?? 1,
 							defaultValue,
-						}
+						},
 					);
 					break;
 				}
-				case 'string': {
-					const defaultValue = typeof currentValue === 'string' ? currentValue : (setting.default as string);
-					form.textField(this.str(setting.labelKey), setting.default as string, {
-						defaultValue,
-					});
+				case "string": {
+					const defaultValue =
+						typeof currentValue === "string"
+							? currentValue
+							: (setting.default as string);
+					form.textField(
+						this.str(setting.labelKey),
+						setting.default as string,
+						{
+							defaultValue,
+						},
+					);
 					break;
 				}
-				case 'enum': {
+				case "enum": {
 					const enumValue =
-						typeof currentValue === 'string' || typeof currentValue === 'number'
+						typeof currentValue === "string" || typeof currentValue === "number"
 							? currentValue
 							: (setting.default as string | number);
 					const items = setting.options.map((opt) => this.str(opt.labelKey));
@@ -365,45 +417,46 @@ export class WailaSettingsUI {
 			nextIndex++;
 
 			if (setting.descriptionKey) {
-				form.label(this.str(setting.descriptionKey, '§7')); // gray color
+				form.label(this.str(setting.descriptionKey, "§7")); // gray color
 				nextIndex++;
 			}
 
 			if (i < entries.length - 1) {
-				form.label('\n'); // divider
+				form.label("\n"); // divider
 				nextIndex++;
 			}
 		}
 
-        form.divider();
-        form.label(this.str(
-                player.id !== target.id
-                    ? 'waila.settings.footer.other_player'
-                    : 'waila.settings.footer.self_adjusting',
-                target
-            )
-        );
+		form.divider();
+		form.label(
+			this.str(
+				player.id !== target.id
+					? "waila.settings.footer.other_player"
+					: "waila.settings.footer.self_adjusting",
+				target,
+			),
+		);
 
 		form.show(player).then((res) => {
 			if (res.canceled || !res.formValues?.length) {
-                player.playSound('note.bass');
+				player.playSound("note.bass");
 				return;
 			}
 			this.handleResponse(target, res, controlIndexByKey);
 			Waila.getInstance().clearUI(target); // refresh UI
-            player.playSound('note.pling');
+			player.playSound("note.pling");
 		});
 	}
 
 	static handleResponse(
 		player: Player,
 		response: ModalFormResponse,
-		controlIndexByKey: Record<string, number>
+		controlIndexByKey: Record<string, number>,
 	) {
 		for (const [key, setting] of WailaSettings.entries()) {
 			const idx = controlIndexByKey[key];
 			const rawValue = response.formValues![idx];
-			if (setting.type === 'enum') {
+			if (setting.type === "enum") {
 				WailaSettings.set(player, key, rawValue);
 			} else {
 				WailaSettings.set(player, key, rawValue);
@@ -411,20 +464,29 @@ export class WailaSettingsUI {
 		}
 	}
 
-    /** Create a raw message from a translation token */
+	/** Create a raw message from a translation token */
 	private static str(token: string): RawMessage;
-    /** Create a raw message from a translation token with a prefix */
-    private static str(token: string, prefix: string): RawMessage;
-    /** Create a raw message from a translation token with a player */
+	/** Create a raw message from a translation token with a prefix */
+	private static str(token: string, prefix: string): RawMessage;
+	/** Create a raw message from a translation token with a player */
 	private static str(token: string, player: Player): RawMessage;
-    /** Create a raw message from a translation token with a prefix and a player */
-    private static str(token: string, prefix: string, player: Player): RawMessage;
-	private static str(token: string, prefixOrPlayer?: string | Player, playerArg?: Player) {
-        if (playerArg) {
-            return { rawtext: [{ text: prefixOrPlayer as string }, { translate: token, with: [playerArg.name] }] };
-        }
+	/** Create a raw message from a translation token with a prefix and a player */
+	private static str(token: string, prefix: string, player: Player): RawMessage;
+	private static str(
+		token: string,
+		prefixOrPlayer?: string | Player,
+		playerArg?: Player,
+	) {
+		if (playerArg) {
+			return {
+				rawtext: [
+					{ text: prefixOrPlayer as string },
+					{ translate: token, with: [playerArg.name] },
+				],
+			};
+		}
 
-		if (typeof prefixOrPlayer === 'string') {
+		if (typeof prefixOrPlayer === "string") {
 			return { rawtext: [{ text: prefixOrPlayer }, { translate: token }] };
 		} else if (prefixOrPlayer) {
 			return { rawtext: [{ translate: token, with: [prefixOrPlayer.name] }] };
@@ -435,33 +497,31 @@ export class WailaSettingsUI {
 
 	private static getEnumOptionIndex(
 		setting: WailaSettingEnum,
-		value: string | number
+		value: string | number,
 	) {
 		const index = setting.options.findIndex((opt) => opt.value === value);
 		return index >= 0 ? index : 0;
 	}
 }
 
-
-
 //#region Types
 /** A setting that represents a boolean value */
 interface WailaSettingBoolean extends WailaSettingBase<boolean> {
-	type: 'boolean';
+	type: "boolean";
 }
 /** A setting that represents a numeric value */
 interface WailaSettingNumber extends WailaSettingBase<number> {
-	type: 'number';
+	type: "number";
 	range: [number, number];
 	step?: number;
 }
 /** A setting that represents a string value */
 interface WailaSettingString extends WailaSettingBase<string> {
-	type: 'string';
+	type: "string";
 }
 /** A setting that represents an enum value */
 interface WailaSettingEnum extends WailaSettingBase<string | number> {
-	type: 'enum';
+	type: "enum";
 	options: { labelKey: string; value: string | number }[];
 }
 /** The base interface for all WAILA settings */
@@ -480,15 +540,15 @@ type WailaSetting =
 type WailaSettingPrimitive = boolean | number | string;
 
 export type WailaDisplayPosition =
-	| 'top_left'
-	| 'top_middle'
-	| 'top_right'
-    | 'left_middle'
-	| 'center'
-	| 'right_middle'
-	| 'bottom_left'
-	| 'bottom_middle'
-	| 'bottom_right';
+	| "top_left"
+	| "top_middle"
+	| "top_right"
+	| "left_middle"
+	| "center"
+	| "right_middle"
+	| "bottom_left"
+	| "bottom_middle"
+	| "bottom_right";
 
 export interface WailaSettingsValues {
 	isEnabled: boolean;

@@ -184,7 +184,12 @@
 		"name": "pickaxe_stone",
 		"remarks": {
 			"correct": {
-				"itemIds": ["minecraft:stone_pickaxe", "minecraft:iron_pickaxe", "minecraft:diamond_pickaxe", "minecraft:netherite_pickaxe"]
+				"itemIds": [
+					"minecraft:stone_pickaxe",
+					"minecraft:iron_pickaxe",
+					"minecraft:diamond_pickaxe",
+					"minecraft:netherite_pickaxe"
+				]
 			},
 			"incorrect": {
 				"itemIds": ["minecraft:wooden_pickaxe", "!minecraft:stone_pickaxe"]
@@ -202,7 +207,11 @@
 		"name": "pickaxe_iron",
 		"remarks": {
 			"correct": {
-				"itemIds": ["minecraft:iron_pickaxe", "minecraft:diamond_pickaxe", "minecraft:netherite_pickaxe"]
+				"itemIds": [
+					"minecraft:iron_pickaxe",
+					"minecraft:diamond_pickaxe",
+					"minecraft:netherite_pickaxe"
+				]
 			},
 			"incorrect": {
 				"itemIds": ["!minecraft:iron_pickaxe"]
@@ -259,7 +268,12 @@
 		"name": "axe_stone",
 		"remarks": {
 			"correct": {
-				"itemIds": ["minecraft:stone_axe", "minecraft:iron_axe", "minecraft:diamond_axe", "minecraft:netherite_axe"]
+				"itemIds": [
+					"minecraft:stone_axe",
+					"minecraft:iron_axe",
+					"minecraft:diamond_axe",
+					"minecraft:netherite_axe"
+				]
 			},
 			"incorrect": {
 				"itemIds": ["minecraft:wooden_axe", "!minecraft:stone_axe"]
@@ -276,7 +290,12 @@
 		"name": "axe_iron",
 		"remarks": {
 			"correct": {
-				"itemIds": ["minecraft:iron_axe", "minecraft:stone_axe", "minecraft:diamond_axe", "minecraft:netherite_axe"]
+				"itemIds": [
+					"minecraft:iron_axe",
+					"minecraft:stone_axe",
+					"minecraft:diamond_axe",
+					"minecraft:netherite_axe"
+				]
 			},
 			"incorrect": {
 				"itemIds": ["!minecraft:iron_axe", "!minecraft:golden_axe"]

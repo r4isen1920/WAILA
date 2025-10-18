@@ -53,7 +53,7 @@ export interface LookAtObjectMetadata {
 	 * If the looked-at block is an item frame (minecraft:frame or minecraft:glow_frame),
 	 * this holds the translation key for the item inside the frame.
 	 */
-	itemInsideFrameTranslationKey?: string
+	itemInsideFrameTranslationKey?: string;
 }
 
 /**

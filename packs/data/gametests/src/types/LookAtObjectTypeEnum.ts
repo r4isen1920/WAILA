@@ -9,7 +9,6 @@
  *
  */
 
-
 /**
  * List of all the possible look at object types.
  */

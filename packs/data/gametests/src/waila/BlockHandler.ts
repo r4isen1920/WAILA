@@ -9,7 +9,17 @@
  *
  */
 
-import { Block, BlockInventoryComponent, EntityComponentTypes, Player, EntityEquippableComponent, EquipmentSlot, ItemStack, world, ItemLockMode } from "@minecraft/server";
+import {
+	Block,
+	BlockInventoryComponent,
+	EntityComponentTypes,
+	Player,
+	EntityEquippableComponent,
+	EquipmentSlot,
+	ItemStack,
+	world,
+	ItemLockMode,
+} from "@minecraft/server";
 import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import { LookAtBlockInterface } from "../types/LookAtObjectInterface";
@@ -31,8 +41,11 @@ export class BlockHandler {
 	 * Helper function to check if a single value matches a condition rule.
 	 * Mirrors the logic used for TagsInterface.target matching.
 	 */
-	private static checkRemarkConditionRule(value: string, rule: string): boolean {
-		const valueNamePart = value.includes(':') ? value.split(':')[1] : value;
+	private static checkRemarkConditionRule(
+		value: string,
+		rule: string,
+	): boolean {
+		const valueNamePart = value.includes(":") ? value.split(":")[1] : value;
 		const isNegatedRule = rule.startsWith("!");
 		const actualRule = isNegatedRule ? rule.substring(1) : rule;
 
@@ -43,16 +56,16 @@ export class BlockHandler {
 			positiveMatchFound = true;
 		}
 		// Case 2: Rule is namespace-less and is an exact match for the name part of the value (e.g., rule="stone", value="minecraft:stone")
-		else if (!actualRule.includes(':') && actualRule === valueNamePart) {
+		else if (!actualRule.includes(":") && actualRule === valueNamePart) {
 			positiveMatchFound = true;
 		}
 		// Case 3: Rule is namespace-less and the full value string includes the rule (e.g., rule="pickaxe", value="minecraft:diamond_pickaxe")
-		else if (!actualRule.includes(':') && value.includes(actualRule)) {
+		else if (!actualRule.includes(":") && value.includes(actualRule)) {
 			positiveMatchFound = true;
 		}
 		// Case 4: Rule is namespace-less and the name part of the value includes the rule (e.g., rule="axe", value="minecraft:diamond_pickaxe" -> namePart "diamond_pickaxe")
 		// This also covers cases where value itself is namespace-less and includes the rule.
-		else if (!actualRule.includes(':') && valueNamePart.includes(actualRule)) {
+		else if (!actualRule.includes(":") && valueNamePart.includes(actualRule)) {
 			positiveMatchFound = true;
 		}
 
@@ -89,31 +102,44 @@ export class BlockHandler {
 	static resolveIcon(player: Player, blockOrItem: Block | ItemStack): void {
 		const SLOT_INDEX = 17;
 
-		const playerContainer = player.getComponent(EntityComponentTypes.Inventory)?.container;
+		const playerContainer = player.getComponent(
+			EntityComponentTypes.Inventory,
+		)?.container;
 		if (!playerContainer) return;
 
-		const ownedItemHolder = player.getDynamicProperty("r4isen1920_waila:item_holder_id");
+		const ownedItemHolder = player.getDynamicProperty(
+			"r4isen1920_waila:item_holder_id",
+		);
 		if (!ownedItemHolder) {
-			const itemHolder = player.dimension.spawnEntity('r4isen1920_waila:item_holder', player.location);
-			const itemHolderContainer = itemHolder.getComponent(EntityComponentTypes.Inventory)?.container;
+			const itemHolder = player.dimension.spawnEntity(
+				"r4isen1920_waila:item_holder",
+				player.location,
+			);
+			const itemHolderContainer = itemHolder.getComponent(
+				EntityComponentTypes.Inventory,
+			)?.container;
 			if (itemHolderContainer) {
 				playerContainer.moveItem(SLOT_INDEX, 0, itemHolderContainer);
-				player.setDynamicProperty("r4isen1920_waila:item_holder_id", itemHolder.id);
+				player.setDynamicProperty(
+					"r4isen1920_waila:item_holder_id",
+					itemHolder.id,
+				);
 			} else {
 				itemHolder.triggerEvent("r4isen1920_waila:instant_despawn");
 			}
 		}
 
 		const ITEM_MAPPING: { [key: string]: ItemStack } = {
-			'minecraft:bubble_column': new ItemStack('minecraft:water_bucket'),
-			'minecraft:flowing_lava': new ItemStack('minecraft:lava_bucket'),
-			'minecraft:flowing_water': new ItemStack('minecraft:water_bucket'),
-			'minecraft:water': new ItemStack('minecraft:water_bucket'),
-			'minecraft:lava': new ItemStack('minecraft:lava_bucket')
+			"minecraft:bubble_column": new ItemStack("minecraft:water_bucket"),
+			"minecraft:flowing_lava": new ItemStack("minecraft:lava_bucket"),
+			"minecraft:flowing_water": new ItemStack("minecraft:water_bucket"),
+			"minecraft:water": new ItemStack("minecraft:water_bucket"),
+			"minecraft:lava": new ItemStack("minecraft:lava_bucket"),
 		};
-		const item = blockOrItem instanceof Block
-			? (ITEM_MAPPING[blockOrItem.typeId] ?? blockOrItem.getItemStack(1))
-			: blockOrItem;
+		const item =
+			blockOrItem instanceof Block
+				? (ITEM_MAPPING[blockOrItem.typeId] ?? blockOrItem.getItemStack(1))
+				: blockOrItem;
 		if (item) {
 			item.lockMode = ItemLockMode.slot;
 			item.keepOnDeath = true;
@@ -128,14 +154,20 @@ export class BlockHandler {
 	static resetIcon(player: Player): void {
 		const SLOT_INDEX = 17;
 
-		const playerContainer = player.getComponent(EntityComponentTypes.Inventory)?.container;
+		const playerContainer = player.getComponent(
+			EntityComponentTypes.Inventory,
+		)?.container;
 		if (!playerContainer) return;
 
-		const ownedItemHolder = player.getDynamicProperty("r4isen1920_waila:item_holder_id");
+		const ownedItemHolder = player.getDynamicProperty(
+			"r4isen1920_waila:item_holder_id",
+		);
 		if (typeof ownedItemHolder === "string") {
 			const itemHolder = world.getEntity(ownedItemHolder);
 			if (itemHolder && itemHolder.isValid) {
-				const itemHolderContainer = itemHolder.getComponent(EntityComponentTypes.Inventory)?.container;
+				const itemHolderContainer = itemHolder.getComponent(
+					EntityComponentTypes.Inventory,
+				)?.container;
 				itemHolderContainer?.moveItem(0, SLOT_INDEX, playerContainer);
 				itemHolder.triggerEvent("r4isen1920_waila:instant_despawn");
 			} else {
@@ -162,20 +194,22 @@ export class BlockHandler {
 			let hasBlockingNegativeRule = false;
 
 			for (const targetMatcher of typedTagRule.target) {
-				if (typeof targetMatcher === 'string') {
+				if (typeof targetMatcher === "string") {
 					const isNegation = targetMatcher.startsWith("!");
-					const ruleContent = isNegation ? targetMatcher.substring(1) : targetMatcher;
+					const ruleContent = isNegation
+						? targetMatcher.substring(1)
+						: targetMatcher;
 
 					let currentRuleMatchesBlock = false;
 					// Condition 1: Exact match on full ID. (e.g. ruleContent "minecraft:stone" matches blockId "minecraft:stone")
 					if (ruleContent === blockId) {
 						currentRuleMatchesBlock = true;
-					// Condition 2: Rule is namespace-less.
-					} else if (!ruleContent.includes(':')) {
+						// Condition 2: Rule is namespace-less.
+					} else if (!ruleContent.includes(":")) {
 						// Condition 2a: Exact match on name part. (e.g. ruleContent "stone" matches namespaceRemoved "stone")
 						if (ruleContent === namespaceRemoved) {
 							currentRuleMatchesBlock = true;
-						// Condition 2b: blockId includes ruleContent. (e.g. ruleContent "log" in blockId "minecraft:oak_log")
+							// Condition 2b: blockId includes ruleContent. (e.g. ruleContent "log" in blockId "minecraft:oak_log")
 						} else if (blockId.includes(ruleContent)) {
 							currentRuleMatchesBlock = true;
 						}
@@ -190,10 +224,12 @@ export class BlockHandler {
 							// Continue checking other matchers for potential negations.
 						}
 					}
-				} else if (typeof targetMatcher === 'object' && targetMatcher.tag) {
+				} else if (typeof targetMatcher === "object" && targetMatcher.tag) {
 					const requiredTagRule = targetMatcher.tag;
 					const isNegation = requiredTagRule.startsWith("!");
-					const actualTag = isNegation ? requiredTagRule.substring(1) : requiredTagRule;
+					const actualTag = isNegation
+						? requiredTagRule.substring(1)
+						: requiredTagRule;
 
 					if (blockTags.includes(actualTag)) {
 						if (isNegation) {
@@ -218,13 +254,17 @@ export class BlockHandler {
 		let playerMainHandItemTags: string[] = [];
 		let playerMainHandItemTypeId: string = "__r4ui:none";
 		try {
-			const equipComponent = player.getComponent(EntityComponentTypes.Equippable) as EntityEquippableComponent | undefined;
+			const equipComponent = player.getComponent(
+				EntityComponentTypes.Equippable,
+			) as EntityEquippableComponent | undefined;
 			const mainHandItem = equipComponent?.getEquipment(EquipmentSlot.Mainhand);
 			if (mainHandItem) {
 				playerMainHandItemTags = mainHandItem.getTags();
 				playerMainHandItemTypeId = mainHandItem.typeId || "__r4ui:none";
 			}
-		} catch { /** Empty */ }
+		} catch {
+			/** Empty */
+		}
 
 		const processedTags: { id: string; remark: string }[] = [];
 
@@ -233,24 +273,39 @@ export class BlockHandler {
 			let remarkIcon = TagRemarksEnum.UNDEFINED;
 
 			const tagNameUpper = typedTagData.name.toUpperCase();
-			const iconId = BlockToolsEnum[tagNameUpper as keyof typeof BlockToolsEnum] || BlockToolsEnum.UNDEFINED;
+			const iconId =
+				BlockToolsEnum[tagNameUpper as keyof typeof BlockToolsEnum] ||
+				BlockToolsEnum.UNDEFINED;
 
 			if (typedTagData.remarks) {
 				for (const jsonRemarkKey in typedTagData.remarks) {
 					const enumKeyCandidate = jsonRemarkKey.toUpperCase();
 
 					if (enumKeyCandidate in TagRemarksEnum) {
-						const remarkEnumValue = TagRemarksEnum[enumKeyCandidate as keyof typeof TagRemarksEnum];
-						const conditions = typedTagData.remarks[jsonRemarkKey as keyof typeof typedTagData.remarks]!;
+						const remarkEnumValue =
+							TagRemarksEnum[enumKeyCandidate as keyof typeof TagRemarksEnum];
+						const conditions =
+							typedTagData.remarks[
+								jsonRemarkKey as keyof typeof typedTagData.remarks
+							]!;
 						let conditionMet = false;
 
 						// Check itemIds condition against the player's mainhand item typeId
 						if (conditions.itemIds) {
-							conditionMet = conditions.itemIds.some(idRule => BlockHandler.checkRemarkConditionRule(playerMainHandItemTypeId, idRule));
+							conditionMet = conditions.itemIds.some((idRule) =>
+								BlockHandler.checkRemarkConditionRule(
+									playerMainHandItemTypeId,
+									idRule,
+								),
+							);
 						}
 
 						if (!conditionMet && conditions.tags) {
-							conditionMet = conditions.tags.some(tagRule => playerMainHandItemTags.some(heldItemTag => BlockHandler.checkRemarkConditionRule(heldItemTag, tagRule)));
+							conditionMet = conditions.tags.some((tagRule) =>
+								playerMainHandItemTags.some((heldItemTag) =>
+									BlockHandler.checkRemarkConditionRule(heldItemTag, tagRule),
+								),
+							);
 						}
 
 						if (conditionMet) {
@@ -263,7 +318,7 @@ export class BlockHandler {
 
 			// If this tag's ID starts with the first letter of any previous processed tag, skip it
 			const firstLetter = iconId.charAt(0);
-			if (processedTags.some(tag => tag.id.startsWith(firstLetter))) {
+			if (processedTags.some((tag) => tag.id.startsWith(firstLetter))) {
 				continue;
 			}
 
@@ -271,8 +326,14 @@ export class BlockHandler {
 			if (processedTags.length >= 2) break; // Max 2 tags
 		}
 
-		const tag1 = processedTags[0] || { id: BlockToolsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED };
-		const tag2 = processedTags[1] || { id: BlockToolsEnum.UNDEFINED, remark: TagRemarksEnum.UNDEFINED };
+		const tag1 = processedTags[0] || {
+			id: BlockToolsEnum.UNDEFINED,
+			remark: TagRemarksEnum.UNDEFINED,
+		};
+		const tag2 = processedTags[1] || {
+			id: BlockToolsEnum.UNDEFINED,
+			remark: TagRemarksEnum.UNDEFINED,
+		};
 
 		return `${tag1.id},${tag1.remark};${tag2.id},${tag2.remark}:`;
 	}
@@ -289,7 +350,14 @@ export class BlockHandler {
 			return `\n${blockStates
 				.map((state) => {
 					const value = states[state];
-					const valueColor = typeof value === "number" ? "§3" : typeof value === "boolean" ? (value ? "§a" : "§c") : "§e";
+					const valueColor =
+						typeof value === "number"
+							? "§3"
+							: typeof value === "boolean"
+								? value
+									? "§a"
+									: "§c"
+								: "§e";
 					return `§7"${state}" -> ${valueColor}${value}§r`;
 				})
 				.join("\n")}`;
@@ -303,7 +371,9 @@ export class BlockHandler {
 	 */
 	static getBlockInventory(block: Block): string | string[] {
 		try {
-			const inventoryComponent = block.getComponent(EntityComponentTypes.Inventory) as BlockInventoryComponent | undefined;
+			const inventoryComponent = block.getComponent(
+				EntityComponentTypes.Inventory,
+			) as BlockInventoryComponent | undefined;
 			const blockContainer = inventoryComponent?.container;
 			if (!blockContainer) return "none";
 
@@ -326,7 +396,10 @@ export class BlockHandler {
 	/**
 	 * Creates block render data for UI display
 	 */
-	static createRenderData(block: Block, player: Player): BlockRenderDataInterface {
+	static createRenderData(
+		block: Block,
+		player: Player,
+	): BlockRenderDataInterface {
 		return {
 			toolIcons: this.getBlockToolIcons(block, player),
 			blockStates: this.getBlockStates(block),

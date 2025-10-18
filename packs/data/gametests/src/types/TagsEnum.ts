@@ -9,7 +9,6 @@
  *
  */
 
-
 /**
  * List of remarks that can be used to describe the state of a tag.
  */

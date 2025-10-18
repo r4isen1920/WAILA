@@ -23,7 +23,7 @@ export default interface TagsInterface {
 	/**
 	 * List of item identifiers or block tags that this tag applies to.
 	 * Tag will be displayed when player views a matching object.
-	 * 
+	 *
 	 * Format options:
 	 * - `"minecraft:stone"` - exact match with namespace
 	 * - `"stone"` - matches all namespaces with this identifier

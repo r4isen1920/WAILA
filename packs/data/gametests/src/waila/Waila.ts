@@ -9,12 +9,36 @@
  *
  */
 
-import { EntityComponentTypes, EquipmentSlot, ItemStack, LocationOutOfWorldBoundariesError, Player, RawMessage, TicksPerSecond, TitleDisplayOptions, system, world } from "@minecraft/server";
-import { Logger, LogLevel, PlayerPulseScheduler } from "@bedrock-oss/bedrock-boost";
+import {
+	EntityComponentTypes,
+	EquipmentSlot,
+	ItemStack,
+	LocationOutOfWorldBoundariesError,
+	Player,
+	RawMessage,
+	TicksPerSecond,
+	TitleDisplayOptions,
+	system,
+	world,
+} from "@minecraft/server";
+import {
+	Logger,
+	LogLevel,
+	PlayerPulseScheduler,
+} from "@bedrock-oss/bedrock-boost";
 import { Registry } from "@bedrock-oss/add-on-registry";
 
-import { LookAtBlockInterface, LookAtEntityInterface, LookAtItemEntityInterface, LookAtObjectInterface } from "../types/LookAtObjectInterface";
-import { BlockRenderDataInterface, EntityRenderDataInterface, LookAtObjectMetadata } from "../types/LookAtObjectMetadataInterface";
+import {
+	LookAtBlockInterface,
+	LookAtEntityInterface,
+	LookAtItemEntityInterface,
+	LookAtObjectInterface,
+} from "../types/LookAtObjectInterface";
+import {
+	BlockRenderDataInterface,
+	EntityRenderDataInterface,
+	LookAtObjectMetadata,
+} from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "./BlockHandler";
 import { EntityHandler } from "./EntityHandler";
@@ -23,8 +47,6 @@ import AfterWorldLoad from "../Init";
 import { WailaSettings } from "./Settings";
 
 import ignoredBlockRender from "../data/ignoredBlockRender.json";
-
-
 
 //#region WAILA
 export default class Waila {
@@ -39,7 +61,7 @@ export default class Waila {
 			world.gameRules.showTags = false;
 
 			const pulse = new PlayerPulseScheduler((player) => {
-				const isEnabled = WailaSettings.get(player, 'isEnabled');
+				const isEnabled = WailaSettings.get(player, "isEnabled");
 				if (isEnabled === undefined || isEnabled === true) {
 					this.toPlayer(player);
 				}
@@ -61,8 +83,13 @@ export default class Waila {
 	 * Requests the process for a player in the world.
 	 */
 	private toPlayer(player: Player): void {
-		const lookAtObject = this.fetchLookAt(player, WailaSettings.get(player, 'maxDisplayDistance'));
-		lookAtObject.viewAdditionalProperties = WailaSettings.get(player, 'displayExtendedInfo') === true && player.isSneaking;
+		const lookAtObject = this.fetchLookAt(
+			player,
+			WailaSettings.get(player, "maxDisplayDistance"),
+		);
+		lookAtObject.viewAdditionalProperties =
+			WailaSettings.get(player, "displayExtendedInfo") === true &&
+			player.isSneaking;
 
 		if (lookAtObject.hitIdentifier === undefined) {
 			lookAtObject.hitIdentifier = "__r4ui:none";
@@ -84,8 +111,10 @@ export default class Waila {
 			});
 
 			// Check for the item held by the player
-			const playerEquippedItem = player.getComponent(EntityComponentTypes.Equippable)
-				?.getEquipment(EquipmentSlot.Mainhand)?.typeId || "__r4ui:none";
+			const playerEquippedItem =
+				player
+					.getComponent(EntityComponentTypes.Equippable)
+					?.getEquipment(EquipmentSlot.Mainhand)?.typeId || "__r4ui:none";
 
 			if (entityLookAt.length > 0 && entityLookAt[0]?.entity) {
 				const entity = entityLookAt[0].entity;
@@ -101,7 +130,10 @@ export default class Waila {
 				maxDistance: max_dist,
 			});
 
-			if (blockLookAt?.block && !ignoredBlockRender.some(b => b.includes(blockLookAt.block.typeId))) {
+			if (
+				blockLookAt?.block &&
+				!ignoredBlockRender.some((b) => b.includes(blockLookAt.block.typeId))
+			) {
 				const lookAtBlock = BlockHandler.createLookupData(blockLookAt.block);
 				lookAtBlock.itemHeld = playerEquippedItem;
 				return lookAtBlock;
@@ -111,7 +143,7 @@ export default class Waila {
 			return {
 				type: undefined,
 				hitIdentifier: "__r4ui:none",
-				itemHeld: playerEquippedItem
+				itemHeld: playerEquippedItem,
 			};
 		} catch (e) {
 			if (!(e instanceof LocationOutOfWorldBoundariesError)) {
@@ -120,7 +152,7 @@ export default class Waila {
 			return {
 				type: undefined,
 				hitIdentifier: "__r4ui:none",
-				itemHeld: "__r4ui:none"
+				itemHeld: "__r4ui:none",
 			};
 		}
 	}
@@ -128,13 +160,23 @@ export default class Waila {
 	/**
 	 * Fetches metadata for the looked-at object.
 	 */
-	private fetchLookAtMetadata(player: Player, lookAtObject: LookAtObjectInterface): LookAtObjectMetadata | null {
-		if (!lookAtObject.type || !lookAtObject.hitIdentifier || lookAtObject.hitIdentifier === "__r4ui:none") {
+	private fetchLookAtMetadata(
+		player: Player,
+		lookAtObject: LookAtObjectInterface,
+	): LookAtObjectMetadata | null {
+		if (
+			!lookAtObject.type ||
+			!lookAtObject.hitIdentifier ||
+			lookAtObject.hitIdentifier === "__r4ui:none"
+		) {
 			return null;
 		}
 
 		const hitNamespace = lookAtObject.hitIdentifier.includes(":")
-			? lookAtObject.hitIdentifier.substring(0, lookAtObject.hitIdentifier.indexOf(":") + 1)
+			? lookAtObject.hitIdentifier.substring(
+					0,
+					lookAtObject.hitIdentifier.indexOf(":") + 1,
+				)
 			: "minecraft:";
 
 		let resultDisplayName: string = lookAtObject.hitIdentifier;
@@ -149,7 +191,7 @@ export default class Waila {
 			const entityRenderData = EntityHandler.createRenderData(
 				entity,
 				player,
-				entityTypeId === "minecraft:player"
+				entityTypeId === "minecraft:player",
 			);
 
 			if (entityNameTag && entityNameTag.length > 0) {
@@ -173,8 +215,12 @@ export default class Waila {
 				namespace: hitNamespace,
 				displayName: resultDisplayName,
 				renderData: entityRenderData,
-				...(nameTagContextTranslationKey_local && { nameTagContextTranslationKey: nameTagContextTranslationKey_local }),
-				...(itemContextIdentifier_local && { itemContextIdentifier: itemContextIdentifier_local })
+				...(nameTagContextTranslationKey_local && {
+					nameTagContextTranslationKey: nameTagContextTranslationKey_local,
+				}),
+				...(itemContextIdentifier_local && {
+					itemContextIdentifier: itemContextIdentifier_local,
+				}),
 			};
 		}
 
@@ -185,7 +231,9 @@ export default class Waila {
 			BlockHandler.resolveIcon(player, block);
 			const blockRenderData = BlockHandler.createRenderData(block, player);
 
-			const nameAlias = (nameAliases as { [key: string]: string })[blockId.replace(/.*:/g, '')];
+			const nameAlias = (nameAliases as { [key: string]: string })[
+				blockId.replace(/.*:/g, "")
+			];
 			if (nameAlias) {
 				resultDisplayName = `${nameAlias}.name`;
 			} else {
@@ -193,11 +241,16 @@ export default class Waila {
 			}
 
 			let itemInsideFrameTranslationKey_local: string | undefined = undefined;
-			const itemFrameIds = ['minecraft:frame', 'minecraft:glow_frame'];
+			const itemFrameIds = ["minecraft:frame", "minecraft:glow_frame"];
 			const hitIdentifier = lookAtObject.hitIdentifier; // the hitIdentifier and the actual block typeId may be different
 			// if hitIdentifier is also an item frame, that means the item frame is empty--don't bother checking
-			if (itemFrameIds.includes(blockId) && !itemFrameIds.includes(hitIdentifier)) {
-				const nA = (nameAliases as { [key: string]: string })[hitIdentifier.replace(/.*:/g, '')];
+			if (
+				itemFrameIds.includes(blockId) &&
+				!itemFrameIds.includes(hitIdentifier)
+			) {
+				const nA = (nameAliases as { [key: string]: string })[
+					hitIdentifier.replace(/.*:/g, "")
+				];
 				if (nA) {
 					itemInsideFrameTranslationKey_local = `${nA}.name`;
 				} else {
@@ -205,7 +258,9 @@ export default class Waila {
 						let tryCreateItem: ItemStack | undefined = undefined;
 						try {
 							tryCreateItem = new ItemStack(hitIdentifier);
-						} catch { /** empty */ }
+						} catch {
+							/** empty */
+						}
 						return tryCreateItem?.localizationKey;
 					})();
 				}
@@ -217,7 +272,9 @@ export default class Waila {
 				namespace: hitNamespace,
 				displayName: resultDisplayName,
 				renderData: blockRenderData,
-				...(itemInsideFrameTranslationKey_local && { itemInsideFrameTranslationKey: itemInsideFrameTranslationKey_local })
+				...(itemInsideFrameTranslationKey_local && {
+					itemInsideFrameTranslationKey: itemInsideFrameTranslationKey_local,
+				}),
 			};
 		}
 
@@ -239,7 +296,9 @@ export default class Waila {
 		try {
 			player.runCommand(`title @s reset`);
 		} catch (e) {
-			this.log.warn(`Failed to run title reset command for ${player.name}: ${e}`);
+			this.log.warn(
+				`Failed to run title reset command for ${player.name}: ${e}`,
+			);
 		}
 
 		player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
@@ -253,7 +312,8 @@ export default class Waila {
 	private displayUI(player: Player, lookAtObject: LookAtObjectInterface): void {
 		const hasTarget = lookAtObject.hitIdentifier !== "__r4ui:none";
 		const playerId = player.id;
-		const hadPreviousTarget = this.playerPreviousLookState.get(playerId) ?? false;
+		const hadPreviousTarget =
+			this.playerPreviousLookState.get(playerId) ?? false;
 
 		// Update the player's look state for the next tick
 		this.playerPreviousLookState.set(playerId, hasTarget);
@@ -268,14 +328,18 @@ export default class Waila {
 
 		// Create comparison data to see if UI needs updating
 		const comparisonData = this.createComparisonData(lookAtObject);
-		const oldLog = player.getDynamicProperty("r4isen1920_waila:old_log") as string | undefined;
+		const oldLog = player.getDynamicProperty("r4isen1920_waila:old_log") as
+			| string
+			| undefined;
 
 		if (oldLog === comparisonData) return;
 		player.setDynamicProperty("r4isen1920_waila:old_log", comparisonData);
 
 		const metadata = this.fetchLookAtMetadata(player, lookAtObject);
 		if (!metadata) {
-			this.log.warn(`Failed to fetch metadata for ${lookAtObject.hitIdentifier}, clearing UI.`);
+			this.log.warn(
+				`Failed to fetch metadata for ${lookAtObject.hitIdentifier}, clearing UI.`,
+			);
 			this.clearUI(player);
 			return;
 		}
@@ -300,7 +364,7 @@ export default class Waila {
 		const baseData: any = {
 			hit: lookAtObject.hitIdentifier,
 			sneaking: lookAtObject.viewAdditionalProperties,
-			itemHeld: lookAtObject.itemHeld
+			itemHeld: lookAtObject.itemHeld,
 		};
 
 		if (lookAtObject.type === LookAtObjectType.ENTITY) {
@@ -309,12 +373,18 @@ export default class Waila {
 				hp: entityData.hp,
 				maxHp: entityData.maxHp,
 				armor: EntityHandler.armorRenderer(entityData.entity),
-				effects: entityData.effectsData?.map(e => `${e.id}:${e.amplifier}:${e.duration}`).join(",") || ""
+				effects:
+					entityData.effectsData
+						?.map((e) => `${e.id}:${e.amplifier}:${e.duration}`)
+						.join(",") || "",
 			});
-		} else if (lookAtObject.type === LookAtObjectType.TILE && (lookAtObject as LookAtBlockInterface).block) {
+		} else if (
+			lookAtObject.type === LookAtObjectType.TILE &&
+			(lookAtObject as LookAtBlockInterface).block
+		) {
 			const blockData = lookAtObject as LookAtBlockInterface;
 			Object.assign(baseData, {
-				states: BlockHandler.getBlockStates(blockData.block)
+				states: BlockHandler.getBlockStates(blockData.block),
 			});
 		}
 
@@ -324,10 +394,19 @@ export default class Waila {
 	/**
 	 * Generates UI components for the title display
 	 */
-	private generateUIComponents(player: Player, metadata: LookAtObjectMetadata): { title: RawMessage[], subtitle: RawMessage[] } {
-		const parseStrSubtitle: RawMessage[] = [{ text: (metadata.renderData as EntityRenderDataInterface).entityId || "" }];
-		const isTileOrItemEntity = metadata.type === LookAtObjectType.TILE ||
-			(metadata.type === LookAtObjectType.ENTITY && !!metadata.itemContextIdentifier);
+	private generateUIComponents(
+		player: Player,
+		metadata: LookAtObjectMetadata,
+	): { title: RawMessage[]; subtitle: RawMessage[] } {
+		const parseStrSubtitle: RawMessage[] = [
+			{
+				text: (metadata.renderData as EntityRenderDataInterface).entityId || "",
+			},
+		];
+		const isTileOrItemEntity =
+			metadata.type === LookAtObjectType.TILE ||
+			(metadata.type === LookAtObjectType.ENTITY &&
+				!!metadata.itemContextIdentifier);
 
 		const prefixType = isTileOrItemEntity ? "A" : "B";
 
@@ -339,10 +418,12 @@ export default class Waila {
 			if (metadata.type === LookAtObjectType.TILE) {
 				const blockData = metadata.renderData as BlockRenderDataInterface;
 				finalTagIcons = blockData.toolIcons;
-			} else { // Item Entity
+			} else {
+				// Item Entity
 				finalTagIcons = `zz,f;zz,f:`; // Item entities don't have specific "tool" icons in this context
 			}
-		} else { // Non-item Entities
+		} else {
+			// Non-item Entities
 			const entityData = metadata.renderData as EntityRenderDataInterface;
 			healthOrArmor = `${entityData.healthRenderer}${entityData.armorRenderer}`;
 			finalTagIcons = entityData.tagIcons;
@@ -352,9 +433,12 @@ export default class Waila {
 
 		const nameElements: RawMessage[] = [];
 		if (metadata.hitIdentifier === "minecraft:player") {
-			nameElements.push({ text: '__r4ui:humanoid.' });
+			nameElements.push({ text: "__r4ui:humanoid." });
 		}
-		if (metadata.nameTagContextTranslationKey && metadata.hitIdentifier !== "minecraft:player") {
+		if (
+			metadata.nameTagContextTranslationKey &&
+			metadata.hitIdentifier !== "minecraft:player"
+		) {
 			nameElements.push({ text: `${metadata.displayName} §7(` }); // metadata.displayName is the nameTag
 			nameElements.push({ translate: metadata.nameTagContextTranslationKey });
 			nameElements.push({ text: ")§r" });
@@ -368,14 +452,19 @@ export default class Waila {
 		}
 		nameElements.push({ text: "§r" });
 
-		const blockStatesText = metadata.type === LookAtObjectType.TILE && player.isSneaking && WailaSettings.get(player, 'displayExtendedInfo')
-			? (metadata.renderData as BlockRenderDataInterface).blockStates
-			: "";
+		const blockStatesText =
+			metadata.type === LookAtObjectType.TILE &&
+			player.isSneaking &&
+			WailaSettings.get(player, "displayExtendedInfo")
+				? (metadata.renderData as BlockRenderDataInterface).blockStates
+				: "";
 
 		// Show item entity's specific item type ID (e.g., minecraft:diamond_sword)
-		const itemEntityText = metadata.type === LookAtObjectType.ENTITY && metadata.itemContextIdentifier
-			? `\n§7${metadata.itemContextIdentifier}§r`
-			: "";
+		const itemEntityText =
+			metadata.type === LookAtObjectType.ENTITY &&
+			metadata.itemContextIdentifier
+				? `\n§7${metadata.itemContextIdentifier}§r`
+				: "";
 
 		// Format health text for entities
 		let healthText = "";
@@ -387,26 +476,36 @@ export default class Waila {
 			// Handle integer health display
 			if (entityData.maxHp > 0 && entityData.intHealthDisplay) {
 				const percentage = Math.round((entityData.hp / entityData.maxHp) * 100);
-				const hpDisplay = entityData.maxHp < 1000000 ?
-					// "" corresponds to health icon in the UI
-					` ${entityData.hp}/${entityData.maxHp} (${percentage}%)` :
-					" ∞";
+				const hpDisplay =
+					entityData.maxHp < 1000000
+						? // "" corresponds to health icon in the UI
+							` ${entityData.hp}/${entityData.maxHp} (${percentage}%)`
+						: " ∞";
 				healthText = `\n§7 ${hpDisplay}§r`;
 			}
 
 			// Add padding based on HP and display type
-			if (entityData.maxHp > 0 && entityData.maxHp <= 40 && !entityData.intHealthDisplay) {
+			if (
+				entityData.maxHp > 0 &&
+				entityData.maxHp <= 40 &&
+				!entityData.intHealthDisplay
+			) {
 				paddingNewlines += "\n";
 			}
-			if (entityData.maxHp > 20 && entityData.maxHp <= 40 && !entityData.intHealthDisplay) {
+			if (
+				entityData.maxHp > 20 &&
+				entityData.maxHp <= 40 &&
+				!entityData.intHealthDisplay
+			) {
 				paddingNewlines += "\n";
 			}
 			if (entityData.maxHp > 40 && !entityData.intHealthDisplay) {
 				// High HP bar shown
-				healthText = `\n§7 ${entityData.maxHp < 1000000
-					? `${entityData.hp}/${entityData.maxHp} (${Math.round((entityData.hp / entityData.maxHp) * 100)}%)`
-					: "∞"
-					}§r`;
+				healthText = `\n§7 ${
+					entityData.maxHp < 1000000
+						? `${entityData.hp}/${entityData.maxHp} (${Math.round((entityData.hp / entityData.maxHp) * 100)}%)`
+						: "∞"
+				}§r`;
 			}
 
 			// Effects padding
@@ -414,7 +513,8 @@ export default class Waila {
 			if (numEffects > 0 && numEffects < 4) {
 				paddingNewlines += "\n\n".repeat(numEffects);
 			} else if (numEffects >= 4) {
-				paddingNewlines += !entityData.intHealthDisplay && entityData.maxHp > 40 ? "\n" : "\n\n";
+				paddingNewlines +=
+					!entityData.intHealthDisplay && entityData.maxHp > 40 ? "\n" : "\n\n";
 			}
 
 			// Armor padding
@@ -426,12 +526,17 @@ export default class Waila {
 		const namespaceText = ((): string => {
 			const value = Registry[metadata.namespace.replace(":", "")];
 			if (value) {
-				return (!player.isSneaking || !WailaSettings.get(player, 'displayExtendedInfo'))
+				return !player.isSneaking ||
+					!WailaSettings.get(player, "displayExtendedInfo")
 					? value.name
 					: `${value.name}\nby ${value.creator}`;
 			}
 			return metadata.namespace.length > 3
-				? metadata.namespace.replace(/_/g, " ").replace(":", "").toTitle().abrevCaps()
+				? metadata.namespace
+						.replace(/_/g, " ")
+						.replace(":", "")
+						.toTitle()
+						.abrevCaps()
 				: metadata.namespace.replace(":", "").toUpperCase();
 		})();
 
@@ -446,16 +551,19 @@ export default class Waila {
 			{ text: itemEntityText },
 			{ text: healthText },
 			{ text: paddingNewlines },
-			{ text: '\n§9§o' },
+			{ text: "\n§9§o" },
 			{ translate: namespaceText },
-			{ text: '§r' },
+			{ text: "§r" },
 		];
 
 		// Add some setting flags
-		parseStr.push({ text: `__r4ui:anchor.${WailaSettings.get(player, 'displayPosition')}__` });
+		parseStr.push({
+			text: `__r4ui:anchor.${WailaSettings.get(player, "displayPosition")}__`,
+		});
 
 		const filteredTitle = parseStr.filter(
-			part => !(typeof part === "object" && "text" in part && part.text === "")
+			(part) =>
+				!(typeof part === "object" && "text" in part && part.text === ""),
 		);
 
 		DEBUG: {

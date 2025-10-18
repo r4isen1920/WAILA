@@ -831,25 +831,57 @@
 				]
 			},
 
-
-			"minecraft:sheep_white": { "add": { "component_groups": [ "minecraft:sheep_white" ] } },
-			"minecraft:sheep_orange": { "add": { "component_groups": [ "minecraft:sheep_orange" ] } },
-			"minecraft:sheep_magenta": { "add": { "component_groups": [ "minecraft:sheep_magenta" ] } },
-			"minecraft:sheep_light_blue": { "add": { "component_groups": [ "minecraft:sheep_light_blue" ] } },
-			"minecraft:sheep_yellow": { "add": { "component_groups": [ "minecraft:sheep_yellow" ] } },
-			"minecraft:sheep_lime": { "add": { "component_groups": [ "minecraft:sheep_lime" ] } },
-			"minecraft:sheep_pink": { "add": { "component_groups": [ "minecraft:sheep_pink" ] } },
-			"minecraft:sheep_gray": { "add": { "component_groups": [ "minecraft:sheep_gray" ] } },
-			"minecraft:sheep_light_gray": { "add": { "component_groups": [ "minecraft:sheep_light_gray" ] } },
-			"minecraft:sheep_cyan": { "add": { "component_groups": [ "minecraft:sheep_cyan" ] } },
-			"minecraft:sheep_purple": { "add": { "component_groups": [ "minecraft:sheep_purple" ] } },
-			"minecraft:sheep_blue": { "add": { "component_groups": [ "minecraft:sheep_blue" ] } },
-			"minecraft:sheep_brown": { "add": { "component_groups": [ "minecraft:sheep_brown" ] } },
-			"minecraft:sheep_green": { "add": { "component_groups": [ "minecraft:sheep_green" ] } },
-			"minecraft:sheep_red": { "add": { "component_groups": [ "minecraft:sheep_red" ] } },
-			"minecraft:sheep_black": { "add": { "component_groups": [ "minecraft:sheep_black" ] } },
-			"minecraft:sheep_jeb": { "add": { "component_groups": [ "minecraft:sheep_jeb" ] } }
-
+			"minecraft:sheep_white": {
+				"add": { "component_groups": ["minecraft:sheep_white"] }
+			},
+			"minecraft:sheep_orange": {
+				"add": { "component_groups": ["minecraft:sheep_orange"] }
+			},
+			"minecraft:sheep_magenta": {
+				"add": { "component_groups": ["minecraft:sheep_magenta"] }
+			},
+			"minecraft:sheep_light_blue": {
+				"add": { "component_groups": ["minecraft:sheep_light_blue"] }
+			},
+			"minecraft:sheep_yellow": {
+				"add": { "component_groups": ["minecraft:sheep_yellow"] }
+			},
+			"minecraft:sheep_lime": {
+				"add": { "component_groups": ["minecraft:sheep_lime"] }
+			},
+			"minecraft:sheep_pink": {
+				"add": { "component_groups": ["minecraft:sheep_pink"] }
+			},
+			"minecraft:sheep_gray": {
+				"add": { "component_groups": ["minecraft:sheep_gray"] }
+			},
+			"minecraft:sheep_light_gray": {
+				"add": { "component_groups": ["minecraft:sheep_light_gray"] }
+			},
+			"minecraft:sheep_cyan": {
+				"add": { "component_groups": ["minecraft:sheep_cyan"] }
+			},
+			"minecraft:sheep_purple": {
+				"add": { "component_groups": ["minecraft:sheep_purple"] }
+			},
+			"minecraft:sheep_blue": {
+				"add": { "component_groups": ["minecraft:sheep_blue"] }
+			},
+			"minecraft:sheep_brown": {
+				"add": { "component_groups": ["minecraft:sheep_brown"] }
+			},
+			"minecraft:sheep_green": {
+				"add": { "component_groups": ["minecraft:sheep_green"] }
+			},
+			"minecraft:sheep_red": {
+				"add": { "component_groups": ["minecraft:sheep_red"] }
+			},
+			"minecraft:sheep_black": {
+				"add": { "component_groups": ["minecraft:sheep_black"] }
+			},
+			"minecraft:sheep_jeb": {
+				"add": { "component_groups": ["minecraft:sheep_jeb"] }
+			}
 		}
 	}
 }

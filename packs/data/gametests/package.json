@@ -1,28 +1,28 @@
 {
-  "name": "waila",
-  "version": "4.2.0",
-  "description": "Handles the WAILA backend and the WAILA UI.",
-  "author": "r4isen1920",
-  "license": "MIT",
-  "dependencies": {
-    "@bedrock-oss/add-on-registry": "^1.0.6",
-    "@bedrock-oss/bedrock-boost": "^2.0.0",
-    "@bedrock-oss/stylish": "^0.0.3",
-    "@minecraft/common": "^1.2.0",
-    "@minecraft/math": "^2.2.11",
-    "@minecraft/server": "^2.2.0",
-    "@minecraft/server-ui": "^2.0.0",
-    "@minecraft/vanilla-data": "^1.21.114"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.38.0",
-    "@stylistic/eslint-plugin-js": "^4.4.1",
-    "@stylistic/eslint-plugin-ts": "^4.4.1",
-    "@typescript-eslint/eslint-plugin": "^8.46.1",
-    "@typescript-eslint/parser": "^8.46.1",
-    "eslint": "^9.38.0",
-    "eslint-plugin-minecraft-linting": "^2.0.10",
-    "globals": "^16.4.0",
-    "typescript-eslint": "^8.46.1"
-  }
+	"name": "waila",
+	"version": "4.2.0",
+	"description": "Handles the WAILA backend and the WAILA UI.",
+	"author": "r4isen1920",
+	"license": "MIT",
+	"dependencies": {
+		"@bedrock-oss/add-on-registry": "^1.0.6",
+		"@bedrock-oss/bedrock-boost": "^2.0.0",
+		"@bedrock-oss/stylish": "^0.0.3",
+		"@minecraft/common": "^1.2.0",
+		"@minecraft/math": "^2.2.11",
+		"@minecraft/server": "^2.2.0",
+		"@minecraft/server-ui": "^2.0.0",
+		"@minecraft/vanilla-data": "^1.21.114"
+	},
+	"devDependencies": {
+		"@eslint/js": "^9.38.0",
+		"@stylistic/eslint-plugin-js": "^4.4.1",
+		"@stylistic/eslint-plugin-ts": "^4.4.1",
+		"@typescript-eslint/eslint-plugin": "^8.46.1",
+		"@typescript-eslint/parser": "^8.46.1",
+		"eslint": "^9.38.0",
+		"eslint-plugin-minecraft-linting": "^2.0.10",
+		"globals": "^16.4.0",
+		"typescript-eslint": "^8.46.1"
+	}
 }

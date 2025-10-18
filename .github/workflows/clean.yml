@@ -12,8 +12,8 @@ jobs:
       actions: write
 
     steps:
-    - name: Remove old artifacts
-      uses: c-hive/gha-remove-artifacts@v1
-      with:
-        age: '3 day'
-        skip-recent: 2
+      - name: Remove old artifacts
+        uses: c-hive/gha-remove-artifacts@v1
+        with:
+          age: "3 day"
+          skip-recent: 2

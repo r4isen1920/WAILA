@@ -12,8 +12,6 @@
 import { Block, Entity, ItemStack } from "@minecraft/server";
 import { LookAtObjectTypeEnum } from "./LookAtObjectTypeEnum";
 
-
-
 //#region Base
 /**
  * Represents the objects that can be looked at in the game.
@@ -36,8 +34,6 @@ export interface LookAtObjectInterface {
 	 */
 	itemHeld?: string;
 }
-
-
 
 //#region Entity
 /**
@@ -86,7 +82,6 @@ export interface LookAtItemEntityInterface extends LookAtObjectInterface {
 	 */
 	itemStack?: ItemStack;
 }
-
 
 //#region Block
 /**
