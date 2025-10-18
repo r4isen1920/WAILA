@@ -67,7 +67,7 @@ export interface BlockRenderDataInterface {
 	/**
 	 * The block states of the block being looked at.
 	 */
-	blockStates: string;
+	blockStates?: string;
 	/**
 	 * Content or contents within the block.
 	 * This is used for blocks that can contain items, such as chests or barrels.

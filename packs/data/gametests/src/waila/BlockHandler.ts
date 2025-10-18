@@ -341,12 +341,15 @@ export class BlockHandler {
 	/**
 	 * Gets block states in a readable format
 	 */
-	static getBlockStates(block: Block): string {
+	static getBlockStates(block: Block): string | undefined {
 		try {
 			const permutation = block.permutation;
 			const states = permutation.getAllStates();
 			const blockStates = Object.keys(states).sort();
-			if (blockStates.length === 0) return "";
+			if (blockStates.length === 0) {
+				return;
+			}
+
 			return `\n${blockStates
 				.map((state) => {
 					const value = states[state];
@@ -358,11 +361,12 @@ export class BlockHandler {
 									? "§a"
 									: "§c"
 								: "§e";
+
 					return `§7"${state}" -> ${valueColor}${value}§r`;
 				})
 				.join("\n")}`;
 		} catch {
-			return "";
+			return;
 		}
 	}
 

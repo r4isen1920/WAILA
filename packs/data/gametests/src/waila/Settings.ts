@@ -33,6 +33,44 @@ export class WailaSettings {
 	static readonly NAMESPACE = "r4isen1920_waila";
 	static readonly log = Logger.getLogger("WailaSettings");
 
+	static readonly DISPLAY_POSITIONS = [
+		{
+			value: "top_left",
+			labelKey: "waila.settings.displayPosition.option.top_left",
+		},
+		{
+			value: "top_middle",
+			labelKey: "waila.settings.displayPosition.option.top_middle",
+		},
+		{
+			value: "top_right",
+			labelKey: "waila.settings.displayPosition.option.top_right",
+		},
+		{
+			value: "left_middle",
+			labelKey: "waila.settings.displayPosition.option.left_middle",
+		},
+		{
+			value: "center",
+			labelKey: "waila.settings.displayPosition.option.center",
+		},
+		{
+			value: "right_middle",
+			labelKey: "waila.settings.displayPosition.option.right_middle",
+		},
+		{
+			value: "bottom_left",
+			labelKey: "waila.settings.displayPosition.option.bottom_left",
+		},
+		{
+			value: "bottom_middle",
+			labelKey: "waila.settings.displayPosition.option.bottom_middle",
+		},
+		{
+			value: "bottom_right",
+			labelKey: "waila.settings.displayPosition.option.bottom_right",
+		},
+	];
 	/**
 	 * List of settings
 	 */
@@ -57,49 +95,20 @@ export class WailaSettings {
 			default: 8,
 			range: [1, 12],
 		},
+
 		displayPosition: {
 			type: "enum",
 			labelKey: "waila.settings.displayPosition.label",
 			descriptionKey: "waila.settings.displayPosition.description",
 			default: "top_middle",
-			options: [
-				{
-					value: "top_left",
-					labelKey: "waila.settings.displayPosition.option.top_left",
-				},
-				{
-					value: "top_middle",
-					labelKey: "waila.settings.displayPosition.option.top_middle",
-				},
-				{
-					value: "top_right",
-					labelKey: "waila.settings.displayPosition.option.top_right",
-				},
-				{
-					value: "left_middle",
-					labelKey: "waila.settings.displayPosition.option.left_middle",
-				},
-				{
-					value: "center",
-					labelKey: "waila.settings.displayPosition.option.center",
-				},
-				{
-					value: "right_middle",
-					labelKey: "waila.settings.displayPosition.option.right_middle",
-				},
-				{
-					value: "bottom_left",
-					labelKey: "waila.settings.displayPosition.option.bottom_left",
-				},
-				{
-					value: "bottom_middle",
-					labelKey: "waila.settings.displayPosition.option.bottom_middle",
-				},
-				{
-					value: "bottom_right",
-					labelKey: "waila.settings.displayPosition.option.bottom_right",
-				},
-			],
+			options: this.DISPLAY_POSITIONS,
+		},
+		extendedDisplayPosition: {
+			type: "enum",
+			labelKey: "waila.settings.extendedDisplayPosition.label",
+			descriptionKey: "waila.settings.extendedDisplayPosition.description",
+			default: "top_right",
+			options: this.DISPLAY_POSITIONS,
 		},
 	};
 
@@ -121,6 +130,7 @@ export class WailaSettings {
 	static get(player: Player, key: "displayExtendedInfo"): boolean;
 	static get(player: Player, key: "maxDisplayDistance"): number;
 	static get(player: Player, key: "displayPosition"): WailaDisplayPosition;
+	static get(player: Player, key: "extendedDisplayPosition"): WailaDisplayPosition;
 	static get(player: Player, key: string): WailaSettingPrimitive;
 	static get(player: Player, key: string): WailaSettingPrimitive {
 		const setting = this.SETTINGS[key];
@@ -166,9 +176,8 @@ export class WailaSettings {
 			isEnabled: this.get(player, "isEnabled") as boolean,
 			displayExtendedInfo: this.get(player, "displayExtendedInfo") as boolean,
 			maxDisplayDistance: this.get(player, "maxDisplayDistance") as number,
-			displayPosition: this.get(player, "displayPosition") as
-				| WailaDisplayPosition
-				| number,
+			displayPosition: this.get(player, "displayPosition") as WailaDisplayPosition,
+			extendedDisplayPosition: this.get(player, "extendedDisplayPosition") as WailaDisplayPosition,
 		};
 	}
 
@@ -554,5 +563,6 @@ export interface WailaSettingsValues {
 	isEnabled: boolean;
 	displayExtendedInfo: boolean;
 	maxDisplayDistance: number;
-	displayPosition: WailaDisplayPosition | number; // support numeric index if ever stored
+	displayPosition: WailaDisplayPosition;
+	extendedDisplayPosition: WailaDisplayPosition;
 }

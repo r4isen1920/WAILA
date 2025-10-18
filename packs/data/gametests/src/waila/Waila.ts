@@ -87,8 +87,16 @@ export default class Waila {
 			player,
 			WailaSettings.get(player, "maxDisplayDistance"),
 		);
+
+		const foundBlock = (lookAtObject as LookAtBlockInterface).block;
 		lookAtObject.viewAdditionalProperties =
-			WailaSettings.get(player, "displayExtendedInfo") === true &&
+			WailaSettings.get(player, "displayExtendedInfo") &&
+			// check if there are actually block states to show before attempting an update
+			(
+				foundBlock
+					? Object.keys(foundBlock.permutation.getAllStates()).length > 0
+					: true
+			) &&
 			player.isSneaking;
 
 		if (lookAtObject.hitIdentifier === undefined) {
@@ -557,8 +565,12 @@ export default class Waila {
 		];
 
 		// Add some setting flags
+		let settingAnchorValue: string = WailaSettings.get(player, "displayPosition");
+		if (player.isSneaking && blockStatesText !== undefined) {
+			settingAnchorValue = WailaSettings.get(player, "extendedDisplayPosition");
+		}
 		parseStr.push({
-			text: `__r4ui:anchor.${WailaSettings.get(player, "displayPosition")}__`,
+			text: `__r4ui:anchor.${settingAnchorValue}__`,
 		});
 
 		const filteredTitle = parseStr.filter(
