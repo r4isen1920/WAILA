@@ -549,7 +549,6 @@ export default class Waila {
 			{ text: finalTagIcons },
 			{ text: effectsStr },
 			...nameElements,
-			{ text: blockStatesText },
 			{ text: itemEntityText },
 			{ text: healthText },
 			{ text: paddingNewlines },
@@ -562,6 +561,9 @@ export default class Waila {
 		let settingAnchorValue: string = WailaSettings.get(player, "displayPosition");
 		if (player.isSneaking && blockStatesText !== undefined) {
 			settingAnchorValue = WailaSettings.get(player, "extendedDisplayPosition");
+
+			parseStrSubtitle.push({ text: '__r4ui:block_states__' });
+			parseStrSubtitle.push({ text: blockStatesText });
 		}
 		parseStr.push({
 			text: `__r4ui:anchor.${settingAnchorValue}__`,

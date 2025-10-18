@@ -350,7 +350,7 @@ export class BlockHandler {
 				return;
 			}
 
-			return `\n${blockStates
+			return `${blockStates
 				.map((state) => {
 					const value = states[state];
 					const valueColor =
@@ -362,7 +362,7 @@ export class BlockHandler {
 									: "§c"
 								: "§e";
 
-					return `§7"${state}" -> ${valueColor}${value}§r`;
+					return `§7${state.replace('minecraft:', '')}: ${valueColor}${value}§r`;
 				})
 				.join("\n")}`;
 		} catch {
