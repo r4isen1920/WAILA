@@ -27,7 +27,7 @@ import ignoredBlockRender from "../data/ignoredBlockRender.json";
 
 
 //#region WAILA
-class Waila {
+export default class Waila {
 	private static instance: Waila;
 	private readonly log = Logger.getLogger("WAILA");
 	private playerPreviousLookState: Map<string, boolean> = new Map();
@@ -42,8 +42,6 @@ class Waila {
 				const isEnabled = WailaSettings.get(player, 'isEnabled');
 				if (isEnabled === undefined || isEnabled === true) {
 					this.toPlayer(player);
-				} else {
-					this.clearUI(player);
 				}
 			}, 3);
 			pulse.start();
@@ -230,7 +228,7 @@ class Waila {
 	/**
 	 * Clears the UI for the specified player.
 	 */
-	private clearUI(player: Player): void {
+	public clearUI(player: Player): void {
 		const options: TitleDisplayOptions = {
 			fadeInDuration: 0,
 			fadeOutDuration: 0,

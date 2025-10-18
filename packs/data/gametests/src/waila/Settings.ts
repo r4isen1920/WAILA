@@ -12,6 +12,7 @@ import {
 	system,
 } from '@minecraft/server';
 import { ModalFormData, ModalFormResponse } from '@minecraft/server-ui';
+import Waila from './Waila';
 
 
 
@@ -378,6 +379,7 @@ export class WailaSettingsUI {
 				return;
 			}
 			this.handleResponse(target, res, controlIndexByKey);
+			Waila.getInstance().clearUI(target); // refresh UI
             player.playSound('note.pling');
 		});
 	}
