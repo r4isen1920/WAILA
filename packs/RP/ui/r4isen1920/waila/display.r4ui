@@ -1569,6 +1569,11 @@
 						{
 							"requires": "($s_anchor = 'top_middle' and $touch)",
 							"$offset": [ 0, 20 ]
+						},
+						// offset to avoid clipping with the hotbar
+						{
+							"requires": "($s_anchor = 'bottom_middle')",
+							"$offset": [ 0, -46 ]
 						}
 					]
 				}
