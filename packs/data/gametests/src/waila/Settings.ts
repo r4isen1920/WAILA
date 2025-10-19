@@ -107,8 +107,11 @@ export class WailaSettings {
 			type: "enum",
 			labelKey: "waila.settings.extendedDisplayPosition.label",
 			descriptionKey: "waila.settings.extendedDisplayPosition.description",
-			default: "top_right",
-			options: this.DISPLAY_POSITIONS,
+			default: "unchanged",
+			options: [
+				{ value: "unchanged", labelKey: "waila.settings.extendedDisplayPosition.option.unchanged" },
+				...this.DISPLAY_POSITIONS
+			],
 		},
 	};
 
@@ -557,7 +560,9 @@ export type WailaDisplayPosition =
 	| "right_middle"
 	| "bottom_left"
 	| "bottom_middle"
-	| "bottom_right";
+	| "bottom_right"
+	/** The value is the same as the other setting */
+	| "unchanged";
 
 export interface WailaSettingsValues {
 	isEnabled: boolean;

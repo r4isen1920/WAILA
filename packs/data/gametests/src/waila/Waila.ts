@@ -560,7 +560,11 @@ export default class Waila {
 		// Add some setting flags
 		let settingAnchorValue: string = WailaSettings.get(player, "displayPosition");
 		if (player.isSneaking && blockStatesText !== undefined) {
-			settingAnchorValue = WailaSettings.get(player, "extendedDisplayPosition");
+			const settingValue = WailaSettings.get(player, "extendedDisplayPosition");
+			settingAnchorValue = 
+				settingValue === "unchanged"
+					? settingAnchorValue
+					: settingValue;
 
 			parseStrSubtitle.push({ text: '__r4ui:block_states__' });
 			parseStrSubtitle.push({ text: blockStatesText });
