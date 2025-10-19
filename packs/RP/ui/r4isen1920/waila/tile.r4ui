@@ -120,12 +120,13 @@
 	},
 
 	"item_inventory@item_aux_inv_renderer": {
-		"$index": 0,
+		"$index|default": 0,
 		"$show_item_count": true,
+		"size": [14, 14],
 
 		"variables": [
 			{
-				"requires": true,
+				"requires": "true",
 				//? player.container is following the 36-slot format (9 hotbar; 27 inventory)
 				"$collection_index": "(9 + $index)" 
 			}
@@ -141,24 +142,22 @@
 		"controls": [
 			{
 				"input@r4isen1920_waila_tile.item_inventory": {
-					"$index": 0,
-					"size": [14, "100%"]
+					"$index": 0
 				}
 			},
 			{
 				"fuel@r4isen1920_waila_tile.item_inventory": {
-					"$index": 1,
-					"size": [14, "100%"]
+					"$index": 1
 				}
 			},
 			{
 				"arrow_centerer@common.empty_panel": {
-					"size": [20, "100%"], // 14px + 6px (padding)
+					"size": [21, "100%"], // 15px + 6px (padding)
 					"controls": [
 						{
-							"arrow_active@r4isen1920_waila_common.image": {
-								"size": [12, 10],
-								"texture": "textures/ui/arrow_active"
+							"arrow@r4isen1920_waila_common.image": {
+								"size": [15, 10],
+								"texture": "textures/r4isen1920/waila/arrow"
 							}
 						}
 					]
@@ -166,8 +165,7 @@
 			},
 			{
 				"output@r4isen1920_waila_tile.item_inventory": {
-					"$index": 2,
-					"size": [14, "100%"]
+					"$index": 2
 				}
 			}
 		]
@@ -190,15 +188,13 @@
 					"controls": [
 						{
 							"reagent@r4isen1920_waila_tile.item_inventory": {
-								"$index": 0,
-								"size": [14, 14]
+								"$index": 0
 							}
 						},
 						{ "padding@common.empty_panel": { "size": [14, 2] } },
 						{
 							"blaze_powder@r4isen1920_waila_tile.item_inventory": {
-								"$index": 4,
-								"size": [14, 14]
+								"$index": 4
 							}
 						}
 					]
@@ -227,15 +223,13 @@
 					"controls": [
 						{
 							"potion_1@r4isen1920_waila_tile.item_inventory": {
-								"$index": 1,
-								"size": [14, 14]
+								"$index": 1
 							}
 						},
 						{ "padding@common.empty_panel": { "size": [14, 2] } },
 						{
 							"potion_3@r4isen1920_waila_tile.item_inventory": {
-								"$index": 3,
-								"size": [14, 14]
+								"$index": 3
 							}
 						}
 					]
@@ -248,8 +242,298 @@
 					"controls": [
 						{
 							"potion_2@r4isen1920_waila_tile.item_inventory": {
-								"$index": 2,
-								"size": [14, 14]
+								"$index": 2
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+
+	"generic_container_inventory_item@common.empty_panel": {
+		"size": ["100%c - 1px", "100%c - 1px"],
+
+		"$border_type|default": "center",
+
+		"controls": [
+			{
+				"border@r4isen1920_waila_common.image": {
+					"type": "image",
+					"size": ["100%c + 4px", "100%c + 4px"],
+
+					"texture": "('textures/r4isen1920/waila/border_' + $border_type)",
+
+					"variables": {
+						"requires": "true",
+						"$index": "$a_index"
+					},
+
+					"controls": [
+						{
+							"item@r4isen1920_waila_tile.item_inventory": {
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+	"generic_container_inventory_row": {
+		"type": "stack_panel",
+		"orientation": "horizontal",
+		"size": ["100%c", "100%cm"]
+	},
+
+	"chest_inventory": {
+		"type": "stack_panel",
+		"orientation": "vertical",
+
+		"size": ["100%cm", "100%c"],
+
+		"controls": [
+			{
+				"row_0@r4isen1920_waila_tile.generic_container_inventory_row": {
+					"controls": [
+						{
+							"item_0@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 0,
+								"$border_type": "top_left"
+							}
+						},
+						{
+							"item_1@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 1,
+								"$border_type": "top_middle"
+							}
+						},
+						{
+							"item_2@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 2,
+								"$border_type": "top_middle"
+							}
+						},
+						{
+							"item_3@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 3,
+								"$border_type": "top_middle"
+							}
+						},
+						{
+							"item_4@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 4,
+								"$border_type": "top_middle"
+							}
+						},
+						{
+							"item_5@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 5,
+								"$border_type": "top_middle"
+							}
+						},
+						{
+							"item_6@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 6,
+								"$border_type": "top_middle"
+							}
+						},
+						{
+							"item_7@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 7,
+								"$border_type": "top_middle"
+							}
+						},
+						{
+							"item_8@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 9, //? skipped a_index 8 because it is reserved for block icon
+								"$border_type": "top_right"
+							}
+						}
+					]
+				}
+			},
+			{
+				"row_1@r4isen1920_waila_tile.generic_container_inventory_row": {
+					"controls": [
+						{
+							"item_0@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 10,
+								"$border_type": "bottom_left"
+							}
+						},
+						{
+							"item_1@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 11,
+								"$border_type": "bottom_middle"
+							}
+						},
+						{
+							"item_2@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 12,
+								"$border_type": "bottom_middle"
+							}
+						},
+						{
+							"item_3@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 13,
+								"$border_type": "bottom_middle"
+							}
+						},
+						{
+							"item_4@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 14,
+								"$border_type": "bottom_middle"
+							}
+						},
+						{
+							"item_5@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 15,
+								"$border_type": "bottom_middle"
+							}
+						},
+						{
+							"item_6@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 16,
+								"$border_type": "bottom_middle"
+							}
+						},
+						{
+							"item_7@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 17,
+								"$border_type": "bottom_middle"
+							}
+						},
+						{
+							"item_8@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 18,
+								"$border_type": "bottom_right"
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+
+	"dropper_inventory": {
+		"type": "stack_panel",
+		"orientation": "vertical",
+
+		"size": ["100%cm", "100%c"],
+
+		"controls": [
+			{
+				"row_0@r4isen1920_waila_tile.generic_container_inventory_row": {
+					"controls": [
+						{
+							"item_0@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 0,
+								"$border_type": "top_left"
+							}
+						},
+						{
+							"item_1@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 1,
+								"$border_type": "top_middle"
+							}
+						},
+						{
+							"item_2@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 2,
+								"$border_type": "top_right"
+							}
+						}
+					]
+				}
+			},
+			{
+				"row_1@r4isen1920_waila_tile.generic_container_inventory_row": {
+					"controls": [
+						{
+							"item_0@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 3,
+								"$border_type": "left_middle"
+							}
+						},
+						{
+							"item_1@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 4
+							}
+						},
+						{
+							"item_2@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 5,
+								"$border_type": "right_middle"
+							}
+						}
+					]
+				}
+			},
+			{
+				"row_2@r4isen1920_waila_tile.generic_container_inventory_row": {
+					"controls": [
+						{
+							"item_0@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 6,
+								"$border_type": "bottom_left"
+							}
+						},
+						{
+							"item_1@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 7,
+								"$border_type": "bottom_middle"
+							}
+						},
+						{
+							"item_2@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 9, //? skipped a_index 8 because it is reserved for block icon
+								"$border_type": "bottom_right"
+							}
+						}
+					]
+				}
+			}
+		]
+	},
+
+	"hopper_inventory": {
+		"type": "stack_panel",
+		"orientation": "vertical",
+
+		"size": ["100%cm", "100%c"],
+
+		"controls": [
+			{
+				"row_0@r4isen1920_waila_tile.generic_container_inventory_row": {
+					"controls": [
+						{
+							"item_0@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 0,
+								"$border_type": "leftmost"
+							}
+						},
+						{
+							"item_1@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 1,
+								"$border_type": "middlemost"
+							}
+						},
+						{
+							"item_2@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 2,
+								"$border_type": "middlemost"
+							}
+						},
+						{
+							"item_3@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 3,
+								"$border_type": "middlemost"
+							}
+						},
+						{
+							"item_4@r4isen1920_waila_tile.generic_container_inventory_item": {
+								"$a_index": 4,
+								"$border_type": "rightmost"
 							}
 						}
 					]

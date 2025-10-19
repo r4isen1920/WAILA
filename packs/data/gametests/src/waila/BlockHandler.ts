@@ -435,31 +435,55 @@ export class BlockHandler {
 	 * Gets block inventory contents
 	 */
 	static getBlockInventory(block: Block): ItemStackWithSlot[] | undefined {
-		try {
-			const inventoryComponent = block.getComponent(
-				EntityComponentTypes.Inventory,
-			) as BlockInventoryComponent | undefined;
-			const blockContainer = inventoryComponent?.container;
-			if (!blockContainer) {
-				return;
-			}
-
-			let emptySlots = 0;
-			const items: ItemStackWithSlot[] = [];
-			for (let i = 0; i < blockContainer.size; i++) {
-				const itemStack = blockContainer.getItem(i);
-				items.push({
-					item: itemStack ?? new ItemStack("minecraft:air"),
-					slot: i
-				});
-				if (!itemStack) {
-					emptySlots++;
-				}
-			}
-			return (items.length > 0 && emptySlots < blockContainer.size) ? items : undefined;
-		} catch {
+		const inventoryComponent = block.getComponent(
+			EntityComponentTypes.Inventory,
+		) as BlockInventoryComponent | undefined;
+		const blockContainer = inventoryComponent?.container;
+		if (!blockContainer) {
 			return;
 		}
+
+		// Two-row limit: indices 0..17 (18 slots) but skip index 8 (reserved for icon => player slot 17)
+		const allowedIndices: number[] = [];
+		for (let idx = 0; idx < 18; idx++) {
+			if (idx === 8) continue; // skip reserved
+			allowedIndices.push(idx);
+		}
+
+		// If container is larger than 2 rows, compress: pack only non-empty items from the whole container
+		if (blockContainer.size > 18) {
+			const nonEmpty: ItemStack[] = [];
+			for (let i = 0; i < blockContainer.size; i++) {
+				const it = blockContainer.getItem(i);
+				if (it && it.typeId !== "minecraft:air" && it.amount > 0) nonEmpty.push(it);
+			}
+
+			if (nonEmpty.length === 0) return undefined;
+
+			const rendered: ItemStackWithSlot[] = [];
+			const count = Math.min(nonEmpty.length, allowedIndices.length);
+			// Place items packed left
+			for (let j = 0; j < count; j++) {
+				rendered.push({ item: nonEmpty[j], slot: allowedIndices[j] });
+			}
+			// Pad trailing with air up to end of second row
+			for (let j = count; j < allowedIndices.length; j++) {
+				rendered.push({ item: new ItemStack("minecraft:air"), slot: allowedIndices[j] });
+			}
+			return rendered;
+		}
+
+		// For containers up to 2 rows, mirror original order to positions (preserve empties), within limit
+		let nonEmptyCount = 0;
+		const rendered: ItemStackWithSlot[] = [];
+		for (let i = 0; i < blockContainer.size; i++) {
+			const mappedIndex = i < 8 ? i : i + 1; // 8 -> 9, 9 -> 10, ...
+			if (mappedIndex > 17) break; // only occupy up to second row
+			const itemStack = blockContainer.getItem(i);
+			if (itemStack) nonEmptyCount++;
+			rendered.push({ item: itemStack ?? new ItemStack("minecraft:air"), slot: mappedIndex });
+		}
+		return nonEmptyCount > 0 ? rendered : undefined;
 	}
 
 	/**

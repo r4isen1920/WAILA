@@ -153,7 +153,7 @@
 																	"variables": [
 																		{
 																			"requires": "($tooltip_renderer_type = 'A:')",
-																			"$text": "('' + ($var_title_text - ('%.18s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:inv.furnace__' - '__r4ui:inv.brewstand__')"
+																			"$text": "('' + ($var_title_text - ('%.18s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:inv.furnace__' - '__r4ui:inv.brewstand__' - '__r4ui:inv.chest__' - '__r4ui:inv.dropper__' - '__r4ui:inv.hopper__')"
 																		},
 																		{
 																			"requires": "(not ($tooltip_renderer_type = 'A:'))",
@@ -169,12 +169,27 @@
 																	"controls": [
 																		{
 																			"furnace_inventory@r4isen1920_waila_tile.furnace_inventory": {
-																				"ignored": "(($var_title_text1 - '__r4ui:inv.furnace__') = $var_title_text1)"
+																				"ignored": "(($var_title_text - '__r4ui:inv.furnace__') = $var_title_text)"
 																			}
 																		},
 																		{
 																			"brewing_stand_inventory@r4isen1920_waila_tile.brewing_stand_inventory": {
-																				"ignored": "(($var_title_text1 - '__r4ui:inv.brewstand__') = $var_title_text1)"
+																				"ignored": "(($var_title_text - '__r4ui:inv.brewstand__') = $var_title_text)"
+																			}
+																		},
+																		{
+																			"chest_inventory@r4isen1920_waila_tile.chest_inventory": {
+																				"ignored": "(($var_title_text - '__r4ui:inv.chest__') = $var_title_text)"
+																			}
+																		},
+																		{
+																			"dropper_inventory@r4isen1920_waila_tile.dropper_inventory": {
+																				"ignored": "(($var_title_text - '__r4ui:inv.dropper__') = $var_title_text)"
+																			}
+																		},
+																		{
+																			"hopper_inventory@r4isen1920_waila_tile.hopper_inventory": {
+																				"ignored": "(($var_title_text - '__r4ui:inv.hopper__') = $var_title_text)"
 																			}
 																		}
 																	],
@@ -189,7 +204,7 @@
 																		{
 																			"border@r4isen1920_waila_common.image": {
 																				"size": ["100%c + 4px", "100%c + 4px"],
-																				"texture": "textures/r4isen1920/waila/border",
+																				"texture": "textures/r4isen1920/waila/border_center",
 
 																				"controls": [
 																					{

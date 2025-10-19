@@ -393,9 +393,11 @@ export default class Waila {
 			(lookAtObject as LookAtBlockInterface).block
 		) {
 			const blockData = lookAtObject as LookAtBlockInterface;
-			Object.assign(baseData, {
-				states: BlockHandler.getBlockStates(blockData.block),
-			});
+			const states = BlockHandler.getBlockStates(blockData.block);
+			const inv = BlockHandler.getBlockInventory(blockData.block)
+				?.map((i) => `${i.slot}:${i.item.typeId}:${i.item.amount}`)
+				.join("|") || "";
+			Object.assign(baseData, { states, inv });
 		}
 
 		return JSON.stringify(baseData);
@@ -583,10 +585,14 @@ export default class Waila {
 
 		// Add additional inventory flags
 		if (
+			!player.isSneaking &&
 			metadata.type === LookAtObjectType.TILE &&
 			(metadata.renderData as BlockRenderDataInterface).inventory
 		) {
 			const furnaceTypes = [
+				"minecraft:lit_blast_furnace", // todo: `lit_` block typeIds should be mapped early on to their respective unlit types for cleanliness
+				"minecraft:lit_furnace",
+				"minecraft:lit_smoker",
 				"minecraft:furnace",
 				"minecraft:blast_furnace",
 				'minecraft:smoker',
@@ -597,6 +603,27 @@ export default class Waila {
 
 			if (metadata.hitIdentifier === "minecraft:brewing_stand") {
 				parseStr.push({ text: `__r4ui:inv.brewstand__` });
+			}
+
+			const chestTypes = [
+				"minecraft:chest",
+				"minecraft:barrel",
+				"minecraft:shulker_box",
+			];
+			if (chestTypes.includes(metadata.hitIdentifier)) {
+				parseStr.push({ text: `__r4ui:inv.chest__` });
+			}
+
+			const dropperTypes = [
+				"minecraft:dispenser",
+				"minecraft:dropper",
+			];
+			if (dropperTypes.includes(metadata.hitIdentifier)) {
+				parseStr.push({ text: `__r4ui:inv.dropper__` });
+			}
+
+			if (metadata.hitIdentifier === "minecraft:hopper") {
+				parseStr.push({ text: `__r4ui:inv.hopper__` });
 			}
 		}
 
