@@ -9,6 +9,7 @@
  *
  */
 
+import { ItemStack } from "@minecraft/server";
 import { LookAtObjectTypeEnum } from "./LookAtObjectTypeEnum";
 
 /**
@@ -56,6 +57,11 @@ export interface LookAtObjectMetadata {
 	itemInsideFrameTranslationKey?: string;
 }
 
+export type ItemStackWithSlot = {
+	item: ItemStack;
+	slot: number;
+};
+
 /**
  * Rendering data specifically for blocks
  */
@@ -72,7 +78,7 @@ export interface BlockRenderDataInterface {
 	 * Content or contents within the block.
 	 * This is used for blocks that can contain items, such as chests or barrels.
 	 */
-	inventory: string | string[];
+	inventory?: ItemStackWithSlot[];
 }
 
 /**

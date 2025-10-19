@@ -233,6 +233,10 @@ export default class Waila {
 			BlockHandler.resolveIcon(player, block);
 			const blockRenderData = BlockHandler.createRenderData(block, player);
 
+			if (blockRenderData.inventory) {
+				BlockHandler.resolveInventoryIcons(blockRenderData.inventory, player);
+			}
+
 			const nameAlias = (nameAliases as { [key: string]: string })[
 				blockId.replace(/.*:/g, "")
 			];
@@ -305,6 +309,7 @@ export default class Waila {
 
 		player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
 
+		BlockHandler.resetInventoryIcons(player);
 		BlockHandler.resetIcon(player);
 	}
 
@@ -356,7 +361,10 @@ export default class Waila {
 			fadeOutDuration: 0,
 			stayDuration: TicksPerSecond * 60,
 		});
-		system.runTimeout(() => BlockHandler.resetIcon(player), 2);
+		system.runTimeout(() => {
+			BlockHandler.resetInventoryIcons(player);
+			BlockHandler.resetIcon(player);
+		}, 2);
 	}
 
 	/**
@@ -573,17 +581,41 @@ export default class Waila {
 			text: `__r4ui:anchor.${settingAnchorValue}__`,
 		});
 
+		// Add additional inventory flags
+		if (
+			metadata.type === LookAtObjectType.TILE &&
+			(metadata.renderData as BlockRenderDataInterface).inventory
+		) {
+			const furnaceTypes = [
+				"minecraft:furnace",
+				"minecraft:blast_furnace",
+				'minecraft:smoker',
+			];
+			if (furnaceTypes.includes(metadata.hitIdentifier)) {
+				parseStr.push({ text: `__r4ui:inv.furnace__` });
+			}
+
+			if (metadata.hitIdentifier === "minecraft:brewing_stand") {
+				parseStr.push({ text: `__r4ui:inv.brewstand__` });
+			}
+		}
+
 		const filteredTitle = parseStr.filter(
 			(part) =>
 				!(typeof part === "object" && "text" in part && part.text === ""),
 		);
 
-		DEBUG: {
-			player.sendMessage(filteredTitle);
-			player.sendMessage(parseStrSubtitle);
-		}
+		// DEBUG: {
+		// 	player.sendMessage(filteredTitle);
+		// 	player.sendMessage(parseStrSubtitle);
+		// }
 
-		this.log.debug(filteredTitle, parseStrSubtitle);
+		// this.log.debug(filteredTitle, parseStrSubtitle);
+		this.log.debug(
+			(metadata.renderData as BlockRenderDataInterface).inventory?.map(i => {
+				return `${i.slot}: ${i.item.typeId} x${i.item.amount}`;
+			})
+		);
 
 		return { title: filteredTitle, subtitle: parseStrSubtitle };
 	}

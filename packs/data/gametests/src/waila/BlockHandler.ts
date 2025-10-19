@@ -23,7 +23,7 @@ import {
 import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import { LookAtBlockInterface } from "../types/LookAtObjectInterface";
-import { BlockRenderDataInterface } from "../types/LookAtObjectMetadataInterface";
+import { BlockRenderDataInterface, ItemStackWithSlot } from "../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
 import TagsInterface from "../types/TagsInterface";
 import { BlockToolsEnum, TagRemarksEnum } from "../types/TagsEnum";
@@ -94,41 +94,78 @@ export class BlockHandler {
 	/**
 	 * Places the block into a hidden slot in the player's inventory to display it in the UI.
 	 */
-	static resolveIcon(player: Player, block: Block): void;
+	static resolveIcon(player: Player, block: Block, slot_index?: number): void;
 	/**
 	 * Places the item stack into a hidden slot in the player's inventory to display it in the UI.
 	 */
-	static resolveIcon(player: Player, item: ItemStack): void;
-	static resolveIcon(player: Player, blockOrItem: Block | ItemStack): void {
-		const SLOT_INDEX = 17;
-
+	static resolveIcon(player: Player, item: ItemStack, slot_index?: number): void;
+	static resolveIcon(player: Player, blockOrItem: Block | ItemStack, slot_index: number = 17): void {
 		const playerContainer = player.getComponent(
 			EntityComponentTypes.Inventory,
-		)?.container;
+		)?.container; //? player container contains up to index 35 (9 hotbar + 27 main)
 		if (!playerContainer) return;
 
-		const ownedItemHolder = player.getDynamicProperty(
+		// Acquire or create an item holder entity that will safeguard player's original items
+		let holderId = player.getDynamicProperty(
 			"r4isen1920_waila:item_holder_id",
-		);
-		if (!ownedItemHolder) {
-			const itemHolder = player.dimension.spawnEntity(
+		) as string | undefined;
+		let holderEntity = holderId ? world.getEntity(holderId) : undefined;
+		let holderContainer = holderEntity?.getComponent(
+			EntityComponentTypes.Inventory,
+		)?.container;
+
+		if (!holderContainer) {
+			// Spawn a new holder if none exists or if the previous one became invalid
+			const newHolder = player.dimension.spawnEntity(
 				"r4isen1920_waila:item_holder",
 				player.location,
 			);
-			const itemHolderContainer = itemHolder.getComponent(
+			const newHolderContainer = newHolder.getComponent(
 				EntityComponentTypes.Inventory,
-			)?.container;
-			if (itemHolderContainer) {
-				playerContainer.moveItem(SLOT_INDEX, 0, itemHolderContainer);
-				player.setDynamicProperty(
-					"r4isen1920_waila:item_holder_id",
-					itemHolder.id,
-				);
-			} else {
-				itemHolder.triggerEvent("r4isen1920_waila:instant_despawn");
+			)?.container; // ? entity container contains up to index 26
+			if (!newHolderContainer) {
+				newHolder.triggerEvent("r4isen1920_waila:instant_despawn");
+				return;
+			}
+			holderEntity = newHolder;
+			holderContainer = newHolderContainer;
+			holderId = newHolder.id;
+			player.setDynamicProperty("r4isen1920_waila:item_holder_id", holderId);
+		}
+
+		// Move current player's item in slot into holder (mirrored index: slot_index - 9)
+		// Only applicable for indices >= 9, which is our reserved range for WAILA
+		if (slot_index >= 9) {
+			try {
+				playerContainer.moveItem(slot_index, slot_index - 9, holderContainer);
+			} catch (e) {
+				this.logger.warn(`Failed moving player slot ${slot_index} to holder: ${e}`);
 			}
 		}
 
+		// Remember which player slots we modified so they can be restored later
+		try {
+			const slotsProp = player.getDynamicProperty(
+				"r4isen1920_waila:inventory_item_holder_slots",
+			);
+			const slots: number[] = Array.isArray(slotsProp)
+				? // Defensive: though we always store as JSON string, keep support if ever stored raw
+				  (slotsProp as unknown as number[])
+				: typeof slotsProp === "string" && slotsProp.length > 0
+				? JSON.parse(slotsProp)
+				: [];
+			if (!slots.includes(slot_index)) {
+				slots.push(slot_index);
+				player.setDynamicProperty(
+					"r4isen1920_waila:inventory_item_holder_slots",
+					JSON.stringify(slots),
+				);
+			}
+		} catch (e) {
+			this.logger.warn(`Failed tracking modified slot ${slot_index}: ${e}`);
+		}
+
+		// Determine the item to render in the UI slot
 		const ITEM_MAPPING: { [key: string]: ItemStack } = {
 			"minecraft:bubble_column": new ItemStack("minecraft:water_bucket"),
 			"minecraft:flowing_lava": new ItemStack("minecraft:lava_bucket"),
@@ -141,41 +178,65 @@ export class BlockHandler {
 				? (ITEM_MAPPING[blockOrItem.typeId] ?? blockOrItem.getItemStack(1))
 				: blockOrItem;
 		if (item) {
+			item.amount = blockOrItem instanceof Block ? 1 : item.amount;
 			item.lockMode = ItemLockMode.slot;
 			item.keepOnDeath = true;
 			item.nameTag = "§7 §r";
 		}
-		playerContainer.setItem(SLOT_INDEX, item);
+		playerContainer.setItem(slot_index, item);
 	}
 
 	/**
 	 * Resets the icon for the specified player. This clears whatever item we put in the hidden slot.
 	 */
-	static resetIcon(player: Player): void {
-		const SLOT_INDEX = 17;
-
+	static resetIcon(player: Player, slot_index: number = 17): void {
 		const playerContainer = player.getComponent(
 			EntityComponentTypes.Inventory,
 		)?.container;
 		if (!playerContainer) return;
 
-		const ownedItemHolder = player.getDynamicProperty(
+		const holderId = player.getDynamicProperty(
 			"r4isen1920_waila:item_holder_id",
-		);
-		if (typeof ownedItemHolder === "string") {
-			const itemHolder = world.getEntity(ownedItemHolder);
-			if (itemHolder && itemHolder.isValid) {
-				const itemHolderContainer = itemHolder.getComponent(
-					EntityComponentTypes.Inventory,
-				)?.container;
-				itemHolderContainer?.moveItem(0, SLOT_INDEX, playerContainer);
-				itemHolder.triggerEvent("r4isen1920_waila:instant_despawn");
-			} else {
-				this.logger.error(`Inventory lost for slot ${SLOT_INDEX}`);
-				playerContainer.setItem(SLOT_INDEX, undefined);
-			}
-			player.setDynamicProperty("r4isen1920_waila:item_holder_id", undefined);
+		) as string | undefined;
+		if (!holderId) {
+			// Nothing to restore; avoid clearing player slot to prevent accidental item loss
 			return;
+		}
+
+		const holder = world.getEntity(holderId);
+		const holderContainer = holder
+			?.getComponent(EntityComponentTypes.Inventory)
+			?.container;
+		if (holder && holder.isValid && holderContainer) {
+			try {
+				holderContainer.moveItem(slot_index - 9, slot_index, playerContainer);
+			} catch (e) {
+				this.logger.warn(`Failed restoring player slot ${slot_index} from holder: ${e}`);
+			}
+			// Update tracked slots: remove this slot
+			try {
+				const slotsProp = player.getDynamicProperty(
+					"r4isen1920_waila:inventory_item_holder_slots",
+				) as string | undefined;
+				if (typeof slotsProp === "string" && slotsProp.length > 0) {
+					const slots: number[] = JSON.parse(slotsProp);
+					const idx = slots.indexOf(slot_index);
+					if (idx >= 0) slots.splice(idx, 1);
+					player.setDynamicProperty(
+						"r4isen1920_waila:inventory_item_holder_slots",
+						slots.length > 0 ? JSON.stringify(slots) : undefined,
+					);
+					if (slots.length === 0) {
+						holder.triggerEvent("r4isen1920_waila:instant_despawn");
+						player.setDynamicProperty(
+							"r4isen1920_waila:item_holder_id",
+							undefined,
+						);
+					}
+				}
+			} catch (e) {
+				this.logger.warn(`Failed updating tracked slots after restore: ${e}`);
+			}
 		}
 	}
 
@@ -373,28 +434,109 @@ export class BlockHandler {
 	/**
 	 * Gets block inventory contents
 	 */
-	static getBlockInventory(block: Block): string | string[] {
+	static getBlockInventory(block: Block): ItemStackWithSlot[] | undefined {
 		try {
 			const inventoryComponent = block.getComponent(
 				EntityComponentTypes.Inventory,
 			) as BlockInventoryComponent | undefined;
 			const blockContainer = inventoryComponent?.container;
-			if (!blockContainer) return "none";
+			if (!blockContainer) {
+				return;
+			}
 
-			const items: string[] = [];
+			let emptySlots = 0;
+			const items: ItemStackWithSlot[] = [];
 			for (let i = 0; i < blockContainer.size; i++) {
 				const itemStack = blockContainer.getItem(i);
-				if (itemStack) {
-					items.push(itemStack.typeId);
+				items.push({
+					item: itemStack ?? new ItemStack("minecraft:air"),
+					slot: i
+				});
+				if (!itemStack) {
+					emptySlots++;
 				}
 			}
-			return items.length > 0 ? items : "empty";
-		} catch (e) {
-			if (e instanceof Error && e.message.includes("Component")) {
-				return "none";
-			}
-			return "error";
+			return (items.length > 0 && emptySlots < blockContainer.size) ? items : undefined;
+		} catch {
+			return;
 		}
+	}
+
+	/**
+	 * Resolves icons for all items in the tile's inventory.
+	 * This behavior is similar to {@link BlockHandler.resolveIcon `resolveIcon()`}, but for multiple items.
+	 */
+	static resolveInventoryIcons(inventory: ItemStackWithSlot[], player: Player) {
+		for (const { item, slot } of inventory) {
+			BlockHandler.resolveIcon(
+				player,
+				item,
+				Math.min(9 + slot, 35) //? start at index 9; max 27 slots, excluding hotbar
+			);
+		}
+	}
+
+	/**
+	 * Resets icons for all items in that were used to render the tile's inventory.
+	 * This behavior is similar to {@link BlockHandler.resetIcon `resetIcon()`}, but for multiple items.
+	 */
+	static resetInventoryIcons(player: Player) {
+		const modifiedSlotsProp = player.getDynamicProperty(
+			"r4isen1920_waila:inventory_item_holder_slots",
+		) as string | undefined;
+		if (typeof modifiedSlotsProp !== "string" || modifiedSlotsProp.length === 0) {
+			return;
+		}
+
+		let modifiedSlots: number[] = [];
+		try {
+			modifiedSlots = JSON.parse(modifiedSlotsProp) as number[];
+		} catch {
+			modifiedSlots = [];
+		}
+		if (modifiedSlots.length === 0) return;
+
+		const playerContainer = player.getComponent(
+			EntityComponentTypes.Inventory,
+		)?.container;
+		if (!playerContainer) return;
+
+		const holderId = player.getDynamicProperty(
+			"r4isen1920_waila:item_holder_id",
+		) as string | undefined;
+		const holder = holderId ? world.getEntity(holderId) : undefined;
+		const holderContainer = holder
+			?.getComponent(EntityComponentTypes.Inventory)
+			?.container;
+
+		if (holder && holder.isValid && holderContainer) {
+			for (const slotIndex of modifiedSlots) {
+				try {
+					if (slotIndex >= 9) {
+						holderContainer.moveItem(slotIndex - 9, slotIndex, playerContainer);
+					}
+				} catch (e) {
+					this.logger.warn(`Failed restoring slot ${slotIndex}: ${e}`);
+				}
+			}
+			try {
+				holder.triggerEvent("r4isen1920_waila:instant_despawn");
+			} catch (e) {
+				this.logger.warn(`Failed to despawn item holder: ${e}`);
+			}
+		} else {
+			// Holder missing; nothing we can safely restore. Avoid clearing player's items.
+			this.logger.warn(
+				"Item holder missing during inventory reset; skipped restoring items.",
+			);
+		}
+
+		// Clear tracking properties regardless to avoid stale state
+		player.setDynamicProperty(
+			"r4isen1920_waila:inventory_item_holder_slots",
+			undefined,
+		);
+		player.setDynamicProperty("r4isen1920_waila:item_holder_id", undefined);
 	}
 
 	/**
