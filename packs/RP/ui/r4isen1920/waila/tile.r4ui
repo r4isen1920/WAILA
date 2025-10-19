@@ -17,32 +17,45 @@
 
 	//* Author: NguyenDuck (https://github.com/NguyenDuck) *//
 	"item_aux_inv_renderer@common.empty_panel": {
-		"$collection_index|default": 17,
+		"$collection_index": 17,
+		"$show_item_count": false,
 
 		"controls": [
 			{
 				"inv": {
 					"type": "custom",
 					"renderer": "inventory_item_renderer",
-					"size": ["100%", "100%"],
+
 					"anchor_from": "top_left",
 					"anchor_to": "top_left",
+					"size": ["100%", "100%"],
 					"layer": "($layer + 1)",
+
 					"controls": [
 						{
 							"stack": {
 								"type": "stack_panel",
 								"size": [0, 0],
-								"collection_name": "hotbar_items",
+
+								"$slot_name": "slot",
+								"$collection_name": "hotbar_items",
+								"collection_name": "$collection_name",
+
 								"controls": [
 									{
-										"slot@common.empty_panel": {
+										"$slot_name@common.empty_panel": {
 											"collection_index": "$collection_index",
 											"bindings": [
 												{
 													"binding_type": "collection",
 													"binding_name": "#item_id_aux",
-													"binding_collection_name": "hotbar_items",
+													"binding_collection_name": "$collection_name",
+													"binding_condition": "visibility_changed"
+												},
+												{
+													"binding_type": "collection",
+													"binding_name": "#inventory_stack_count",
+													"binding_collection_name": "$collection_name",
 													"binding_condition": "visibility_changed"
 												}
 											]
@@ -52,10 +65,41 @@
 								"bindings": [
 									{
 										"binding_type": "view",
-										"source_control_name": "slot",
+										"source_control_name": "$slot_name",
 										"resolve_sibling_scope": true,
 										"source_property_name": "#item_id_aux",
 										"target_property_name": "#item_id_aux"
+									},
+									{
+										"binding_type": "view",
+										"source_control_name": "$slot_name",
+										"resolve_sibling_scope": true,
+										"source_property_name": "#inventory_stack_count",
+										"target_property_name": "#inventory_stack_count"
+									}
+								]
+							}
+						},
+
+						{
+							"item_amount@r4isen1920_waila_common.label": {
+								"anchor_from": "bottom_right",
+								"anchor_to": "bottom_right",
+								"offset": [0, 1],
+
+								"text": "#text",
+								"font_scale_factor": 0.75,
+								"shadow": true,
+
+								"ignored": "(not $show_item_count)",
+
+								"bindings": [
+									{
+										"binding_type": "view",
+										"source_control_name": "stack",
+										"resolve_sibling_scope": true,
+										"source_property_name": "#inventory_stack_count",
+										"target_property_name": "#text"
 									}
 								]
 							}
@@ -68,6 +112,145 @@
 							"resolve_sibling_scope": true,
 							"source_property_name": "#item_id_aux",
 							"target_property_name": "#item_id_aux"
+						}
+					]
+				}
+			}
+		]
+	},
+
+	"item_inventory@item_aux_inv_renderer": {
+		"$index": 0,
+		"$show_item_count": true,
+
+		"variables": [
+			{
+				"requires": true,
+				//? player.container is following the 36-slot format (9 hotbar; 27 inventory)
+				"$collection_index": "(9 + $index)" 
+			}
+		]
+	},
+
+	"furnace_inventory": {
+		"type": "stack_panel",
+		"orientation": "horizontal",
+
+		"size": ["100%c", 14],
+
+		"controls": [
+			{
+				"input@r4isen1920_waila_tile.item_inventory": {
+					"$index": 0,
+					"size": [14, "100%"]
+				}
+			},
+			{
+				"fuel@r4isen1920_waila_tile.item_inventory": {
+					"$index": 1,
+					"size": [14, "100%"]
+				}
+			},
+			{
+				"arrow_centerer@common.empty_panel": {
+					"size": [20, "100%"], // 14px + 6px (padding)
+					"controls": [
+						{
+							"arrow_active@r4isen1920_waila_common.image": {
+								"size": [12, 10],
+								"texture": "textures/ui/arrow_active"
+							}
+						}
+					]
+				}
+			},
+			{
+				"output@r4isen1920_waila_tile.item_inventory": {
+					"$index": 2,
+					"size": [14, "100%"]
+				}
+			}
+		]
+	},
+
+	"brewing_stand_inventory": {
+		"type": "stack_panel",
+		"orientation": "horizontal",
+
+		"size": ["100%c", 30],
+
+		"controls": [
+			{
+				"inputs": {
+					"type": "stack_panel",
+					"orientation": "vertical",
+
+					"size": [14, "100%"],
+
+					"controls": [
+						{
+							"reagent@r4isen1920_waila_tile.item_inventory": {
+								"$index": 0,
+								"size": [14, 14]
+							}
+						},
+						{ "padding@common.empty_panel": { "size": [14, 2] } },
+						{
+							"blaze_powder@r4isen1920_waila_tile.item_inventory": {
+								"$index": 4,
+								"size": [14, 14]
+							}
+						}
+					]
+				}
+			},
+			{
+				"bubbles_centerer@common.empty_panel": {
+					"size": [18, "100%"], // 12px + 6px (padding)
+					"controls": [
+						{
+							"bubbles_full@r4isen1920_waila_common.image": {
+								"size": [12, 30],
+								"texture": "textures/ui/bubbles_full"
+							}
+						}
+					]
+				}
+			},
+			{
+				"potion_1_and_3": {
+					"type": "stack_panel",
+					"orientation": "vertical",
+
+					"size": [14, "100%"],
+
+					"controls": [
+						{
+							"potion_1@r4isen1920_waila_tile.item_inventory": {
+								"$index": 1,
+								"size": [14, 14]
+							}
+						},
+						{ "padding@common.empty_panel": { "size": [14, 2] } },
+						{
+							"potion_3@r4isen1920_waila_tile.item_inventory": {
+								"$index": 3,
+								"size": [14, 14]
+							}
+						}
+					]
+				}
+			},
+			{
+				"potion_2_centerer@common.empty_panel": {
+					"size": [14, "100%"],
+
+					"controls": [
+						{
+							"potion_2@r4isen1920_waila_tile.item_inventory": {
+								"$index": 2,
+								"size": [14, 14]
+							}
 						}
 					]
 				}

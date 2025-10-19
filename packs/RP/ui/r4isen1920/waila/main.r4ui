@@ -153,13 +153,32 @@
 																	"variables": [
 																		{
 																			"requires": "($tooltip_renderer_type = 'A:')",
-																			"$text": "('' + ($var_title_text - ('%.18s' * $var_title_text)) - 'tile.' - 'entity.' - '.name')"
+																			"$text": "('' + ($var_title_text - ('%.18s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:inv.furnace__' - '__r4ui:inv.brewstand__')"
 																		},
 																		{
 																			"requires": "(not ($tooltip_renderer_type = 'A:'))",
 																			"$text": "('' + ($var_title_text - ('%.324s' * $var_title_text)) - 'tile.' - 'entity.' - '.name' - '__r4ui:humanoid.')"
 																		}
 																	]
+																}
+															},
+
+															{
+																"inventory_items@common.empty_panel": {
+																	"size": ["100%c", "100%c"],
+																	"controls": [
+																		{
+																			"furnace_inventory@r4isen1920_waila_tile.furnace_inventory": {
+																				"ignored": "(($var_title_text1 - '__r4ui:inv.furnace__') = $var_title_text1)"
+																			}
+																		},
+																		{
+																			"brewing_stand_inventory@r4isen1920_waila_tile.brewing_stand_inventory": {
+																				"ignored": "(($var_title_text1 - '__r4ui:inv.brewstand__') = $var_title_text1)"
+																			}
+																		}
+																	],
+																	"ignored": "(not ($tooltip_renderer_type = 'A:'))"
 																}
 															},
 
