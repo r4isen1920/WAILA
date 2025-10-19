@@ -25,6 +25,8 @@ import {
 	Logger,
 	LogLevel,
 	PlayerPulseScheduler,
+	Vec2,
+	Vec3,
 } from "@bedrock-oss/bedrock-boost";
 import { Registry } from "@bedrock-oss/add-on-registry";
 
@@ -57,6 +59,33 @@ export default class Waila {
 	private constructor() {
 		Logger.setLevel(LogLevel.Debug);
 
+		world.afterEvents.playerInteractWithBlock.subscribe(event => {
+			const { player, block } = event;
+			const blocksWithGuiOnInteract = [
+				"minecraft:crafting_table",
+				"minecraft:furnace",
+				"minecraft:blast_furnace",
+				"minecraft:smoker",
+				"minecraft:brewing_stand",
+				"minecraft:chest",
+				"minecraft:barrel",
+				"minecraft:dispenser",
+				"minecraft:dropper",
+				"minecraft:hopper",
+				// todo: expand list; move to data JSON file
+			];
+
+			if (blocksWithGuiOnInteract.includes(block.typeId)) {
+				this.pauseUI(player);
+			}
+		});
+
+		world.beforeEvents.playerLeave.subscribe(event => {
+			const { player } = event;
+			player.setDynamicProperty("r4isen1920_waila:paused", undefined);
+			this.clearUI(player);
+		});
+
 		AfterWorldLoad(() => {
 			world.gameRules.showTags = false;
 
@@ -83,6 +112,8 @@ export default class Waila {
 	 * Requests the process for a player in the world.
 	 */
 	private toPlayer(player: Player): void {
+		if (player.getDynamicProperty("r4isen1920_waila:paused")) return;
+
 		const lookAtObject = this.fetchLookAt(
 			player,
 			WailaSettings.get(player, "maxDisplayDistance"),
@@ -311,6 +342,37 @@ export default class Waila {
 
 		BlockHandler.resetInventoryIcons(player);
 		BlockHandler.resetIcon(player);
+	}
+
+	/**
+	 * Prevents the WAILA HUD from ever updating until player resumes any form of movement.
+	 */
+	private pauseUI(player: Player): void {
+		if (player.getDynamicProperty("r4isen1920_waila:paused")) return;
+
+		player.setDynamicProperty("r4isen1920_waila:paused", true);
+		this.clearUI(player);
+		this.log.info(`Player ${player.name} opened a UI, pausing updates.`);
+
+		const savedPos = Vec3.from(player.location);
+		const savedRot = Vec2.from(player.getRotation());
+
+		// watch for player movement to resume UI
+		const runtime = system.runInterval(() => {
+			const currPos = Vec3.from(player.location);
+			const currRot = Vec2.from(player.getRotation());
+
+			if (
+				// account for potential slight deviation
+				savedPos.distance(currPos) > 2 ||
+				currRot.distance(savedRot) > 10
+			) {
+				this.log.info(`Player ${player.name} moved, resuming WAILA UI.`);
+				this.clearUI(player);
+				player.setDynamicProperty("r4isen1920_waila:paused", undefined);
+				system.clearRun(runtime);
+			}
+		}, 5);
 	}
 
 	/**
@@ -630,18 +692,6 @@ export default class Waila {
 		const filteredTitle = parseStr.filter(
 			(part) =>
 				!(typeof part === "object" && "text" in part && part.text === ""),
-		);
-
-		// DEBUG: {
-		// 	player.sendMessage(filteredTitle);
-		// 	player.sendMessage(parseStrSubtitle);
-		// }
-
-		// this.log.debug(filteredTitle, parseStrSubtitle);
-		this.log.debug(
-			(metadata.renderData as BlockRenderDataInterface).inventory?.map(i => {
-				return `${i.slot}: ${i.item.typeId} x${i.item.amount}`;
-			})
 		);
 
 		return { title: filteredTitle, subtitle: parseStrSubtitle };
