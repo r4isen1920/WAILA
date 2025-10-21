@@ -49,6 +49,16 @@ interface TagEvaluationResult {
 	remark: TagRemarksEnum;
 }
 
+interface StackAggregationBucket {
+	template: ItemStack;
+	maxAmount: number;
+	total: number;
+}
+
+type AggregationOrderEntry =
+	| { kind: "single"; stack: ItemStack }
+	| { kind: "bucket"; key: string };
+
 export class BlockHandler {
 	private static readonly log = Logger.getLogger("BlockHandler");
 
@@ -273,9 +283,10 @@ export class BlockHandler {
 		if (container.size > INVENTORY_SECOND_ROW_LIMIT) {
 			if (allNonEmpty.length === 0) return { slots: undefined, overflow: 0 };
 			const packed = BlockHandler.packIntoTwoRows(allNonEmpty);
-			const overflow = Math.max(0, allNonEmpty.length - packed.length);
+			const slots = packed.slots;
+			const overflow = Math.max(0, packed.aggregatedSize - slots.length);
 			return {
-				slots: packed.length > 0 ? packed : undefined,
+				slots: slots.length > 0 ? slots : undefined,
 				overflow,
 			};
 		}
@@ -307,7 +318,8 @@ export class BlockHandler {
 		return result;
 	}
 
-	private static packIntoTwoRows(items: ItemStack[]): ItemStackWithSlot[] {
+	private static packIntoTwoRows(items: ItemStack[]): { slots: ItemStackWithSlot[]; aggregatedSize: number } {
+		const aggregated = BlockHandler.aggregateStackableItems(items);
 		const allowedSlots: number[] = [];
 		for (let index = 0; index < INVENTORY_SECOND_ROW_LIMIT; index++) {
 			if (index === 8) continue;
@@ -316,11 +328,11 @@ export class BlockHandler {
 
 		const slots: ItemStackWithSlot[] = [];
 		for (let i = 0; i < allowedSlots.length; i++) {
-			const item = items[i];
+			const item = aggregated[i];
 			if (!item) break;
 			slots.push({ item, slot: allowedSlots[i] });
 		}
-		return slots;
+		return { slots, aggregatedSize: aggregated.length };
 	}
 
 	private static mirrorContainer(container: BlockContainer): MirroredInventoryResult | undefined {
@@ -336,5 +348,88 @@ export class BlockHandler {
 			rendered.push({ item: stack ?? new ItemStack("minecraft:air"), slot: mapped });
 		}
 		return mirroredNonEmpty > 0 ? { slots: rendered, mirroredNonEmpty } : undefined;
+	}
+
+	private static aggregateStackableItems(items: ItemStack[]): ItemStack[] {
+		if (items.length === 0) return items;
+
+		const order: AggregationOrderEntry[] = [];
+		const buckets = new Map<string, StackAggregationBucket>();
+
+		for (const item of items) {
+			if (!item) continue;
+			if (!BlockHandler.isStackableCandidate(item)) {
+				order.push({ kind: "single", stack: item });
+				continue;
+			}
+
+			const key = item.typeId;
+			let bucket = buckets.get(key);
+			if (!bucket) {
+				bucket = {
+					template: item,
+					maxAmount: BlockHandler.resolveMaxStackSize(item),
+					total: 0,
+				};
+				buckets.set(key, bucket);
+				order.push({ kind: "bucket", key });
+			}
+			bucket.total += Math.max(0, item.amount);
+		}
+
+		const aggregated: ItemStack[] = [];
+		for (const entry of order) {
+			if (entry.kind === "single") {
+				aggregated.push(entry.stack);
+				continue;
+			}
+
+			const bucket = buckets.get(entry.key);
+			if (!bucket) continue;
+
+			let remaining = bucket.total;
+			const maxStack = Math.max(1, bucket.maxAmount);
+			while (remaining > 0) {
+				const portion = Math.min(maxStack, remaining);
+				const clone = BlockHandler.cloneItemForAggregation(bucket.template, portion);
+				if (clone) {
+					aggregated.push(clone);
+				}
+				remaining -= portion;
+			}
+			buckets.delete(entry.key);
+		}
+
+		return aggregated;
+	}
+
+	private static isStackableCandidate(item: ItemStack): boolean {
+		if (!item || item.amount <= 0) return false;
+		if (item.isStackable !== true) return false;
+		const maxAmount = typeof item.maxAmount === "number" ? item.maxAmount : 0;
+		return maxAmount > 1;
+	}
+
+	private static resolveMaxStackSize(item: ItemStack): number {
+		const maxAmount = typeof item.maxAmount === "number" ? item.maxAmount : 0;
+		return maxAmount > 0 ? maxAmount : 64;
+	}
+
+	private static cloneItemForAggregation(source: ItemStack, amount: number): ItemStack | undefined {
+		try {
+			const clone = source.clone();
+			clone.amount = amount;
+			return clone;
+		} catch (error) {
+			BlockHandler.log.debug?.(`Failed to clone stack for aggregation: ${error}`);
+			try {
+				const fallback = new ItemStack(source.typeId, amount);
+				fallback.amount = amount;
+				return fallback;
+			} catch (creationError) {
+				BlockHandler.log.warn(`Failed to create fallback stack for ${source.typeId}: ${creationError}`);
+				return undefined;
+			}
+		}
 	}
 }
