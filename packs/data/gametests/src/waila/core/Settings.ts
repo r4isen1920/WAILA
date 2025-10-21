@@ -80,14 +80,14 @@ export class WailaSettings {
 		isEnabled: {
 			type: "boolean",
 			labelKey: "waila.settings.isEnabled.label",
-			descriptionKey: "waila.settings.isEnabled.description",
+			// descriptionKey: "waila.settings.isEnabled.description",
 			default: true,
 		},
 
-		displayExtendedInfo: {
+		displayBlockStates: {
 			type: "boolean",
-			labelKey: "waila.settings.displayExtendedInfo.label",
-			descriptionKey: "waila.settings.displayExtendedInfo.description",
+			labelKey: "waila.settings.displayBlockStates.label",
+			// descriptionKey: "waila.settings.displayBlockStates.description",
 			default: true,
 		},
 		maxDisplayDistance: {
@@ -98,10 +98,23 @@ export class WailaSettings {
 			range: [1, 12],
 		},
 
+		showInventoryContents: {
+			type: "enum",
+			labelKey: "waila.settings.showInventoryContents.label",
+			descriptionKey: "waila.settings.showInventoryContents.description",
+			default: "when_sneaking",
+			options: [
+				{ value: "always", labelKey: "waila.settings.showInventoryContents.option.always" },
+				{ value: "when_not_sneaking", labelKey: "waila.settings.showInventoryContents.option.when_not_sneaking" },
+				{ value: "when_sneaking", labelKey: "waila.settings.showInventoryContents.option.when_sneaking" },
+				{ value: "never", labelKey: "waila.settings.showInventoryContents.option.never" },
+			],
+		},
+
 		displayPosition: {
 			type: "enum",
 			labelKey: "waila.settings.displayPosition.label",
-			descriptionKey: "waila.settings.displayPosition.description",
+			// descriptionKey: "waila.settings.displayPosition.description",
 			default: "top_middle",
 			options: this.DISPLAY_POSITIONS,
 		},
@@ -132,10 +145,11 @@ export class WailaSettings {
 	 * Falls back to the setting default when no value has been stored yet.
 	 */
 	static get(player: Player, key: "isEnabled"): boolean;
-	static get(player: Player, key: "displayExtendedInfo"): boolean;
+	static get(player: Player, key: "displayBlockStates"): boolean;
 	static get(player: Player, key: "maxDisplayDistance"): number;
 	static get(player: Player, key: "displayPosition"): WailaDisplayPosition;
 	static get(player: Player, key: "extendedDisplayPosition"): WailaDisplayPosition;
+	static get(player: Player, key: "showInventoryContents"): WailaInventoryDisplayOption;
 	static get(player: Player, key: string): WailaSettingPrimitive;
 	static get(player: Player, key: string): WailaSettingPrimitive {
 		const setting = this.SETTINGS[key];
@@ -179,10 +193,11 @@ export class WailaSettings {
 	static getAllTyped(player: Player): WailaSettingsValues {
 		return {
 			isEnabled: this.get(player, "isEnabled") as boolean,
-			displayExtendedInfo: this.get(player, "displayExtendedInfo") as boolean,
+			displayBlockStates: this.get(player, "displayBlockStates") as boolean,
 			maxDisplayDistance: this.get(player, "maxDisplayDistance") as number,
 			displayPosition: this.get(player, "displayPosition") as WailaDisplayPosition,
 			extendedDisplayPosition: this.get(player, "extendedDisplayPosition") as WailaDisplayPosition,
+			showInventoryContents: this.get(player, "showInventoryContents") as WailaInventoryDisplayOption,
 		};
 	}
 
@@ -568,10 +583,34 @@ export type WailaDisplayPosition =
 	/** The value is the same as the other setting */
 	| "unchanged";
 
+export type WailaInventoryDisplayOption =
+	| "always"
+	| "when_not_sneaking"
+	| "when_sneaking"
+	| "never";
+
 export interface WailaSettingsValues {
 	isEnabled: boolean;
-	displayExtendedInfo: boolean;
+	displayBlockStates: boolean;
 	maxDisplayDistance: number;
 	displayPosition: WailaDisplayPosition;
 	extendedDisplayPosition: WailaDisplayPosition;
+	showInventoryContents: WailaInventoryDisplayOption;
+}
+
+export function shouldRenderInventoryContents(
+	option: WailaInventoryDisplayOption,
+	isSneaking: boolean,
+): boolean {
+	switch (option) {
+		case "always":
+			return true;
+		case "never":
+			return false;
+		case "when_sneaking":
+			return isSneaking;
+		case "when_not_sneaking":
+		default:
+			return !isSneaking;
+	}
 }

@@ -165,7 +165,7 @@
 
 															{
 																"inventory_items@common.empty_panel": {
-																	"size": ["100%c", "100%c"],
+																	"size": ["100%c", "100%cm + 3px"],
 																	"controls": [
 																		{
 																			"furnace_inventory@r4isen1920_waila_tile.furnace_inventory": {
@@ -193,7 +193,7 @@
 																			}
 																		}
 																	],
-																	"ignored": "(not ($tooltip_renderer_type = 'A:'))"
+																	"ignored": "(($var_title_text - '__r4ui:inv.') = $var_title_text)"
 																}
 															},
 

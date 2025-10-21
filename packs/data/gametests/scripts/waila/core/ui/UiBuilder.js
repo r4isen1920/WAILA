@@ -138,7 +138,7 @@ class UiBuilder {
     static resolveNamespaceText(namespace, player, settings) {
         const value = add_on_registry_1.Registry[namespace.replace(":", "")];
         if (value) {
-            return !player.isSneaking || !settings.displayExtendedInfo
+            return !player.isSneaking || !settings.displayBlockStates
                 ? value.name
                 : `${value.name}\nby ${value.creator}`;
         }

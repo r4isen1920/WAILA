@@ -9,7 +9,8 @@ import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import { InventoryMirror } from "../InventoryMirror";
 import { LookResolution } from "../look/LookPipeline";
-import { WailaSettingsValues } from "../Settings";
+import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
+import { WailaSettingsValues, shouldRenderInventoryContents } from "../Settings";
 import { UiBuilder } from "./UiBuilder";
 
 
@@ -24,7 +25,14 @@ export class UiController {
 		settings: WailaSettingsValues,
 	): void {
 		try {
-			InventoryMirror.apply(player, resolution.iconRequests);
+			const shouldDisplayInventory =
+				resolution.metadata.type === LookAtObjectType.TILE &&
+				shouldRenderInventoryContents(settings.showInventoryContents, player.isSneaking);
+			const shouldMirrorInventory =
+				shouldDisplayInventory &&
+				resolution.iconRequests.some((request) => request.slot >= 9 && request.slot <= 35 && request.slot !== 17);
+
+			InventoryMirror.apply(player, resolution.iconRequests, shouldMirrorInventory);
 		} catch (error) {
 			this.log.warn(`Failed applying inventory mirror: ${error}`);
 		}

@@ -45,7 +45,11 @@ const INVENTORY_MIRROR_END_SLOT = 26;
 export class InventoryMirror {
 	private static readonly log = Logger.getLogger("InventoryMirror");
 
-	static apply(player: Player, requests: readonly IconSlotRequest[]): void {
+	static apply(
+		player: Player,
+		requests: readonly IconSlotRequest[],
+		mirrorAuxSlots = true,
+	): void {
 		if (requests.length === 0) return;
 
 		const playerContainer = this.getPlayerContainer(player);
@@ -70,18 +74,20 @@ export class InventoryMirror {
 			touchedSlots.add(slotIndex);
 		}
 
-		for (let slotIndex = INVENTORY_MIRROR_START_SLOT; slotIndex <= INVENTORY_MIRROR_END_SLOT; slotIndex++) {
-			if (slotIndex >= playerContainer.size) break;
-			if (touchedSlots.has(slotIndex)) continue;
+		if (mirrorAuxSlots) {
+			for (let slotIndex = INVENTORY_MIRROR_START_SLOT; slotIndex <= INVENTORY_MIRROR_END_SLOT; slotIndex++) {
+				if (slotIndex >= playerContainer.size) break;
+				if (touchedSlots.has(slotIndex)) continue;
 
-			const slotKey = String(slotIndex);
-			if (!trackedSlotsSet.has(slotIndex)) {
-				const original = playerContainer.getItem(slotIndex);
-				backups[slotKey] = this.serializeItemStack(original);
-				trackedSlotsSet.add(slotIndex);
+				const slotKey = String(slotIndex);
+				if (!trackedSlotsSet.has(slotIndex)) {
+					const original = playerContainer.getItem(slotIndex);
+					backups[slotKey] = this.serializeItemStack(original);
+					trackedSlotsSet.add(slotIndex);
+				}
+
+				this.applyRequestToSlot(playerContainer, slotIndex, undefined);
 			}
-
-			this.applyRequestToSlot(playerContainer, slotIndex, undefined);
 		}
 
 		if (!this.storeBackupMap(player, backups)) {

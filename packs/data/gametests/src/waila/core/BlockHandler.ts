@@ -51,14 +51,28 @@ export class BlockHandler {
 		};
 	}
 
-	static createRenderData(block: Block, player: Player): BlockRenderDataInterface {
-		const extracted = BlockHandler.extractInventory(block);
-		return {
+	static createRenderData(
+		block: Block,
+		player: Player,
+		options?: { includeInventory?: boolean },
+	): BlockRenderDataInterface {
+		const includeInventory = options?.includeInventory ?? true;
+		const extracted = includeInventory ? BlockHandler.extractInventory(block) : undefined;
+		const renderData: BlockRenderDataInterface = {
 			toolIcons: BlockHandler.buildToolIconString(block, player),
 			blockStates: BlockHandler.describeStates(block),
-			inventory: extracted.slots,
-			...(extracted.overflow > 0 ? { inventoryOverflow: extracted.overflow } : {}),
 		};
+
+		if (includeInventory && extracted) {
+			if (extracted.slots) {
+				renderData.inventory = extracted.slots;
+			}
+			if (extracted.overflow > 0) {
+				renderData.inventoryOverflow = extracted.overflow;
+			}
+		}
+
+		return renderData;
 	}
 
 	private static resolveHitIdentifier(block: Block): string {

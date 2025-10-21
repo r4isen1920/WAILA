@@ -8,7 +8,7 @@ import {
 	LookAtObjectMetadata,
 } from "../../../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
-import { WailaSettingsValues } from "../Settings";
+import { WailaSettingsValues, shouldRenderInventoryContents } from "../Settings";
 
 
 
@@ -28,6 +28,10 @@ export class UiBuilder {
 			metadata.type === LookAtObjectType.TILE ||
 			(metadata.type === LookAtObjectType.ENTITY && !!metadata.itemContextIdentifier);
 
+		const shouldDisplayInventory =
+			metadata.type === LookAtObjectType.TILE &&
+			shouldRenderInventoryContents(settings.showInventoryContents, player.isSneaking);
+
 		const prefixType = isTileOrItemEntity ? "A" : "B";
 
 		let healthOrArmor = "";
@@ -39,7 +43,9 @@ export class UiBuilder {
 			if (metadata.type === LookAtObjectType.TILE) {
 				const blockData = metadata.renderData as BlockRenderDataInterface;
 				finalTagIcons = blockData.toolIcons;
-				inventoryOverflow = blockData.inventoryOverflow ?? 0;
+				if (shouldDisplayInventory) {
+					inventoryOverflow = blockData.inventoryOverflow ?? 0;
+				}
 			} else {
 				finalTagIcons = "zz,f;zz,f:";
 			}
@@ -151,7 +157,7 @@ export class UiBuilder {
 			subtitleParts.push({ text: blockStatesText });
 		}
 
-		if (metadata.type === LookAtObjectType.TILE && inventoryOverflow > 0) {
+		if (shouldDisplayInventory && metadata.type === LookAtObjectType.TILE && inventoryOverflow > 0) {
 			const clampedOverflow = Math.min(99, Math.max(0, inventoryOverflow));
 			titleParts.push({ text: `__r4ui:inv.size_${clampedOverflow}__` });
 		}
@@ -159,9 +165,9 @@ export class UiBuilder {
 		titleParts.push({ text: `__r4ui:anchor.${anchorSetting}__` });
 
 		if (
+			shouldDisplayInventory &&
 			metadata.type === LookAtObjectType.TILE &&
-			(metadata.renderData as BlockRenderDataInterface).inventory &&
-			!player.isSneaking
+			(metadata.renderData as BlockRenderDataInterface).inventory
 		) {
 			for (const token of UiBuilder.collectInventoryTokens(metadata.hitIdentifier)) {
 				titleParts.push({ text: token });
@@ -193,7 +199,7 @@ export class UiBuilder {
 	): string {
 		const value = Registry[namespace.replace(":", "")];
 		if (value) {
-			return !player.isSneaking || !settings.displayExtendedInfo
+			return !player.isSneaking || !settings.displayBlockStates
 				? value.name
 				: `${value.name}\nby ${value.creator}`;
 		}

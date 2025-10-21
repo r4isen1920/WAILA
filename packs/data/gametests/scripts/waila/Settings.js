@@ -64,10 +64,10 @@ class WailaSettings {
             descriptionKey: "waila.settings.isEnabled.description",
             default: true,
         },
-        displayExtendedInfo: {
+        displayBlockStates: {
             type: "boolean",
-            labelKey: "waila.settings.displayExtendedInfo.label",
-            descriptionKey: "waila.settings.displayExtendedInfo.description",
+            labelKey: "waila.settings.displayBlockStates.label",
+            descriptionKey: "waila.settings.displayBlockStates.description",
             default: true,
         },
         maxDisplayDistance: {
@@ -135,7 +135,7 @@ class WailaSettings {
     static getAllTyped(player) {
         return {
             isEnabled: this.get(player, "isEnabled"),
-            displayExtendedInfo: this.get(player, "displayExtendedInfo"),
+            displayBlockStates: this.get(player, "displayBlockStates"),
             maxDisplayDistance: this.get(player, "maxDisplayDistance"),
             displayPosition: this.get(player, "displayPosition"),
             extendedDisplayPosition: this.get(player, "extendedDisplayPosition"),

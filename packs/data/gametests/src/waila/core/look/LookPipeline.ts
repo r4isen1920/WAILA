@@ -3,7 +3,7 @@ import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import frameBlockIds from "../../../data/frameBlockIds.json";
 import nameAliases from "../../../data/nameAliases.json";
-import { WailaSettingsValues } from "../Settings";
+import { WailaSettingsValues, shouldRenderInventoryContents } from "../Settings";
 import { InventoryMirror, IconSlotRequest } from "../InventoryMirror";
 import {
 	LookAtBlockInterface,
@@ -144,9 +144,16 @@ export class LookPipeline {
 		const block = lookAtObject.block;
 		if (!block) return undefined;
 
+		const includeInventory = shouldRenderInventoryContents(
+			settings.showInventoryContents,
+			player.isSneaking,
+		);
+
 		let renderData: BlockRenderDataInterface;
 		try {
-			renderData = BlockHandler.createRenderData(block, player);
+			renderData = BlockHandler.createRenderData(block, player, {
+				includeInventory,
+			});
 		} catch (error) {
 			this.log.warn(`Failed to build block render data for ${block.typeId}: ${error}`);
 			return undefined;
@@ -159,11 +166,11 @@ export class LookPipeline {
 		const displayName = aliasKey ? `${aliasKey}.name` : block.localizationKey;
 
 		const extendedInfoActive = Boolean(
-			renderData.blockStates && settings.displayExtendedInfo && player.isSneaking,
+			renderData.blockStates && settings.displayBlockStates && player.isSneaking,
 		);
 
 		const frameItemTranslationKey = this.resolveFrameItemKey(blockTypeId, lookAtObject.hitIdentifier);
-		const inventorySignature = this.encodeInventory(renderData.inventory);
+		const inventorySignature = includeInventory ? this.encodeInventory(renderData.inventory) : "";
 
 		return {
 			type: LookAtObjectType.TILE,

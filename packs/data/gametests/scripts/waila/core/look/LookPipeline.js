@@ -117,7 +117,7 @@ class LookPipeline {
         const hitNamespace = this.resolveNamespace(lookAtObject.hitIdentifier);
         const aliasKey = nameAliases_json_1.default[blockTypeId.replace(/.*:/g, "")];
         const displayName = aliasKey ? `${aliasKey}.name` : block.localizationKey;
-        const extendedInfoActive = Boolean(renderData.blockStates && settings.displayExtendedInfo && player.isSneaking);
+        const extendedInfoActive = Boolean(renderData.blockStates && settings.displayBlockStates && player.isSneaking);
         const frameItemTranslationKey = this.resolveFrameItemKey(blockTypeId, lookAtObject.hitIdentifier);
         const inventorySignature = this.encodeInventory(renderData.inventory);
         return {
