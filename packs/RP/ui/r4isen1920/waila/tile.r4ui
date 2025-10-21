@@ -404,9 +404,424 @@
 							}
 						},
 						{
-							"item_8@r4isen1920_waila_tile.generic_container_inventory_item": {
-								"$a_index": 18,
-								"$border_type": "bottom_right"
+							"elipsis_overflow@common.empty_panel": {
+								"size": ["100%sm", "100%sm"],
+
+								"controls": [
+									{
+										"label@r4isen1920_waila_common.label": {
+											"anchor_from": "center",
+											"anchor_to": "center",
+
+											"text_alignment": "center",
+											"font_scale_factor": 0.75,
+
+											"$text": "+0",
+											"text": "('§o' + $text)",
+
+											"variables": [
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_1__') = $var_title_text))",
+													"$text": "+1"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_2__') = $var_title_text))",
+													"$text": "+2"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_3__') = $var_title_text))",
+													"$text": "+3"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_4__') = $var_title_text))",
+													"$text": "+4"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_5__') = $var_title_text))",
+													"$text": "+5"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_6__') = $var_title_text))",
+													"$text": "+6"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_7__') = $var_title_text))",
+													"$text": "+7"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_8__') = $var_title_text))",
+													"$text": "+8"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_9__') = $var_title_text))",
+													"$text": "+9"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_10__') = $var_title_text))",
+													"$text": "+10"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_11__') = $var_title_text))",
+													"$text": "+11"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_12__') = $var_title_text))",
+													"$text": "+12"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_13__') = $var_title_text))",
+													"$text": "+13"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_14__') = $var_title_text))",
+													"$text": "+14"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_15__') = $var_title_text))",
+													"$text": "+15"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_16__') = $var_title_text))",
+													"$text": "+16"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_17__') = $var_title_text))",
+													"$text": "+17"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_18__') = $var_title_text))",
+													"$text": "+18"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_19__') = $var_title_text))",
+													"$text": "+19"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_20__') = $var_title_text))",
+													"$text": "+20"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_21__') = $var_title_text))",
+													"$text": "+21"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_22__') = $var_title_text))",
+													"$text": "+22"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_23__') = $var_title_text))",
+													"$text": "+23"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_24__') = $var_title_text))",
+													"$text": "+24"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_25__') = $var_title_text))",
+													"$text": "+25"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_26__') = $var_title_text))",
+													"$text": "+26"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_27__') = $var_title_text))",
+													"$text": "+27"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_28__') = $var_title_text))",
+													"$text": "+28"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_29__') = $var_title_text))",
+													"$text": "+29"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_30__') = $var_title_text))",
+													"$text": "+30"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_31__') = $var_title_text))",
+													"$text": "+31"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_32__') = $var_title_text))",
+													"$text": "+32"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_33__') = $var_title_text))",
+													"$text": "+33"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_34__') = $var_title_text))",
+													"$text": "+34"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_35__') = $var_title_text))",
+													"$text": "+35"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_36__') = $var_title_text))",
+													"$text": "+36"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_37__') = $var_title_text))",
+													"$text": "+37"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_38__') = $var_title_text))",
+													"$text": "+38"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_39__') = $var_title_text))",
+													"$text": "+39"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_40__') = $var_title_text))",
+													"$text": "+40"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_41__') = $var_title_text))",
+													"$text": "+41"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_42__') = $var_title_text))",
+													"$text": "+42"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_43__') = $var_title_text))",
+													"$text": "+43"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_44__') = $var_title_text))",
+													"$text": "+44"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_45__') = $var_title_text))",
+													"$text": "+45"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_46__') = $var_title_text))",
+													"$text": "+46"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_47__') = $var_title_text))",
+													"$text": "+47"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_48__') = $var_title_text))",
+													"$text": "+48"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_49__') = $var_title_text))",
+													"$text": "+49"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_50__') = $var_title_text))",
+													"$text": "+50"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_51__') = $var_title_text))",
+													"$text": "+51"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_52__') = $var_title_text))",
+													"$text": "+52"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_53__') = $var_title_text))",
+													"$text": "+53"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_54__') = $var_title_text))",
+													"$text": "+54"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_55__') = $var_title_text))",
+													"$text": "+55"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_56__') = $var_title_text))",
+													"$text": "+56"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_57__') = $var_title_text))",
+													"$text": "+57"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_58__') = $var_title_text))",
+													"$text": "+58"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_59__') = $var_title_text))",
+													"$text": "+59"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_60__') = $var_title_text))",
+													"$text": "+60"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_61__') = $var_title_text))",
+													"$text": "+61"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_62__') = $var_title_text))",
+													"$text": "+62"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_63__') = $var_title_text))",
+													"$text": "+63"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_64__') = $var_title_text))",
+													"$text": "+64"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_65__') = $var_title_text))",
+													"$text": "+65"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_66__') = $var_title_text))",
+													"$text": "+66"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_67__') = $var_title_text))",
+													"$text": "+67"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_68__') = $var_title_text))",
+													"$text": "+68"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_69__') = $var_title_text))",
+													"$text": "+69"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_70__') = $var_title_text))",
+													"$text": "+70"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_71__') = $var_title_text))",
+													"$text": "+71"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_72__') = $var_title_text))",
+													"$text": "+72"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_73__') = $var_title_text))",
+													"$text": "+73"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_74__') = $var_title_text))",
+													"$text": "+74"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_75__') = $var_title_text))",
+													"$text": "+75"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_76__') = $var_title_text))",
+													"$text": "+76"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_77__') = $var_title_text))",
+													"$text": "+77"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_78__') = $var_title_text))",
+													"$text": "+78"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_79__') = $var_title_text))",
+													"$text": "+79"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_80__') = $var_title_text))",
+													"$text": "+80"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_81__') = $var_title_text))",
+													"$text": "+81"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_82__') = $var_title_text))",
+													"$text": "+82"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_83__') = $var_title_text))",
+													"$text": "+83"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_84__') = $var_title_text))",
+													"$text": "+84"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_85__') = $var_title_text))",
+													"$text": "+85"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_86__') = $var_title_text))",
+													"$text": "+86"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_87__') = $var_title_text))",
+													"$text": "+87"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_88__') = $var_title_text))",
+													"$text": "+88"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_89__') = $var_title_text))",
+													"$text": "+89"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_90__') = $var_title_text))",
+													"$text": "+90"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_91__') = $var_title_text))",
+													"$text": "+91"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_92__') = $var_title_text))",
+													"$text": "+92"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_93__') = $var_title_text))",
+													"$text": "+93"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_94__') = $var_title_text))",
+													"$text": "+94"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_95__') = $var_title_text))",
+													"$text": "+95"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_96__') = $var_title_text))",
+													"$text": "+96"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_97__') = $var_title_text))",
+													"$text": "+97"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_98__') = $var_title_text))",
+													"$text": "+98"
+												},
+												{
+													"requires": "(not (($var_title_text - '__r4ui:inv.size_99__') = $var_title_text))",
+													"$text": "+99"
+												}
+											]
+										}
+									}
+								],
+
+								"ignored": "(($var_title_text - '__r4ui:inv.size_') = $var_title_text)"
 							}
 						}
 					]

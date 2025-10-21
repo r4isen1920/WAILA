@@ -9,82 +9,34 @@
  *
  */
 
-import {
-	EntityComponentTypes,
-	EquipmentSlot,
-	ItemStack,
-	LocationOutOfWorldBoundariesError,
-	Player,
-	RawMessage,
-	TicksPerSecond,
-	TitleDisplayOptions,
-	system,
-	world,
-} from "@minecraft/server";
-import {
-	Logger,
-	LogLevel,
-	PlayerPulseScheduler,
-	Vec2,
-	Vec3,
-} from "@bedrock-oss/bedrock-boost";
-import { Registry } from "@bedrock-oss/add-on-registry";
+import { Player, world } from "@minecraft/server";
+import { Logger, LogLevel, PlayerPulseScheduler } from "@bedrock-oss/bedrock-boost";
 
-import {
-	LookAtBlockInterface,
-	LookAtEntityInterface,
-	LookAtItemEntityInterface,
-	LookAtObjectInterface,
-} from "../types/LookAtObjectInterface";
-import {
-	BlockRenderDataInterface,
-	EntityRenderDataInterface,
-	LookAtObjectMetadata,
-} from "../types/LookAtObjectMetadataInterface";
-import { LookAtObjectTypeEnum as LookAtObjectType } from "../types/LookAtObjectTypeEnum";
-import { BlockHandler } from "./BlockHandler";
-import { EntityHandler } from "./EntityHandler";
-import nameAliases from "../data/nameAliases.json";
 import AfterWorldLoad from "../Init";
 import { WailaSettings } from "./Settings";
-
-import ignoredBlockRender from "../data/ignoredBlockRender.json";
+import { PauseManager } from "./core/PauseManager";
+import { SignatureStore } from "./core/SignatureStore";
+import { LookPipeline, LookAssessment } from "./core/look/LookPipeline";
+import { LookScanner } from "./core/look/LookScanner";
+import { UiController } from "./core/ui/UiController";
 
 //#region WAILA
 export default class Waila {
 	private static instance: Waila;
+
 	private readonly log = Logger.getLogger("WAILA");
-	private playerPreviousLookState: Map<string, boolean> = new Map();
+	private readonly signatureStore = new SignatureStore();
+	private readonly lookScanner = new LookScanner();
+	private readonly lookPipeline = new LookPipeline();
+	private readonly uiController = new UiController();
+	private readonly playerHasTarget: Map<string, boolean> = new Map();
+	private readonly pauseManager: PauseManager;
 
 	private constructor() {
 		Logger.setLevel(LogLevel.Debug);
 
-		world.afterEvents.playerInteractWithBlock.subscribe(event => {
-			const { player, block } = event;
-			const blocksWithGuiOnInteract = [
-				"minecraft:crafting_table",
-				"minecraft:furnace",
-				"minecraft:blast_furnace",
-				"minecraft:smoker",
-				"minecraft:brewing_stand",
-				"minecraft:chest",
-				"minecraft:barrel",
-				"minecraft:dispenser",
-				"minecraft:dropper",
-				"minecraft:hopper",
-				// todo: expand list; move to data JSON file
-			];
-
-			if (blocksWithGuiOnInteract.includes(block.typeId)) {
-				this.pauseUI(player);
-			}
-		});
-
-		world.beforeEvents.playerLeave.subscribe(event => {
-			const { player } = event;
-			player.setDynamicProperty("r4isen1920_waila:paused", undefined);
-			this.clearUI(player);
-		});
+		this.pauseManager = new PauseManager((player) => this.handleExternalClear(player));
+		this.pauseManager.initialize();
 
 		AfterWorldLoad(() => {
 			world.gameRules.showTags = false;
@@ -92,7 +44,7 @@ export default class Waila {
 			const pulse = new PlayerPulseScheduler((player) => {
 				const isEnabled = WailaSettings.get(player, "isEnabled");
 				if (isEnabled === undefined || isEnabled === true) {
-					this.toPlayer(player);
+					this.processPlayer(player);
 				}
 			}, 3);
 			pulse.start();
@@ -108,593 +60,50 @@ export default class Waila {
 		return Waila.instance;
 	}
 
-	/**
-	 * Requests the process for a player in the world.
-	 */
-	private toPlayer(player: Player): void {
-		if (player.getDynamicProperty("r4isen1920_waila:paused")) return;
+	private processPlayer(player: Player): void {
+		if (this.pauseManager.isPaused(player)) return;
 
-		const lookAtObject = this.fetchLookAt(
-			player,
-			WailaSettings.get(player, "maxDisplayDistance"),
-		);
-		lookAtObject.viewAdditionalProperties =
-			WailaSettings.get(player, "displayExtendedInfo") &&
-			// check if there are actually block states to show before attempting an update
-			Object.keys((lookAtObject as LookAtBlockInterface)?.block?.permutation.getAllStates() ?? {}).length > 0 &&
-			player.isSneaking;
+		const settings = WailaSettings.getAllTyped(player);
+		const lookAt = this.lookScanner.scan(player, settings.maxDisplayDistance);
+		const assessment = this.lookPipeline.assess(player, lookAt, settings);
 
-		if (lookAtObject.hitIdentifier === undefined) {
-			lookAtObject.hitIdentifier = "__r4ui:none";
-			player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
+		this.updateTargetState(player, assessment);
+
+		if (!assessment.hasTarget || !assessment.signature || !assessment.context) {
+			this.signatureStore.clear(player);
+			return;
 		}
 
-		this.displayUI(player, lookAtObject);
+		if (this.signatureStore.isDuplicate(player, assessment.signature)) return;
+
+		const resolution = this.lookPipeline.finalize(assessment.context);
+		this.uiController.present(player, resolution, settings);
 	}
 
-	//#region Fetch
-	/**
-	 * Fetches what block or entity the specified player is looking at.
-	 */
-	private fetchLookAt(player: Player, max_dist: number): LookAtObjectInterface {
-		try {
-			// First check for entities in view direction (higher priority)
-			const entityLookAt = player.getEntitiesFromViewDirection({
-				maxDistance: max_dist,
-			});
-
-			// Check for the item held by the player
-			const playerEquippedItem =
-				player
-					.getComponent(EntityComponentTypes.Equippable)
-					?.getEquipment(EquipmentSlot.Mainhand)?.typeId || "__r4ui:none";
-
-			if (entityLookAt.length > 0 && entityLookAt[0]?.entity) {
-				const entity = entityLookAt[0].entity;
-				const lookAtEntity = EntityHandler.createLookupData(entity);
-				lookAtEntity.itemHeld = playerEquippedItem;
-				return lookAtEntity;
-			}
-
-			// If no entity was found, check for blocks
-			const blockLookAt = player.getBlockFromViewDirection({
-				includeLiquidBlocks: !player.isInWater,
-				includePassableBlocks: !player.isInWater,
-				maxDistance: max_dist,
-			});
-
-			if (
-				blockLookAt?.block &&
-				!ignoredBlockRender.some((b) => b.includes(blockLookAt.block.typeId))
-			) {
-				const lookAtBlock = BlockHandler.createLookupData(blockLookAt.block);
-				lookAtBlock.itemHeld = playerEquippedItem;
-				return lookAtBlock;
-			}
-
-			// Nothing was found
-			return {
-				type: undefined,
-				hitIdentifier: "__r4ui:none",
-				itemHeld: playerEquippedItem,
-			};
-		} catch (e) {
-			if (!(e instanceof LocationOutOfWorldBoundariesError)) {
-				this.log.error(`Error in fetchLookAt: ${e}`);
-			}
-			return {
-				type: undefined,
-				hitIdentifier: "__r4ui:none",
-				itemHeld: "__r4ui:none",
-			};
-		}
-	}
-
-	/**
-	 * Fetches metadata for the looked-at object.
-	 */
-	private fetchLookAtMetadata(
-		player: Player,
-		lookAtObject: LookAtObjectInterface,
-	): LookAtObjectMetadata | null {
-		if (
-			!lookAtObject.type ||
-			!lookAtObject.hitIdentifier ||
-			lookAtObject.hitIdentifier === "__r4ui:none"
-		) {
-			return null;
-		}
-
-		const hitNamespace = lookAtObject.hitIdentifier.includes(":")
-			? lookAtObject.hitIdentifier.substring(
-					0,
-					lookAtObject.hitIdentifier.indexOf(":") + 1,
-				)
-			: "minecraft:";
-
-		let resultDisplayName: string = lookAtObject.hitIdentifier;
-		let nameTagContextTranslationKey_local: string | undefined = undefined;
-		let itemContextIdentifier_local: string | undefined = undefined;
-
-		if (lookAtObject.type === LookAtObjectType.ENTITY) {
-			const entity = (lookAtObject as LookAtEntityInterface).entity;
-			const entityNameTag = entity.nameTag;
-			const entityTypeId = entity.typeId;
-
-			const entityRenderData = EntityHandler.createRenderData(
-				entity,
-				player,
-				entityTypeId === "minecraft:player",
-			);
-
-			if (entityNameTag && entityNameTag.length > 0) {
-				resultDisplayName = entityNameTag;
-				nameTagContextTranslationKey_local = entity.localizationKey;
-			} else {
-				if (entityTypeId === "minecraft:item") {
-					const itemEntity = lookAtObject as LookAtItemEntityInterface;
-					const itemStack = itemEntity.itemStack;
-					if (itemStack) {
-						itemContextIdentifier_local = itemStack.typeId;
-						BlockHandler.resolveIcon(player, itemStack);
-					}
-				}
-				resultDisplayName = entity.localizationKey;
-			}
-
-			return {
-				type: lookAtObject.type,
-				hitIdentifier: entityTypeId,
-				namespace: hitNamespace,
-				displayName: resultDisplayName,
-				renderData: entityRenderData,
-				...(nameTagContextTranslationKey_local && {
-					nameTagContextTranslationKey: nameTagContextTranslationKey_local,
-				}),
-				...(itemContextIdentifier_local && {
-					itemContextIdentifier: itemContextIdentifier_local,
-				}),
-			};
-		}
-
-		if (lookAtObject.type === LookAtObjectType.TILE) {
-			const block = (lookAtObject as LookAtBlockInterface).block;
-			const blockId = block.typeId;
-
-			BlockHandler.resolveIcon(player, block);
-			const blockRenderData = BlockHandler.createRenderData(block, player);
-
-			if (blockRenderData.inventory) {
-				BlockHandler.resolveInventoryIcons(blockRenderData.inventory, player);
-			}
-
-			const nameAlias = (nameAliases as { [key: string]: string })[
-				blockId.replace(/.*:/g, "")
-			];
-			if (nameAlias) {
-				resultDisplayName = `${nameAlias}.name`;
-			} else {
-				resultDisplayName = block.localizationKey;
-			}
-
-			let itemInsideFrameTranslationKey_local: string | undefined = undefined;
-			const itemFrameIds = ["minecraft:frame", "minecraft:glow_frame"];
-			const hitIdentifier = lookAtObject.hitIdentifier; // the hitIdentifier and the actual block typeId may be different
-			// if hitIdentifier is also an item frame, that means the item frame is empty--don't bother checking
-			if (
-				itemFrameIds.includes(blockId) &&
-				!itemFrameIds.includes(hitIdentifier)
-			) {
-				const nA = (nameAliases as { [key: string]: string })[
-					hitIdentifier.replace(/.*:/g, "")
-				];
-				if (nA) {
-					itemInsideFrameTranslationKey_local = `${nA}.name`;
-				} else {
-					itemInsideFrameTranslationKey_local = (() => {
-						let tryCreateItem: ItemStack | undefined = undefined;
-						try {
-							tryCreateItem = new ItemStack(hitIdentifier);
-						} catch {
-							/** empty */
-						}
-						return tryCreateItem?.localizationKey;
-					})();
-				}
-			}
-
-			return {
-				type: lookAtObject.type,
-				hitIdentifier: blockId,
-				namespace: hitNamespace,
-				displayName: resultDisplayName,
-				renderData: blockRenderData,
-				...(itemInsideFrameTranslationKey_local && {
-					itemInsideFrameTranslationKey: itemInsideFrameTranslationKey_local,
-				}),
-			};
-		}
-
-		return null;
-	}
-
-	//#region Render
-	/**
-	 * Clears the UI for the specified player.
-	 */
-	public clearUI(player: Player): void {
-		const options: TitleDisplayOptions = {
-			fadeInDuration: 0,
-			fadeOutDuration: 0,
-			stayDuration: 0,
-		};
-		player.onScreenDisplay.setTitle(" ", options);
-
-		try {
-			player.runCommand(`title @s reset`);
-		} catch (e) {
-			this.log.warn(
-				`Failed to run title reset command for ${player.name}: ${e}`,
-			);
-		}
-
-		player.setDynamicProperty("r4isen1920_waila:old_log", undefined);
-
-		BlockHandler.resetInventoryIcons(player);
-		BlockHandler.resetIcon(player);
-	}
-
-	/**
-	 * Prevents the WAILA HUD from ever updating until player resumes any form of movement.
-	 */
-	private pauseUI(player: Player): void {
-		if (player.getDynamicProperty("r4isen1920_waila:paused")) return;
-
-		player.setDynamicProperty("r4isen1920_waila:paused", true);
-		this.clearUI(player);
-		this.log.info(`Player ${player.name} opened a UI, pausing updates.`);
-
-		const savedPos = Vec3.from(player.location);
-		const savedRot = Vec2.from(player.getRotation());
-
-		// watch for player movement to resume UI
-		const runtime = system.runInterval(() => {
-			const currPos = Vec3.from(player.location);
-			const currRot = Vec2.from(player.getRotation());
-
-			if (
-				// account for potential slight deviation
-				savedPos.distance(currPos) > 2 ||
-				currRot.distance(savedRot) > 10
-			) {
-				this.log.info(`Player ${player.name} moved, resuming WAILA UI.`);
-				this.clearUI(player);
-				player.setDynamicProperty("r4isen1920_waila:paused", undefined);
-				system.clearRun(runtime);
-			}
-		}, 5);
-	}
-
-	/**
-	 * Handles final string parse and sends a request to the UI.
-	 */
-	private displayUI(player: Player, lookAtObject: LookAtObjectInterface): void {
-		const hasTarget = lookAtObject.hitIdentifier !== "__r4ui:none";
+	private updateTargetState(player: Player, assessment: LookAssessment): void {
 		const playerId = player.id;
-		const hadPreviousTarget =
-			this.playerPreviousLookState.get(playerId) ?? false;
+		const hadTarget = this.playerHasTarget.get(playerId) ?? false;
+		const hasTarget = assessment.hasTarget;
 
-		// Update the player's look state for the next tick
-		this.playerPreviousLookState.set(playerId, hasTarget);
-
-		if (!hasTarget) {
-			// Only clear UI when transitioning from having a target to no target
-			if (hadPreviousTarget) {
-				this.clearUI(player);
-			}
-			return;
+		if (!hasTarget && hadTarget) {
+			this.handleExternalClear(player);
 		}
 
-		// Create comparison data to see if UI needs updating
-		const comparisonData = this.createComparisonData(lookAtObject);
-		const oldLog = player.getDynamicProperty("r4isen1920_waila:old_log") as
-			| string
-			| undefined;
-
-		if (oldLog === comparisonData) return;
-		player.setDynamicProperty("r4isen1920_waila:old_log", comparisonData);
-
-		const metadata = this.fetchLookAtMetadata(player, lookAtObject);
-		if (!metadata) {
-			this.log.warn(
-				`Failed to fetch metadata for ${lookAtObject.hitIdentifier}, clearing UI.`,
-			);
-			this.clearUI(player);
-			return;
-		}
-
-		// Generate UI components
-		const { title, subtitle } = this.generateUIComponents(player, metadata);
-
-		// Display the UI
-		player.onScreenDisplay.setTitle(title, {
-			subtitle: subtitle,
-			fadeInDuration: 0,
-			fadeOutDuration: 0,
-			stayDuration: TicksPerSecond * 60,
-		});
-		system.runTimeout(() => {
-			BlockHandler.resetInventoryIcons(player);
-			BlockHandler.resetIcon(player);
-		}, 2);
+		this.playerHasTarget.set(playerId, hasTarget);
 	}
 
-	/**
-	 * Creates a comparison string to determine if UI needs updating
-	 */
-	private createComparisonData(lookAtObject: LookAtObjectInterface): string {
-		const baseData: any = {
-			hit: lookAtObject.hitIdentifier,
-			sneaking: lookAtObject.viewAdditionalProperties,
-			itemHeld: lookAtObject.itemHeld,
-		};
-
-		if (lookAtObject.type === LookAtObjectType.ENTITY) {
-			const entityData = lookAtObject as LookAtEntityInterface;
-			Object.assign(baseData, {
-				hp: entityData.hp,
-				maxHp: entityData.maxHp,
-				armor: EntityHandler.armorRenderer(entityData.entity),
-				effects:
-					entityData.effectsData
-						?.map((e) => `${e.id}:${e.amplifier}:${e.duration}`)
-						.join(",") || "",
-			});
-		} else if (
-			lookAtObject.type === LookAtObjectType.TILE &&
-			(lookAtObject as LookAtBlockInterface).block
-		) {
-			const blockData = lookAtObject as LookAtBlockInterface;
-			const states = BlockHandler.getBlockStates(blockData.block);
-			const inv = BlockHandler.getBlockInventory(blockData.block)
-				?.map((i) => `${i.slot}:${i.item.typeId}:${i.item.amount}`)
-				.join("|") || "";
-			Object.assign(baseData, { states, inv });
-		}
-
-		return JSON.stringify(baseData);
+	private handleExternalClear(player: Player): void {
+		this.uiController.clear(player);
+		this.signatureStore.clear(player);
+		this.playerHasTarget.set(player.id, false);
 	}
 
-	/**
-	 * Generates UI components for the title display
-	 */
-	private generateUIComponents(
-		player: Player,
-		metadata: LookAtObjectMetadata,
-	): { title: RawMessage[]; subtitle: RawMessage[] } {
-		const parseStrSubtitle: RawMessage[] = [
-			{
-				text: (metadata.renderData as EntityRenderDataInterface).entityId || "",
-			},
-		];
-		const isTileOrItemEntity =
-			metadata.type === LookAtObjectType.TILE ||
-			(metadata.type === LookAtObjectType.ENTITY &&
-				!!metadata.itemContextIdentifier);
+	public clearUI(player: Player): void {
+		this.handleExternalClear(player);
+	}
 
-		const prefixType = isTileOrItemEntity ? "A" : "B";
-
-		let healthOrArmor = "";
-		let finalTagIcons = "";
-		let effectsStr = "";
-
-		if (isTileOrItemEntity) {
-			if (metadata.type === LookAtObjectType.TILE) {
-				const blockData = metadata.renderData as BlockRenderDataInterface;
-				finalTagIcons = blockData.toolIcons;
-			} else {
-				// Item Entity
-				finalTagIcons = `zz,f;zz,f:`; // Item entities don't have specific "tool" icons in this context
-			}
-		} else {
-			// Non-item Entities
-			const entityData = metadata.renderData as EntityRenderDataInterface;
-			healthOrArmor = `${entityData.healthRenderer}${entityData.armorRenderer}`;
-			finalTagIcons = entityData.tagIcons;
-
-			effectsStr = `${entityData.effectsRenderer.effectString}e${entityData.effectsRenderer.effectsResolvedArray.length.toString().padStart(2, "0")}`;
-		}
-
-		const nameElements: RawMessage[] = [];
-		if (metadata.hitIdentifier === "minecraft:player") {
-			nameElements.push({ text: "__r4ui:humanoid." });
-		}
-		if (
-			metadata.nameTagContextTranslationKey &&
-			metadata.hitIdentifier !== "minecraft:player"
-		) {
-			nameElements.push({ text: `${metadata.displayName} §7(` }); // metadata.displayName is the nameTag
-			nameElements.push({ translate: metadata.nameTagContextTranslationKey });
-			nameElements.push({ text: ")§r" });
-		} else {
-			nameElements.push({ translate: metadata.displayName }); // Standard translation key or 'entity.item.name'
-		}
-		if (metadata.itemInsideFrameTranslationKey) {
-			nameElements.push({ text: `\n§7[` });
-			nameElements.push({ translate: metadata.itemInsideFrameTranslationKey });
-			nameElements.push({ text: "]§r" });
-		}
-		nameElements.push({ text: "§r" });
-
-		const blockStatesText =
-			metadata.type === LookAtObjectType.TILE &&
-			player.isSneaking &&
-			WailaSettings.get(player, "displayExtendedInfo")
-				? (metadata.renderData as BlockRenderDataInterface).blockStates
-				: "";
-
-		// Show item entity's specific item type ID (e.g., minecraft:diamond_sword)
-		const itemEntityText =
-			metadata.type === LookAtObjectType.ENTITY &&
-			metadata.itemContextIdentifier
-				? `\n§7${metadata.itemContextIdentifier}§r`
-				: "";
-
-		// Format health text for entities
-		let healthText = "";
-		let paddingNewlines = "";
-
-		if (metadata.type === LookAtObjectType.ENTITY) {
-			const entityData = metadata.renderData as EntityRenderDataInterface;
-
-			// Handle integer health display
-			if (entityData.maxHp > 0 && entityData.intHealthDisplay) {
-				const percentage = Math.round((entityData.hp / entityData.maxHp) * 100);
-				const hpDisplay =
-					entityData.maxHp < 1000000
-						? // "" corresponds to health icon in the UI
-							` ${entityData.hp}/${entityData.maxHp} (${percentage}%)`
-						: " ∞";
-				healthText = `\n§7 ${hpDisplay}§r`;
-			}
-
-			// Add padding based on HP and display type
-			if (
-				entityData.maxHp > 0 &&
-				entityData.maxHp <= 40 &&
-				!entityData.intHealthDisplay
-			) {
-				paddingNewlines += "\n";
-			}
-			if (
-				entityData.maxHp > 20 &&
-				entityData.maxHp <= 40 &&
-				!entityData.intHealthDisplay
-			) {
-				paddingNewlines += "\n";
-			}
-			if (entityData.maxHp > 40 && !entityData.intHealthDisplay) {
-				// High HP bar shown
-				healthText = `\n§7 ${
-					entityData.maxHp < 1000000
-						? `${entityData.hp}/${entityData.maxHp} (${Math.round((entityData.hp / entityData.maxHp) * 100)}%)`
-						: "∞"
-				}§r`;
-			}
-
-			// Effects padding
-			const numEffects = entityData.effectsRenderer.effectsResolvedArray.length;
-			if (numEffects > 0 && numEffects < 4) {
-				paddingNewlines += "\n\n".repeat(numEffects);
-			} else if (numEffects >= 4) {
-				paddingNewlines +=
-					!entityData.intHealthDisplay && entityData.maxHp > 40 ? "\n" : "\n\n";
-			}
-
-			// Armor padding
-			if (entityData.armorRenderer !== "dddddddddd") {
-				paddingNewlines += "\n";
-			}
-		}
-
-		const namespaceText = ((): string => {
-			const value = Registry[metadata.namespace.replace(":", "")];
-			if (value) {
-				return !player.isSneaking ||
-					!WailaSettings.get(player, "displayExtendedInfo")
-					? value.name
-					: `${value.name}\nby ${value.creator}`;
-			}
-			return metadata.namespace.length > 3
-				? metadata.namespace
-						.replace(/_/g, " ")
-						.replace(":", "")
-						.toTitle()
-						.abrevCaps()
-				: metadata.namespace.replace(":", "").toUpperCase();
-		})();
-
-		// Build the complete title
-		const parseStr: RawMessage[] = [
-			{ text: `_r4ui:${prefixType}:` },
-			{ text: healthOrArmor },
-			{ text: finalTagIcons },
-			{ text: effectsStr },
-			...nameElements,
-			{ text: itemEntityText },
-			{ text: healthText },
-			{ text: paddingNewlines },
-			{ text: "\n§9§o" },
-			{ translate: namespaceText },
-			{ text: "§r" },
-		];
-
-		// Add some setting flags
-		let settingAnchorValue: string = WailaSettings.get(player, "displayPosition");
-		if (player.isSneaking && blockStatesText !== undefined) {
-			const settingValue = WailaSettings.get(player, "extendedDisplayPosition");
-			settingAnchorValue = 
-				settingValue === "unchanged"
-					? settingAnchorValue
-					: settingValue;
-
-			parseStrSubtitle.push({ text: '__r4ui:block_states__' });
-			parseStrSubtitle.push({ text: blockStatesText });
-		}
-		parseStr.push({
-			text: `__r4ui:anchor.${settingAnchorValue}__`,
-		});
-
-		// Add additional inventory flags
-		if (
-			!player.isSneaking &&
-			metadata.type === LookAtObjectType.TILE &&
-			(metadata.renderData as BlockRenderDataInterface).inventory
-		) {
-			const furnaceTypes = [
-				"minecraft:lit_blast_furnace", // todo: `lit_` block typeIds should be mapped early on to their respective unlit types for cleanliness
-				"minecraft:lit_furnace",
-				"minecraft:lit_smoker",
-				"minecraft:furnace",
-				"minecraft:blast_furnace",
-				'minecraft:smoker',
-			];
-			if (furnaceTypes.includes(metadata.hitIdentifier)) {
-				parseStr.push({ text: `__r4ui:inv.furnace__` });
-			}
-
-			if (metadata.hitIdentifier === "minecraft:brewing_stand") {
-				parseStr.push({ text: `__r4ui:inv.brewstand__` });
-			}
-
-			const chestTypes = [
-				"minecraft:chest",
-				"minecraft:barrel",
-				"minecraft:shulker_box",
-			];
-			if (chestTypes.includes(metadata.hitIdentifier)) {
-				parseStr.push({ text: `__r4ui:inv.chest__` });
-			}
-
-			const dropperTypes = [
-				"minecraft:dispenser",
-				"minecraft:dropper",
-			];
-			if (dropperTypes.includes(metadata.hitIdentifier)) {
-				parseStr.push({ text: `__r4ui:inv.dropper__` });
-			}
-
-			if (metadata.hitIdentifier === "minecraft:hopper") {
-				parseStr.push({ text: `__r4ui:inv.hopper__` });
-			}
-		}
-
-		const filteredTitle = parseStr.filter(
-			(part) =>
-				!(typeof part === "object" && "text" in part && part.text === ""),
-		);
-
-		return { title: filteredTitle, subtitle: parseStrSubtitle };
+	public isPaused(player: Player): boolean {
+		return this.pauseManager.isPaused(player);
 	}
 }
 

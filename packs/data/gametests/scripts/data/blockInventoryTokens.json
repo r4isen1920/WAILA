@@ -1,0 +1,40 @@
+[
+    {
+        "token": "__r4ui:inv.furnace__",
+        "match": [
+            "minecraft:lit_blast_furnace",
+            "minecraft:lit_furnace",
+            "minecraft:lit_smoker",
+            "minecraft:furnace",
+            "minecraft:blast_furnace",
+            "minecraft:smoker"
+        ]
+    },
+    {
+        "token": "__r4ui:inv.brewstand__",
+        "match": [
+            "minecraft:brewing_stand"
+        ]
+    },
+    {
+        "token": "__r4ui:inv.chest__",
+        "match": [
+            "minecraft:chest",
+            "minecraft:barrel",
+            "minecraft:shulker_box"
+        ]
+    },
+    {
+        "token": "__r4ui:inv.dropper__",
+        "match": [
+            "minecraft:dispenser",
+            "minecraft:dropper"
+        ]
+    },
+    {
+        "token": "__r4ui:inv.hopper__",
+        "match": [
+            "minecraft:hopper"
+        ]
+    }
+]

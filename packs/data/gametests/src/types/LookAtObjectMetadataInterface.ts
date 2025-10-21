@@ -79,6 +79,8 @@ export interface BlockRenderDataInterface {
 	 * This is used for blocks that can contain items, such as chests or barrels.
 	 */
 	inventory?: ItemStackWithSlot[];
+	/** Number of additional item stacks that could not be mirrored into the player inventory projection. */
+	inventoryOverflow?: number;
 }
 
 /**
