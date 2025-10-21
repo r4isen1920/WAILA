@@ -1,4 +1,4 @@
-import { Player, system, world } from "@minecraft/server";
+import { EntityComponentTypes, Player, system, world } from "@minecraft/server";
 import { Logger, Vec2, Vec3 } from "@bedrock-oss/bedrock-boost";
 
 import pauseBlocks from "../../data/guiPauseBlocks.json";
@@ -28,6 +28,15 @@ export class PauseManager {
 			player.setDynamicProperty(PROPERTY_PAUSED, undefined);
 			this.stopResumeWatcher(player.id);
 		});
+	}
+
+	public checkPlayerInventoryOpen(player: Player): void {
+		const playerCursor = player.getComponent(EntityComponentTypes.CursorInventory);
+		if (!playerCursor) return;
+
+		if (playerCursor.item !== undefined) {
+			this.pause(player);
+		}
 	}
 
 	public isPaused(player: Player): boolean {

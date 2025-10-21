@@ -61,6 +61,7 @@ export default class Waila {
 	}
 
 	private processPlayer(player: Player): void {
+		this.pauseManager.checkPlayerInventoryOpen(player);
 		if (this.pauseManager.isPaused(player)) return;
 
 		const settings = WailaSettings.getAllTyped(player);
