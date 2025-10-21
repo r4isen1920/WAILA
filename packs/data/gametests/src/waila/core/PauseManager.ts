@@ -1,14 +1,27 @@
+/**
+ *
+ * @author
+ * r4isen1920
+ * https://mcpedl.com/user/r4isen1920
+ *
+ * @license
+ * MIT License
+ *
+ */
+
 import { EntityComponentTypes, Player, system, world } from "@minecraft/server";
 import { Logger, Vec2, Vec3 } from "@bedrock-oss/bedrock-boost";
 
 import pauseBlocks from "../../data/guiPauseBlocks.json";
 
+
+
+//#region Globals
 const PROPERTY_PAUSED = "r4isen1920_waila:paused";
 
-type ClearUiHandler = (player: Player) => void;
 
-type IntervalHandle = number;
 
+//#region PauseManager
 export class PauseManager {
 	private readonly log = Logger.getLogger("WAILA:PauseManager");
 	private readonly resumeWatchers: Map<string, IntervalHandle> = new Map();
@@ -86,3 +99,10 @@ export class PauseManager {
 		this.resumeWatchers.delete(playerId);
 	}
 }
+
+
+
+//#region Types
+type ClearUiHandler = (player: Player) => void;
+
+type IntervalHandle = number;

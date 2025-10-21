@@ -1,3 +1,14 @@
+/**
+ *
+ * @author
+ * r4isen1920
+ * https://mcpedl.com/user/r4isen1920
+ *
+ * @license
+ * MIT License
+ *
+ */
+
 import {
 	EntityComponentTypes,
 	EntityEquippableComponent,
@@ -5,11 +16,9 @@ import {
 	Player,
 } from "@minecraft/server";
 
-export interface MainHandContext {
-	itemTypeId: string;
-	tags: string[];
-}
 
+
+//#region Functions
 export function getMainHandContext(player: Player): MainHandContext {
 	try {
 		const equippable = player.getComponent(
@@ -26,4 +35,12 @@ export function getMainHandContext(player: Player): MainHandContext {
 	} catch {
 		return { itemTypeId: "__r4ui:none", tags: [] };
 	}
+}
+
+
+
+//#region Types
+export interface MainHandContext {
+	itemTypeId: string;
+	tags: string[];
 }

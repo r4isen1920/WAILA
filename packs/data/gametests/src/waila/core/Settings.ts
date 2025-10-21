@@ -25,6 +25,8 @@ import {
 import { ModalFormData, ModalFormResponse } from "@minecraft/server-ui";
 import Waila from "./Waila";
 
+
+
 //#region API
 /**
  * Handles options and per-player settings for WAILA.
@@ -515,6 +517,8 @@ export class WailaSettingsUI {
 		return index >= 0 ? index : 0;
 	}
 }
+
+
 
 //#region Types
 /** A setting that represents a boolean value */

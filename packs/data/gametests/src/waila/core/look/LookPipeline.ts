@@ -3,7 +3,7 @@ import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import frameBlockIds from "../../../data/frameBlockIds.json";
 import nameAliases from "../../../data/nameAliases.json";
-import { WailaSettingsValues } from "../../Settings";
+import { WailaSettingsValues } from "../Settings";
 import { InventoryMirror, IconSlotRequest } from "../InventoryMirror";
 import {
 	LookAtBlockInterface,
@@ -17,50 +17,12 @@ import {
 	LookAtObjectMetadata,
 } from "../../../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
-import { BlockHandler } from "../../BlockHandler";
-import { EntityHandler } from "../../EntityHandler";
+import { BlockHandler } from "../BlockHandler";
+import { EntityHandler } from "../EntityHandler";
 
-interface BaseLookContext {
-	type: LookAtObjectType;
-	hitIdentifier: string;
-	namespace: string;
-	displayName: string;
-}
 
-interface BlockLookContext extends BaseLookContext {
-	type: LookAtObjectType.TILE;
-	block: LookAtBlockInterface["block"];
-	blockTypeId: string;
-	renderData: BlockRenderDataInterface;
-	inventorySignature: string;
-	extendedInfoActive: boolean;
-	itemInsideFrameTranslationKey?: string;
-}
 
-interface EntityLookContext extends BaseLookContext {
-	type: LookAtObjectType.ENTITY;
-	entity: LookAtEntityInterface["entity"];
-	renderData: EntityRenderDataInterface;
-	nameTagContextTranslationKey?: string;
-	itemContextIdentifier?: string;
-	itemStack?: ItemStack;
-	isPlayer: boolean;
-}
-
-type LookContext = BlockLookContext | EntityLookContext;
-
-export interface LookAssessment {
-	hasTarget: boolean;
-	signature?: string;
-	context?: LookContext;
-}
-
-export interface LookResolution {
-	metadata: LookAtObjectMetadata;
-	iconRequests: IconSlotRequest[];
-	extendedInfoActive: boolean;
-}
-
+//#region Pipeline
 export class LookPipeline {
 	private readonly log = Logger.getLogger("WAILA:LookPipeline");
 
@@ -306,4 +268,48 @@ export class LookPipeline {
 			})
 			.join("|");
 	}
+}
+
+
+
+//#region Types
+interface BaseLookContext {
+	type: LookAtObjectType;
+	hitIdentifier: string;
+	namespace: string;
+	displayName: string;
+}
+
+interface BlockLookContext extends BaseLookContext {
+	type: LookAtObjectType.TILE;
+	block: LookAtBlockInterface["block"];
+	blockTypeId: string;
+	renderData: BlockRenderDataInterface;
+	inventorySignature: string;
+	extendedInfoActive: boolean;
+	itemInsideFrameTranslationKey?: string;
+}
+
+interface EntityLookContext extends BaseLookContext {
+	type: LookAtObjectType.ENTITY;
+	entity: LookAtEntityInterface["entity"];
+	renderData: EntityRenderDataInterface;
+	nameTagContextTranslationKey?: string;
+	itemContextIdentifier?: string;
+	itemStack?: ItemStack;
+	isPlayer: boolean;
+}
+
+type LookContext = BlockLookContext | EntityLookContext;
+
+export interface LookAssessment {
+	hasTarget: boolean;
+	signature?: string;
+	context?: LookContext;
+}
+
+export interface LookResolution {
+	metadata: LookAtObjectMetadata;
+	iconRequests: IconSlotRequest[];
+	extendedInfoActive: boolean;
 }

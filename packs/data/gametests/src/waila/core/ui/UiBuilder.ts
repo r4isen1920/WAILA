@@ -8,13 +8,11 @@ import {
 	LookAtObjectMetadata,
 } from "../../../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
-import { WailaSettingsValues } from "../../Settings";
+import { WailaSettingsValues } from "../Settings";
 
-interface InventoryTokenRule {
-	token: string;
-	match: string[];
-}
 
+
+//#region UI Builder
 export class UiBuilder {
 	public static build(
 		player: Player,
@@ -210,4 +208,12 @@ export class UiBuilder {
 
 		return namespace.replace(":", "").toUpperCase();
 	}
+}
+
+
+
+//#region Types
+interface InventoryTokenRule {
+	token: string;
+	match: string[];
 }

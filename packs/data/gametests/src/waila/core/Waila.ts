@@ -12,13 +12,15 @@
 import { Player, world } from "@minecraft/server";
 import { Logger, LogLevel, PlayerPulseScheduler } from "@bedrock-oss/bedrock-boost";
 
-import AfterWorldLoad from "../Init";
+import AfterWorldLoad from "../utils/Init";
 import { WailaSettings } from "./Settings";
-import { PauseManager } from "./core/PauseManager";
-import { SignatureStore } from "./core/SignatureStore";
-import { LookPipeline, LookAssessment } from "./core/look/LookPipeline";
-import { LookScanner } from "./core/look/LookScanner";
-import { UiController } from "./core/ui/UiController";
+import { PauseManager } from "./PauseManager";
+import { SignatureStore } from "./SignatureStore";
+import { LookPipeline, LookAssessment } from "./look/LookPipeline";
+import { LookScanner } from "./look/LookScanner";
+import { UiController } from "./ui/UiController";
+
+
 
 //#region WAILA
 export default class Waila {

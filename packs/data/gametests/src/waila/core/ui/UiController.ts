@@ -9,9 +9,12 @@ import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import { InventoryMirror } from "../InventoryMirror";
 import { LookResolution } from "../look/LookPipeline";
-import { WailaSettingsValues } from "../../Settings";
+import { WailaSettingsValues } from "../Settings";
 import { UiBuilder } from "./UiBuilder";
 
+
+
+//#region UI Controller
 export class UiController {
 	private readonly log = Logger.getLogger("WAILA:UiController");
 

@@ -1,3 +1,14 @@
+/**
+ *
+ * @author
+ * r4isen1920
+ * https://mcpedl.com/user/r4isen1920
+ *
+ * @license
+ * MIT License
+ *
+ */
+
 import {
 	Block,
 	EntityComponentTypes,
@@ -14,6 +25,9 @@ import {
 } from "@minecraft/server";
 import { Logger } from "@bedrock-oss/bedrock-boost";
 
+
+
+//#region Globals
 const PROPERTY_TRACKED_SLOTS = "r4isen1920_waila:inventory_item_holder_slots";
 const PROPERTY_ITEM_BACKUPS = "r4isen1920_waila:inventory_item_backups";
 const PROPERTY_ITEM_BACKUPS_CHUNK_SUFFIX = "_chunk_";
@@ -22,11 +36,9 @@ const DYNAMIC_PROPERTY_MAX_CHUNKS = 16;
 const INVENTORY_MIRROR_START_SLOT = 9;
 const INVENTORY_MIRROR_END_SLOT = 26;
 
-export interface IconSlotRequest {
-	slot: number;
-	item: ItemStack | undefined;
-}
 
+
+//#region InventoryMirror
 /**
  * Manages the temporary inventory mirroring WAILA performs to show block/item icons in the UI.
  */
@@ -539,6 +551,9 @@ export class InventoryMirror {
 	}
 }
 
+
+
+//#region Types
 type InventoryBackupPayload = Record<string, SerializedItemStackData | null | undefined>;
 
 interface SerializedItemStackData {
@@ -568,4 +583,9 @@ interface SerializedDynamicProperty {
 	id: string;
 	type: "boolean" | "number" | "string" | "vector3";
 	value: boolean | number | string | { x: number; y: number; z: number };
+}
+
+export interface IconSlotRequest {
+	slot: number;
+	item: ItemStack | undefined;
 }

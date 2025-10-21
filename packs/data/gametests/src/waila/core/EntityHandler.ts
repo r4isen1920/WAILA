@@ -22,21 +22,24 @@ import {
 import {
 	LookAtEntityInterface,
 	LookAtItemEntityInterface,
-} from "../types/LookAtObjectInterface";
+} from "../../types/LookAtObjectInterface";
 import {
 	EffectsRendererType,
 	EntityRenderDataInterface,
-} from "../types/LookAtObjectMetadataInterface";
-import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
-import { EntityInteractionsEnum, TagRemarksEnum } from "../types/TagsEnum";
-import TagsInterface from "../types/TagsInterface";
+} from "../../types/LookAtObjectMetadataInterface";
+import { LookAtObjectTypeEnum } from "../../types/LookAtObjectTypeEnum";
+import { EntityInteractionsEnum, TagRemarksEnum } from "../../types/TagsEnum";
+import TagsInterface from "../../types/TagsInterface";
 
-import armor from "../data/armor.json";
-import entityInteractionsData from "../data/entityInteractions.json";
-import ignoredEntityRender from "../data/ignoredEntityRender.json";
-import { RuleMatcher } from "./utils/RuleMatcher";
-import { getMainHandContext } from "./utils/PlayerEquipment";
+import armor from "../../data/armor.json";
+import entityInteractionsData from "../../data/entityInteractions.json";
+import ignoredEntityRender from "../../data/ignoredEntityRender.json";
+import { RuleMatcher } from "../utils/RuleMatcher";
+import { getMainHandContext } from "../utils/PlayerEquipment";
 
+
+
+//#region Globals
 const MAX_TRACKED_EFFECTS = 6;
 const EFFECT_TABLE = [
 	{ name: "speed", id: 1 },
@@ -75,6 +78,9 @@ const EFFECT_TABLE = [
 	{ name: "infested", id: 34 },
 ];
 
+
+
+//#region EntityHandler
 export class EntityHandler {
 	static createLookupData(entity: Entity): LookAtEntityInterface {
 		const health = entity.getComponent(

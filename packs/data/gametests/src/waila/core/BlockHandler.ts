@@ -18,47 +18,28 @@ import {
 } from "@minecraft/server";
 import { Logger } from "@bedrock-oss/bedrock-boost";
 
-import { LookAtBlockInterface } from "../types/LookAtObjectInterface";
+import { LookAtBlockInterface } from "../../types/LookAtObjectInterface";
 import {
 	BlockRenderDataInterface,
 	ItemStackWithSlot,
-} from "../types/LookAtObjectMetadataInterface";
-import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
-import TagsInterface from "../types/TagsInterface";
-import { BlockToolsEnum, TagRemarksEnum } from "../types/TagsEnum";
+} from "../../types/LookAtObjectMetadataInterface";
+import { LookAtObjectTypeEnum } from "../../types/LookAtObjectTypeEnum";
+import TagsInterface from "../../types/TagsInterface";
+import { BlockToolsEnum, TagRemarksEnum } from "../../types/TagsEnum";
 
-import blockTools from "../data/blockTools.json";
-import { RuleMatcher } from "./utils/RuleMatcher";
-import { MainHandContext, getMainHandContext } from "./utils/PlayerEquipment";
+import blockTools from "../../data/blockTools.json";
+import { RuleMatcher } from "../utils/RuleMatcher";
+import { MainHandContext, getMainHandContext } from "../utils/PlayerEquipment";
 
+
+
+//#region Globals
 const INVENTORY_SECOND_ROW_LIMIT = 18;
-type BlockContainer = NonNullable<BlockInventoryComponent["container"]>;
 
-interface ExtractedInventoryResult {
-	slots?: ItemStackWithSlot[];
-	overflow: number;
-}
 
-interface MirroredInventoryResult {
-	slots: ItemStackWithSlot[];
-	mirroredNonEmpty: number;
-}
 
-interface TagEvaluationResult {
-	iconId: string;
-	remark: TagRemarksEnum;
-}
 
-interface StackAggregationBucket {
-	template: ItemStack;
-	maxAmount: number;
-	total: number;
-}
-
-type AggregationOrderEntry =
-	| { kind: "single"; stack: ItemStack }
-	| { kind: "bucket"; key: string };
-
+//#region BlockHandler
 export class BlockHandler {
 	private static readonly log = Logger.getLogger("BlockHandler");
 
@@ -433,3 +414,33 @@ export class BlockHandler {
 		}
 	}
 }
+
+
+
+//#region Types
+type BlockContainer = NonNullable<BlockInventoryComponent["container"]>;
+
+interface ExtractedInventoryResult {
+	slots?: ItemStackWithSlot[];
+	overflow: number;
+}
+
+interface MirroredInventoryResult {
+	slots: ItemStackWithSlot[];
+	mirroredNonEmpty: number;
+}
+
+interface TagEvaluationResult {
+	iconId: string;
+	remark: TagRemarksEnum;
+}
+
+interface StackAggregationBucket {
+	template: ItemStack;
+	maxAmount: number;
+	total: number;
+}
+
+type AggregationOrderEntry =
+	| { kind: "single"; stack: ItemStack }
+	| { kind: "bucket"; key: string };

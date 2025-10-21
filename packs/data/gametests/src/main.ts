@@ -9,9 +9,9 @@
  *
  */
 
-import "./String";
-import "./waila/Settings";
-import "./waila/Waila";
+import "./waila/utils/String";
+import "./waila/core/Settings";
+import "./waila/core/Waila";
 
 import { init } from "@bedrock-oss/stylish";
 init();

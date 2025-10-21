@@ -5,10 +5,13 @@ import {
 import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import ignoredBlockRender from "../../../data/ignoredBlockRender.json";
-import { BlockHandler } from "../../BlockHandler";
-import { EntityHandler } from "../../EntityHandler";
+import { BlockHandler } from "../BlockHandler";
+import { EntityHandler } from "../EntityHandler";
 import { LookAtObjectInterface } from "../../../types/LookAtObjectInterface";
 
+
+
+//#region LookScanner
 export class LookScanner {
 	private readonly log = Logger.getLogger("WAILA:LookScanner");
 
