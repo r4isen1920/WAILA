@@ -205,9 +205,9 @@
 					"size": [18, "100%"], // 12px + 6px (padding)
 					"controls": [
 						{
-							"bubbles_full@r4isen1920_waila_common.image": {
+							"bubbles@r4isen1920_waila_common.image": {
 								"size": [12, 30],
-								"texture": "textures/ui/bubbles_full"
+								"texture": "textures/r4isen1920/waila/bubbles"
 							}
 						}
 					]
