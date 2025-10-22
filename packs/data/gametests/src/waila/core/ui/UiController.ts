@@ -10,7 +10,7 @@ import { Logger } from "@bedrock-oss/bedrock-boost";
 import { InventoryMirror } from "../InventoryMirror";
 import { LookResolution } from "../look/LookPipeline";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
-import { WailaSettingsValues, shouldRenderInventoryContents } from "../Settings";
+import { WailaSettingsValues, shouldDisplayFeature } from "../Settings";
 import { UiBuilder } from "./UiBuilder";
 
 
@@ -27,7 +27,10 @@ export class UiController {
 		try {
 			const shouldDisplayInventory =
 				resolution.metadata.type === LookAtObjectType.TILE &&
-				shouldRenderInventoryContents(settings.showInventoryContents, player.isSneaking);
+				shouldDisplayFeature(
+					settings.containerInventoryVisibility,
+					player.isSneaking,
+				);
 			const shouldMirrorInventory =
 				shouldDisplayInventory &&
 				resolution.iconRequests.some((request) => request.slot >= 9 && request.slot <= 35 && request.slot !== 17);
@@ -43,6 +46,8 @@ export class UiController {
 			settings,
 			resolution.extendedInfoActive,
 		);
+
+		player.sendMessage(title);
 
 		this.scheduleTitleUpdate(player, title, {
 			subtitle,

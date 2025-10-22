@@ -67,7 +67,7 @@ export default class Waila {
 		if (this.pauseManager.isPaused(player)) return;
 
 		const settings = WailaSettings.getAllTyped(player);
-		const lookAt = this.lookScanner.scan(player, settings.maxDisplayDistance);
+		const lookAt = this.lookScanner.scan(player, WailaSettings.DEFAULT_VIEW_DISTANCE);
 		const assessment = this.lookPipeline.assess(player, lookAt, settings);
 
 		this.updateTargetState(player, assessment);

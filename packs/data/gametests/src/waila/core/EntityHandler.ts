@@ -36,6 +36,7 @@ import entityInteractionsData from "../../data/entityInteractions.json";
 import ignoredEntityRender from "../../data/ignoredEntityRender.json";
 import { RuleMatcher } from "../utils/RuleMatcher";
 import { getMainHandContext } from "../utils/PlayerEquipment";
+import { shouldDisplayFeature, WailaSettingsValues } from "./Settings";
 
 
 
@@ -135,6 +136,7 @@ export class EntityHandler {
 		entity: Entity,
 		player: Player,
 		isPlayer: boolean,
+		settings: WailaSettingsValues,
 	): EntityRenderDataInterface {
 		const health = entity.getComponent(
 			EntityComponentTypes.Health,
@@ -161,7 +163,7 @@ export class EntityHandler {
 			intHealthDisplay,
 			healthRenderer,
 			armorRenderer: EntityHandler.buildArmorRenderer(entity),
-			effectsRenderer: EntityHandler.buildEffectsRenderer(entity),
+			effectsRenderer: EntityHandler.buildEffectsRenderer(entity, player, settings),
 		};
 	}
 
@@ -375,15 +377,22 @@ export class EntityHandler {
 		return rendered.substring(0, 10) || "dddddddddd";
 	}
 
-	private static buildEffectsRenderer(entity: Entity): EffectsRendererType {
+	private static buildEffectsRenderer(entity: Entity, player: Player, settings: WailaSettingsValues): EffectsRendererType {
 		let resolvedCount = 0;
 		const resolvedIds: string[] = [];
 		let effectString = "";
 
+		const showEffects = shouldDisplayFeature(
+			settings.entityEffectsVisibility,
+			player.isSneaking,
+		);
+
 		for (const effectInfo of EFFECT_TABLE) {
 			let effect: Effect | undefined;
 			try {
-				effect = entity.getEffect(effectInfo.name);
+				effect = showEffects ?
+					entity.getEffect(effectInfo.name) :
+					undefined; //? still iterate but do not resolve effects
 			} catch {
 				effect = undefined;
 			}

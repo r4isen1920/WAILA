@@ -3,7 +3,7 @@ import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import frameBlockIds from "../../../data/frameBlockIds.json";
 import nameAliases from "../../../data/nameAliases.json";
-import { WailaSettingsValues, shouldRenderInventoryContents } from "../Settings";
+import { WailaSettingsValues, shouldDisplayFeature } from "../Settings";
 import { InventoryMirror, IconSlotRequest } from "../InventoryMirror";
 import {
 	LookAtBlockInterface,
@@ -19,6 +19,11 @@ import {
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "../BlockHandler";
 import { EntityHandler } from "../EntityHandler";
+
+const EMPTY_BLOCK_TOOL_ICONS = "zz,z;zz,z:";
+const EMPTY_ENTITY_TAG_ICONS = ":zz,z;zz,z:";
+const EMPTY_HEALTH_RENDERER = "yyyyyyyyyyyyyyyyyyyy";
+const EMPTY_ARMOR_RENDERER = "dddddddddd";
 
 
 
@@ -36,7 +41,11 @@ export class LookPipeline {
 		}
 
 		if (lookAtObject.type === LookAtObjectType.ENTITY) {
-			const context = this.buildEntityContext(player, lookAtObject as LookAtEntityInterface);
+			const context = this.buildEntityContext(
+				player,
+				lookAtObject as LookAtEntityInterface,
+				settings,
+			);
 			if (!context) return { hasTarget: false };
 
 			const signaturePayload = {
@@ -93,6 +102,7 @@ export class LookPipeline {
 	private buildEntityContext(
 		player: Player,
 		lookAtObject: LookAtEntityInterface,
+		settings: WailaSettingsValues,
 	): EntityLookContext | undefined {
 		const { entity } = lookAtObject;
 		if (!entity || !entity.isValid) return undefined;
@@ -101,7 +111,30 @@ export class LookPipeline {
 			entity,
 			player,
 			entity.typeId === "minecraft:player",
+			settings,
 		);
+
+		const isSneaking = player.isSneaking;
+		const showTags = shouldDisplayFeature(
+			settings.entityTagsVisibility,
+			isSneaking,
+		);
+		const showHealth = shouldDisplayFeature(
+			settings.entityHealthVisibility,
+			isSneaking,
+		);
+
+		if (!showTags) {
+			renderData.tagIcons = EMPTY_ENTITY_TAG_ICONS;
+		}
+
+		if (!showHealth) {
+			renderData.healthRenderer = EMPTY_HEALTH_RENDERER;
+			renderData.armorRenderer = EMPTY_ARMOR_RENDERER;
+			renderData.hp = 0;
+			renderData.maxHp = 0;
+			renderData.intHealthDisplay = true;
+		}
 
 		let displayName = entity.localizationKey;
 		let nameTagContextTranslationKey: string | undefined;
@@ -144,9 +177,10 @@ export class LookPipeline {
 		const block = lookAtObject.block;
 		if (!block) return undefined;
 
-		const includeInventory = shouldRenderInventoryContents(
-			settings.showInventoryContents,
-			player.isSneaking,
+		const isSneaking = player.isSneaking;
+		const includeInventory = shouldDisplayFeature(
+			settings.containerInventoryVisibility,
+			isSneaking,
 		);
 
 		let renderData: BlockRenderDataInterface;
@@ -159,15 +193,30 @@ export class LookPipeline {
 			return undefined;
 		}
 
+		if (!includeInventory) {
+			renderData.inventory = undefined;
+			renderData.inventoryOverflow = 0;
+		}
+
+		const showTools = shouldDisplayFeature(
+			settings.effectiveToolVisibility,
+			isSneaking,
+		);
+		if (!showTools) {
+			renderData.toolIcons = EMPTY_BLOCK_TOOL_ICONS;
+		}
+
 		const blockTypeId = block.typeId;
 		const hitNamespace = this.resolveNamespace(lookAtObject.hitIdentifier);
 
 		const aliasKey = (nameAliases as Record<string, string>)[blockTypeId.replace(/.*:/g, "")];
 		const displayName = aliasKey ? `${aliasKey}.name` : block.localizationKey;
 
-		const extendedInfoActive = Boolean(
-			renderData.blockStates && settings.displayBlockStates && player.isSneaking,
+		const showBlockStates = shouldDisplayFeature(
+			settings.blockStatesVisibility,
+			isSneaking,
 		);
+		const extendedInfoActive = Boolean(renderData.blockStates && showBlockStates);
 
 		const frameItemTranslationKey = this.resolveFrameItemKey(blockTypeId, lookAtObject.hitIdentifier);
 		const inventorySignature = includeInventory ? this.encodeInventory(renderData.inventory) : "";

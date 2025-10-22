@@ -8,7 +8,11 @@ import {
 	LookAtObjectMetadata,
 } from "../../../types/LookAtObjectMetadataInterface";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
-import { WailaSettingsValues, shouldRenderInventoryContents } from "../Settings";
+import {
+	WailaSettingsValues,
+	shouldDisplayFeature,
+	resolveDisplayAnchor,
+} from "../Settings";
 
 
 
@@ -24,13 +28,18 @@ export class UiBuilder {
 			{ text: (metadata.renderData as EntityRenderDataInterface).entityId || "" },
 		];
 
+		const isSneaking = player.isSneaking;
+
 		const isTileOrItemEntity =
 			metadata.type === LookAtObjectType.TILE ||
 			(metadata.type === LookAtObjectType.ENTITY && !!metadata.itemContextIdentifier);
 
 		const shouldDisplayInventory =
 			metadata.type === LookAtObjectType.TILE &&
-			shouldRenderInventoryContents(settings.showInventoryContents, player.isSneaking);
+			shouldDisplayFeature(
+				settings.containerInventoryVisibility,
+				isSneaking,
+			);
 
 		const prefixType = isTileOrItemEntity ? "A" : "B";
 
@@ -128,10 +137,13 @@ export class UiBuilder {
 			}
 		}
 
+		const showPackAuthor = shouldDisplayFeature(
+			settings.packAuthorVisibility,
+			isSneaking,
+		);
 		const namespaceText = UiBuilder.resolveNamespaceText(
 			metadata.namespace,
-			player,
-			settings,
+			showPackAuthor,
 		);
 
 		const titleParts: RawMessage[] = [
@@ -148,11 +160,15 @@ export class UiBuilder {
 			{ text: "§r" },
 		];
 
-		let anchorSetting = settings.displayPosition;
+		const baseAnchor = resolveDisplayAnchor(settings.displayPosition, "top_middle");
+		let anchorSetting = baseAnchor;
+		if (isSneaking) {
+			anchorSetting = resolveDisplayAnchor(
+				settings.displayPositionWhenSneaking,
+				baseAnchor,
+			);
+		}
 		if (extendedInfoActive && blockStatesText.length > 0) {
-			const override = settings.extendedDisplayPosition;
-			anchorSetting = override === "unchanged" ? anchorSetting : override;
-
 			subtitleParts.push({ text: "__r4ui:block_states__" });
 			subtitleParts.push({ text: blockStatesText });
 		}
@@ -194,14 +210,14 @@ export class UiBuilder {
 
 	private static resolveNamespaceText(
 		namespace: string,
-		player: Player,
-		settings: WailaSettingsValues,
+		showPackAuthor: boolean,
 	): string {
 		const value = Registry[namespace.replace(":", "")];
 		if (value) {
-			return !player.isSneaking || !settings.displayBlockStates
-				? value.name
-				: `${value.name}\nby ${value.creator}`;
+			if (showPackAuthor && value.creator) {
+				return `${value.name}\nby ${value.creator}`;
+			}
+			return value.name;
 		}
 
 		if (namespace.length > 3) {
