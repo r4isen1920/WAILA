@@ -28,7 +28,7 @@
 					"orientation": "horizontal",
 
 					"size": "$size",
-					"$size|default": ["100%c", "50%c"],
+					"$size|default": ["100%c", "100%cm + 4px"],
 					"variables": {
 						"requires": "(not $is_expanded)",
 						"$size": [0, 0]
@@ -40,20 +40,22 @@
 					"controls": [
 						{
 							"icon_panel@common.empty_panel": {
-								"size": ["100%c + 4px", "100%sm"],
+								"size": ["100%y", "100%sm"],
 
 								"controls": [
 									{
 										"icon@r4isen1920_waila_common.image": {
-											"texture": "('textures/ui/' + $data_a + '_effect')",
+											"$texture": "('textures/ui/' + $data_a + '_effect')",
+											"texture": "$texture",
 											"keep_ratio": true,
 
-											"size": ["100%y", 14]
+											"size": ["100% - 4px", "100% - 4px"]
 										}
 									}
 								]
 							}
 						},
+						{ "padding@common.empty_panel": { "size": [ 2.5, 0 ] } },
 						{
 							"label_panel": {
 								"type": "stack_panel",
@@ -71,66 +73,48 @@
 
 											"$data_e": "('%.2s' * ($data_d - ('%.6s' * $data_d)))",
 
+											"variables": [
+												{
+													"requires": "$data_c",
+													"$color": "$c_color_format"
+												},
+												{
+													"requires": "(not $data_c)",
+													"$color": "$f_color_format"
+												}
+											],
+
 											"controls": [
 												{
 													"name@r4isen1920_waila_common.label": {
 														"text": "$data_b",
-														"font_scale_factor": 0.88,
+														"font_scale_factor": 0.75,
 														"localize": true,
-														"color": "$color",
-
-														"variables": [
-															{
-																"requires": "$data_c",
-																"$color": "$c_color_format"
-															},
-															{
-																"requires": "(not $data_c)",
-																"$color": "$f_color_format"
-															}
-														]
+														"color": "$color"
 													}
 												},
 												{
-													"padding@common.empty_panel": {
-														"size": [3.75, 1]
+													"padding@r4isen1920_waila_common.label": {
+														"text": " ",
+														"font_scale_factor": 0.75,
+														"color": "$color"
 													}
 												},
 												{
 													"amplifier@r4isen1920_waila_common.label": {
 														"text": "$text",
-														"font_scale_factor": 0.88,
+														"font_scale_factor": 0.75,
 														"color": "$color",
 
-														"$text|default": " ",
-
+														"$text": "",
 														"variables": [
-															{
-																"requires": "$data_c",
-																"$color": "$c_color_format"
-															},
-															{
-																"requires": "(not $data_c)",
-																"$color": "$f_color_format"
-															},
-
-															{ "requires": "($data_e = 'p1')", "$text": " " },
 															{ "requires": "($data_e = 'p2')", "$text": "II" },
-															{
-																"requires": "($data_e = 'p3')",
-																"$text": "III"
-															},
+															{ "requires": "($data_e = 'p3')", "$text": "III" },
 															{ "requires": "($data_e = 'p4')", "$text": "IV" },
 															{ "requires": "($data_e = 'p5')", "$text": "V" },
 															{ "requires": "($data_e = 'p6')", "$text": "VI" },
-															{
-																"requires": "($data_e = 'p7')",
-																"$text": "VII"
-															},
-															{
-																"requires": "($data_e = 'p8')",
-																"$text": "VIII"
-															},
+															{ "requires": "($data_e = 'p7')", "$text": "VII" },
+															{ "requires": "($data_e = 'p8')", "$text": "VIII" },
 															{ "requires": "($data_e = 'p9')", "$text": "IX" }
 														]
 													}
@@ -141,6 +125,7 @@
 									{
 										"duration@r4isen1920_waila_common.label": {
 											"text": "#text",
+											"font_scale_factor": 0.75,
 											"color": "$7_color_format",
 
 											"property_bag": {
@@ -176,15 +161,16 @@
 					"controls": [
 						{
 							"icon_panel@common.empty_panel": {
-								"size": ["100%c + 2px", "100%c + 2px"],
+								"size": ["100%c + 4px", "100%c + 2px"],
 
 								"controls": [
 									{
 										"icon@r4isen1920_waila_common.image": {
-											"texture": "('textures/ui/' + $data_a + '_effect')",
+											"$texture": "('textures/ui/' + $data_a + '_effect')",
+											"texture": "$texture",
 											"keep_ratio": true,
 
-											"size": ["100%y", 14],
+											"size": [10, 10],
 
 											"$data_e": "('%.2s' * ($data_d - ('%.6s' * $data_d)))",
 
@@ -193,14 +179,13 @@
 													"amplifier@r4isen1920_waila_common.label": {
 														"anchor_from": "bottom_right",
 														"anchor_to": "bottom_right",
-														"offset": [1, 1],
+														"offset": [0, 1],
 
 														"text": "$text",
-														"font_scale_factor": 0.88,
+														"font_scale_factor": 0.75,
 														"color": "$color",
 
-														"$text|default": " ",
-
+														"$text": "",
 														"variables": [
 															{
 																"requires": "$data_c",
@@ -211,23 +196,13 @@
 																"$color": "$f_color_format"
 															},
 
-															{ "requires": "($data_e = 'p1')", "$text": " " },
 															{ "requires": "($data_e = 'p2')", "$text": "II" },
-															{
-																"requires": "($data_e = 'p3')",
-																"$text": "III"
-															},
+															{ "requires": "($data_e = 'p3')", "$text": "III" },
 															{ "requires": "($data_e = 'p4')", "$text": "IV" },
 															{ "requires": "($data_e = 'p5')", "$text": "V" },
 															{ "requires": "($data_e = 'p6')", "$text": "VI" },
-															{
-																"requires": "($data_e = 'p7')",
-																"$text": "VII"
-															},
-															{
-																"requires": "($data_e = 'p8')",
-																"$text": "VIII"
-															},
+															{ "requires": "($data_e = 'p7')", "$text": "VII" },
+															{ "requires": "($data_e = 'p8')", "$text": "VIII" },
 															{ "requires": "($data_e = 'p9')", "$text": "IX" }
 														]
 													}
