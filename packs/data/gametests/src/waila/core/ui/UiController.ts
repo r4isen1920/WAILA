@@ -47,8 +47,6 @@ export class UiController {
 			resolution.extendedInfoActive,
 		);
 
-		player.sendMessage(title);
-
 		this.scheduleTitleUpdate(player, title, {
 			subtitle,
 			fadeInDuration: 0,
