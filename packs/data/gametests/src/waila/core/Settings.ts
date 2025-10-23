@@ -91,6 +91,7 @@ export class WailaSettings {
 	static get(player: Player, key: "entityHealthVisibility"): WailaWhenToShowOption;
 	static get(player: Player, key: "entityEffectsVisibility"): WailaWhenToShowOption;
 	static get(player: Player, key: "packAuthorVisibility"): WailaWhenToShowOption;
+	static get(player: Player, key: "alwaysDisplayEntityIntHealth"): boolean;
 	static get(player: Player, key: string): WailaSettingPrimitive;
 	static get(player: Player, key: string): WailaSettingPrimitive {
 		this.ensureInitialized();
@@ -143,6 +144,7 @@ export class WailaSettings {
 			containerInventoryVisibility: this.get(player, "containerInventoryVisibility") as WailaWhenToShowOption,
 			entityTagsVisibility: this.get(player, "entityTagsVisibility") as WailaWhenToShowOption,
 			entityHealthVisibility: this.get(player, "entityHealthVisibility") as WailaWhenToShowOption,
+			alwaysDisplayEntityIntHealth: this.get(player, "alwaysDisplayEntityIntHealth") as boolean,
 			entityEffectsVisibility: this.get(player, "entityEffectsVisibility") as WailaWhenToShowOption,
 			packAuthorVisibility: this.get(player, "packAuthorVisibility") as WailaWhenToShowOption,
 		};
@@ -291,6 +293,13 @@ export class WailaSettings {
 			category: "displayContent",
 			default: "always",
 			options: this.WHEN_TO_SHOW_OPTIONS,
+		});
+		this.addSetting("alwaysDisplayEntityIntHealth", {
+			type: "boolean",
+			labelKey: "waila.settings.alwaysDisplayEntityIntHealth.label",
+			descriptionKey: "waila.settings.alwaysDisplayEntityIntHealth.description",
+			category: "displayContent",
+			default: false,
 		});
 		this.addSetting("entityEffectsVisibility", {
 			type: "enum",
@@ -863,6 +872,7 @@ export interface WailaSettingsValues {
 	containerInventoryVisibility: WailaWhenToShowOption;
 	entityTagsVisibility: WailaWhenToShowOption;
 	entityHealthVisibility: WailaWhenToShowOption;
+	alwaysDisplayEntityIntHealth: boolean;
 	entityEffectsVisibility: WailaWhenToShowOption;
 	packAuthorVisibility: WailaWhenToShowOption;
 }
@@ -873,7 +883,7 @@ export function shouldDisplayFeature(
 ): boolean {
 	switch (option) {
 		case "always":
-			return !isSneaking;
+			return true;
 		case "when_not_sneaking":
 			return !isSneaking;
 		case "when_sneaking":
