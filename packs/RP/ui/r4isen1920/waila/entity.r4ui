@@ -446,7 +446,7 @@
 					"offset": [0, 0.5],
 					"$is_expanded": true,
 
-					"ignored": "($effects_length = 'e04' or $effects_length = 'e05' or $effects_length = 'e06')",
+					"ignored": "($effects_length = 'e03' or $effects_length = 'e04')",
 
 					"controls": [
 						{
@@ -733,7 +733,7 @@
 					"offset": [0, 0.5],
 					"$is_expanded": false,
 
-					"ignored": "($effects_length = 'e01' or $effects_length = 'e02' or $effects_length = 'e03')",
+					"ignored": "($effects_length = 'e01' or $effects_length = 'e02')",
 
 					"controls": [
 						{

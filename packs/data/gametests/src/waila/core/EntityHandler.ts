@@ -41,7 +41,7 @@ import { shouldDisplayFeature, WailaSettingsValues } from "./Settings";
 
 
 //#region Globals
-const MAX_TRACKED_EFFECTS = 6;
+export const MAX_TRACKED_EFFECTS = 4;
 const EFFECT_TABLE = [
 	{ name: "speed", id: 1 },
 	{ name: "slowness", id: 2 },

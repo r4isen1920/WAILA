@@ -13,6 +13,7 @@ import {
 	shouldDisplayFeature,
 	resolveDisplayAnchor,
 } from "../Settings";
+import { MAX_TRACKED_EFFECTS } from "../EntityHandler";
 
 
 
@@ -125,9 +126,10 @@ export class UiBuilder {
 			}
 
 			const numEffects = entityData.effectsRenderer.effectsResolvedArray.length;
-			if (numEffects > 0 && numEffects < 4) {
+			const numEffectsThreshold = Math.ceil(MAX_TRACKED_EFFECTS / 2);
+			if (numEffects > 0 && numEffects <= numEffectsThreshold) {
 				paddingNewlines += "\n\n".repeat(numEffects);
-			} else if (numEffects >= 4) {
+			} else if (numEffects > numEffectsThreshold) {
 				paddingNewlines +=
 					!entityData.intHealthDisplay && entityData.maxHp > 40 ? "\n" : "\n\n";
 			}
