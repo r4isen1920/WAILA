@@ -1,13 +1,13 @@
-pack.name=§7[v5.0]§r WAILA [RP]
+pack.name=§7[v5.0]§r WAILA [RP]	## WAILA stands for "What Am I Looking At" (pronounced "why-la"). When translating, retain the "WAILA" acronym as is.
 pack.description=See what you are looking at as displayed in the HUD. Created by r4isen1920.
 
 waila.settings.title=WAILA Settings
-waila.settings.title_for=WAILA Settings for %s
+waila.settings.title_for=WAILA Settings for %s	## %s is where the player name would be
 waila.settings.submit=Save Changes
 waila.settings.footer.self_adjusting=§7This adjusts how WAILA behaves for you.§r
 waila.settings.footer.other_player=§7Editing WAILA settings for %s.§r
-waila.settings.category.general=GENERAL
-waila.settings.category.displayContent=DISPLAY CONTENT
+waila.settings.category.general=GENERAL	## Should all be in capital letters
+waila.settings.category.displayContent=DISPLAY CONTENT	## Should all be in capital letters
 waila.settings.isEnabled.label=Enable Overlay
 waila.settings.displayPosition.label=Overlay Position
 waila.settings.displayPositionWhenSneaking.label=Position While Sneaking
@@ -41,5 +41,5 @@ waila.settings.experimental.containerInventory.body=Showing container contents m
 waila.settings.experimental.confirm=Enable Anyway
 waila.settings.experimental.cancel=Go Back
 waila.settings.feedback.updatedSelf=Updated your WAILA settings.
-waila.settings.feedback.updatedByOther=Your WAILA settings were updated by %s.
-waila.settings.feedback.updatedOther=Updated %s's WAILA settings.
+waila.settings.feedback.updatedByOther=Your WAILA settings were updated by %s.	## %s is where the player name would be
+waila.settings.feedback.updatedOther=Updated %s's WAILA settings.	## %s is where the player name would be
