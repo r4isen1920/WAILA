@@ -31,7 +31,8 @@
 		"controls": [
 			{
 				"icon@image": {
-					"texture": "('textures/r4isen1920/waila/icons/' + $texture)",
+					"$texture_path": "('textures/r4isen1920/waila/icons/' + $texture)",
+					"texture": "$texture_path",
 					"ignored": "(($texture = 'x') or ($texture = 'y'))",
 
 					"size": [9, 9],

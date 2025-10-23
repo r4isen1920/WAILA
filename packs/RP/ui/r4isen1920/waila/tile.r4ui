@@ -262,7 +262,8 @@
 					"type": "image",
 					"size": ["100%c + 4px", "100%c + 4px"],
 
-					"texture": "('textures/r4isen1920/waila/border_' + $border_type)",
+					"$texture": "('textures/r4isen1920/waila/border_' + $border_type)",
+					"texture": "$texture",
 
 					"variables": {
 						"requires": "true",

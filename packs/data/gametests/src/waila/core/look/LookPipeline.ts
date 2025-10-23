@@ -23,6 +23,7 @@ import { EntityHandler } from "../EntityHandler";
 const EMPTY_BLOCK_TOOL_ICONS = "zz,z;zz,z:";
 const EMPTY_ENTITY_TAG_ICONS = ":zz,z;zz,z:";
 const EMPTY_HEALTH_RENDERER = "yyyyyyyyyyyyyyyyyyyy";
+const INT_HEALTH_RENDERER = "yxyyyyyyyyyyyyyyyyyy";
 const EMPTY_ARMOR_RENDERER = "dddddddddd";
 
 
@@ -133,6 +134,9 @@ export class LookPipeline {
 			renderData.armorRenderer = EMPTY_ARMOR_RENDERER;
 			renderData.hp = 0;
 			renderData.maxHp = 0;
+		}
+		if (renderData.maxHp > 0 && settings.alwaysDisplayEntityIntHealth) {
+			renderData.healthRenderer = INT_HEALTH_RENDERER;
 			renderData.intHealthDisplay = true;
 		}
 

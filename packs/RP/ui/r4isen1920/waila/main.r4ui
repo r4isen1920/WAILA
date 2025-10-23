@@ -267,34 +267,22 @@
 
 																		{
 																			"effects_padding_top@common.empty_panel": {
+																				"$size": [0, 0.5],
 																				"size": "$size",
-																				"$size|default": [1, 0.5],
-																				"variables": [
-																					{
-																						"requires": "(('' + ('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))) = 'x')",
-																						"$size": [1, 9]
-																					},
-																					{
-																						"requires": "(('' + ('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))) = 'y')",
-																						"$size": [1, 9]
-																					}
-																				],
+
+																				"$is_int_health": "(('' + ('%.2s' * ($var_title_text - ('%.8s' * $var_title_text)))) = 'yx')",
+																				"variables": {
+																					"requires": "($is_int_health)",
+																					"$size": [0, 8.5]
+																				},
 
 																				"ignored": "(('%.3s' * ($var_title_text - ('%.321s' * $var_title_text))) = 'e00')"
 																			}
 																		},
 																		{
 																			"effects@r4isen1920_waila_entity.effects_renderer": {} 
-																		},
-
-																		{
-																			"bottom_padding@common.empty_panel": {
-																				"size": [1, 0.5]
-																			}
 																		}
-																	],
-
-																	"ignored": "(('' + ('%.1s' * ($var_title_text - ('%.8s' * $var_title_text)))) = 'y')"
+																	]
 																}
 															}
 														]
