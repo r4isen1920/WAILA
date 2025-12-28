@@ -8,9 +8,9 @@
 	"regolith": {
 		"dataPath": "./packs/data",
 		"filterDefinitions": {
-			"gametests": {
-				"url": "github.com/Bedrock-OSS/regolith-filters",
-				"version": "1.7.4"
+			"esbuild": {
+				"url": "github.com/ink0rr/regolith-filters",
+				"version": "0.3.1"
 			},
 			"jsonte": {
 				"url": "github.com/MCDevKit/regolith-library",
@@ -123,18 +123,17 @@
 				},
 				"filters": [
 					{
-						"filter": "gametests",
+						"filter": "esbuild",
 						"settings": {
-							"buildOptions": {
-								"bundle": true,
-								"dropLabels": ["DEBUG", "LOGGING"],
-								"minify": true
-							},
-							"modules": [
-								"@minecraft/server@2.1.0",
-								"@minecraft/server-ui@2.0.0"
+							"bundle": true,
+							"minify": true,
+							"dropLabels": [
+								"DEBUG",
+								"LOGGING"
 							],
-							"outfile": "BP/scripts/main.js"
+							"entryPoints": [
+								"data/scripts/main.ts"
+							]
 						}
 					}
 				]
@@ -146,18 +145,12 @@
 				},
 				"filters": [
 					{
-						"filter": "gametests",
+						"filter": "esbuild",
 						"settings": {
-							"buildOptions": {
-								"minify": false
-							},
-							"debugBuild": true,
-							"injectSourceMapping": true,
-							"modules": [
-								"@minecraft/server@2.1.0",
-								"@minecraft/server-ui@2.0.0"
-							],
-							"outfile": "BP/scripts/main.js"
+							"minify": false,
+							"entryPoints": [
+								"data/scripts/main.ts"
+							]
 						}
 					}
 				]
