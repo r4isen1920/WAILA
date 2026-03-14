@@ -10,6 +10,27 @@ import Meta from '../../Meta';
 import { BindThis, CustomCmd, OnWorldLoad } from '@bedrock-oss/stylish';
 import WailaLogger from './Logger';
 
+
+
+//#region Types
+/**
+ * Contains information about a version change, including the previous and current version data.
+ */
+interface VersionChangeContext {
+	/** The version data of the previous version */
+	previous: VersionData | null;
+	/** The version data of the current version */
+	current: VersionData;
+}
+/**
+ * Describes the data structure for version information, including the version string and the associated commit hash.
+ */
+interface VersionData {
+	version: Version;
+	commit: string;
+}
+
+
 //#region Version
 /**
  * Handles semantic versioning for the Add-On, allowing for easy comparison and retrieval of version information.
@@ -49,18 +70,26 @@ export default class Version {
 		const comparison =
 			typeof version === 'string' ? Version.compareTo(version) : -1;
 
+		const context: VersionChangeContext = {
+			previous:
+				typeof version === "string"
+					? { version: new Version(version), commit: Meta.github.commit }
+					: null,
+			current: { version: currentVersion, commit: Meta.github.commit },
+		};
+
 		if (comparison < 0) {
 			this.log.info(
 				`World was loaded with older version (${version ?? 'unknown'}). Upgrading to ${currentVersion.version}.`
 			);
 			currentVersion.saveToWorld();
-			this.onUpgrade();
+			this.onUpgrade(context);
 		} else if (comparison > 0) {
 			this.log.warn(
 				`World was loaded with newer version (${version}). Downgrading to ${currentVersion.version}.`
 			);
 			currentVersion.saveToWorld();
-			this.onDowngrade();
+			this.onDowngrade(context);
 		} else {
 			this.log.info(
 				`World is up to date with ${currentVersion.version}.`
@@ -74,11 +103,11 @@ export default class Version {
 
 	//#region Hooks
 
-	private static onUpgrade() {
+	private static onUpgrade(_context?: VersionChangeContext) {
 		// TODO: add logic here to handle any necessary updates when the version upgrades
 	}
 
-	private static onDowngrade() {
+	private static onDowngrade(_context?: VersionChangeContext) {
 		// TODO: add logic here to handle any necessary updates when the version downgrades
 	}
 
