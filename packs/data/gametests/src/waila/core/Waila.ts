@@ -49,8 +49,6 @@ export default class Waila {
 				}
 			}, 3);
 			pulse.start();
-
-			this.log.info(`WAILA loaded and running.`);
 		});
 	}
 

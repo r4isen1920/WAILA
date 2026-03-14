@@ -11,6 +11,7 @@
 
 import "./waila/utils/Logger";
 import "./waila/utils/String";
+import "./waila/utils/Version";
 import "./waila/core/Settings";
 import "./waila/core/Waila";
 
