@@ -10,7 +10,7 @@
  */
 
 import { Player, world } from "@minecraft/server";
-import { Logger, LogLevel, PlayerPulseScheduler } from "@bedrock-oss/bedrock-boost";
+import { PlayerPulseScheduler } from "@bedrock-oss/bedrock-boost";
 
 import AfterWorldLoad from "../utils/Init";
 import { WailaSettings } from "./Settings";

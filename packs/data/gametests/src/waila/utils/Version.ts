@@ -9,6 +9,7 @@ import {
 import Meta from '../../Meta';
 import { BindThis, CustomCmd, OnWorldLoad } from '@bedrock-oss/stylish';
 import WailaLogger from './Logger';
+import { Registry } from '@bedrock-oss/add-on-registry';
 
 
 
@@ -96,6 +97,7 @@ export default class Version {
 			);
 		}
 
+		this.log.info(`Add-On namespace registry size: ${Object.keys(Registry).length}`);
 		this.log.info('WAILA is loaded and running!');
 	}
 
