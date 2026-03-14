@@ -16,7 +16,6 @@ import {
 	ItemStack,
 	Player,
 } from "@minecraft/server";
-import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import { LookAtBlockInterface } from "../../types/LookAtObjectInterface";
 import {
@@ -30,6 +29,7 @@ import { BlockToolsEnum, TagRemarksEnum } from "../../types/TagsEnum";
 import blockTools from "../../data/blockTools.json";
 import { RuleMatcher } from "../utils/RuleMatcher";
 import { MainHandContext, getMainHandContext } from "../utils/PlayerEquipment";
+import WailaLogger from "../utils/Logger";
 
 
 
@@ -41,7 +41,7 @@ const INVENTORY_SECOND_ROW_LIMIT = 18;
 
 //#region BlockHandler
 export class BlockHandler {
-	private static readonly log = Logger.getLogger("BlockHandler");
+	private static readonly log = WailaLogger.get("BlockHandler");
 
 	static createLookupData(block: Block): LookAtBlockInterface {
 		return {

@@ -9,7 +9,6 @@
  *
  */
 
-import { Logger } from "@bedrock-oss/bedrock-boost";
 import { BindThis, CustomCmd } from "@bedrock-oss/stylish";
 import {
 	CommandPermissionLevel,
@@ -29,6 +28,7 @@ import {
 	ModalFormResponse,
 } from "@minecraft/server-ui";
 import Waila from "./Waila";
+import WailaLogger from "../utils/Logger";
 
 
 
@@ -38,7 +38,7 @@ import Waila from "./Waila";
  */
 export class WailaSettings {
 	static readonly NAMESPACE = "r4isen1920_waila";
-	static readonly log = Logger.getLogger("WailaSettings");
+	static readonly log = WailaLogger.get("Settings");
 	static readonly DEFAULT_VIEW_DISTANCE = 8;
 
 	private static initialized = false;
@@ -421,7 +421,7 @@ export class WailaSettings {
 @CustomCmd
 export class WailaCommand implements CustomCommand {
 	static readonly NAMESPACE = WailaSettings.NAMESPACE;
-	static readonly log = Logger.getLogger("WailaCommand");
+	static readonly log = WailaLogger.get("Command");
 
 	readonly name = WailaCommand.NAMESPACE + ":waila";
 	readonly description = `Shows the WAILA options`; //? Localization support for command description is not yet supported for some reason !!!1!!1

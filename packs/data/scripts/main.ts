@@ -9,6 +9,7 @@
  *
  */
 
+import "./waila/utils/Logger";
 import "./waila/utils/String";
 import "./waila/core/Settings";
 import "./waila/core/Waila";

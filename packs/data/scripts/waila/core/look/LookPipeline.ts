@@ -1,5 +1,4 @@
 import { ItemStack, Player } from "@minecraft/server";
-import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import frameBlockIds from "../../../data/frameBlockIds.json";
 import nameAliases from "../../../data/nameAliases.json";
@@ -19,6 +18,7 @@ import {
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "../BlockHandler";
 import { EntityHandler } from "../EntityHandler";
+import WailaLogger from "../../utils/Logger";
 
 const EMPTY_BLOCK_TOOL_ICONS = "zz,z;zz,z:";
 const EMPTY_ENTITY_TAG_ICONS = ":zz,z;zz,z:";
@@ -30,7 +30,7 @@ const EMPTY_ARMOR_RENDERER = "dddddddddd";
 
 //#region Pipeline
 export class LookPipeline {
-	private readonly log = Logger.getLogger("WAILA:LookPipeline");
+	private readonly log = WailaLogger.get("LookPipeline");
 
 	public assess(
 		player: Player,

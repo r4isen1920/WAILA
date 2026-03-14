@@ -2,18 +2,18 @@ import {
 	LocationOutOfWorldBoundariesError,
 	Player,
 } from "@minecraft/server";
-import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import ignoredBlockRender from "../../../data/ignoredBlockRender.json";
 import { BlockHandler } from "../BlockHandler";
 import { EntityHandler } from "../EntityHandler";
 import { LookAtObjectInterface } from "../../../types/LookAtObjectInterface";
+import WailaLogger from "../../utils/Logger";
 
 
 
 //#region LookScanner
 export class LookScanner {
-	private readonly log = Logger.getLogger("WAILA:LookScanner");
+	private readonly log = WailaLogger.get("LookScanner");
 
 	public scan(player: Player, maxDistance: number): LookAtObjectInterface {
 		try {

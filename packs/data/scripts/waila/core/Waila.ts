@@ -19,6 +19,7 @@ import { SignatureStore } from "./SignatureStore";
 import { LookPipeline, LookAssessment } from "./look/LookPipeline";
 import { LookScanner } from "./look/LookScanner";
 import { UiController } from "./ui/UiController";
+import WailaLogger from "../utils/Logger";
 
 
 
@@ -26,7 +27,7 @@ import { UiController } from "./ui/UiController";
 export default class Waila {
 	private static instance: Waila;
 
-	private readonly log = Logger.getLogger("WAILA");
+	private readonly log = WailaLogger.get('Main');
 	private readonly signatureStore = new SignatureStore();
 	private readonly lookScanner = new LookScanner();
 	private readonly lookPipeline = new LookPipeline();
@@ -35,8 +36,6 @@ export default class Waila {
 	private readonly pauseManager: PauseManager;
 
 	private constructor() {
-		Logger.setLevel(LogLevel.Debug);
-
 		this.pauseManager = new PauseManager((player) => this.handleExternalClear(player));
 		this.pauseManager.initialize();
 

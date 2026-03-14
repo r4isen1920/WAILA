@@ -10,9 +10,10 @@
  */
 
 import { EntityComponentTypes, Player, system, world } from "@minecraft/server";
-import { Logger, Vec2, Vec3 } from "@bedrock-oss/bedrock-boost";
+import { Vec2, Vec3 } from "@bedrock-oss/bedrock-boost";
 
 import pauseBlocks from "../../data/guiPauseBlocks.json";
+import WailaLogger from "../utils/Logger";
 
 
 
@@ -23,7 +24,7 @@ const PROPERTY_PAUSED = "r4isen1920_waila:paused";
 
 //#region PauseManager
 export class PauseManager {
-	private readonly log = Logger.getLogger("WAILA:PauseManager");
+	private readonly log = WailaLogger.get("PauseManager");
 	private readonly resumeWatchers: Map<string, IntervalHandle> = new Map();
 
 	constructor(private readonly clearUi: ClearUiHandler) {}

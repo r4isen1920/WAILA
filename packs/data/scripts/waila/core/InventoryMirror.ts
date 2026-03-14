@@ -23,7 +23,7 @@ import {
 	type ItemEnchantableComponent,
 	type Vector3,
 } from "@minecraft/server";
-import { Logger } from "@bedrock-oss/bedrock-boost";
+import WailaLogger from "../utils/Logger";
 
 
 
@@ -43,7 +43,7 @@ const INVENTORY_MIRROR_END_SLOT = 26;
  * Manages the temporary inventory mirroring WAILA performs to show block/item icons in the UI.
  */
 export class InventoryMirror {
-	private static readonly log = Logger.getLogger("InventoryMirror");
+	private static readonly log = WailaLogger.get("InventoryMirror");
 
 	static apply(
 		player: Player,

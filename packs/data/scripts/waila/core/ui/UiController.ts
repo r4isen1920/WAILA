@@ -5,19 +5,19 @@ import {
 	TitleDisplayOptions,
 	system,
 } from "@minecraft/server";
-import { Logger } from "@bedrock-oss/bedrock-boost";
 
 import { InventoryMirror } from "../InventoryMirror";
 import { LookResolution } from "../look/LookPipeline";
 import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
 import { WailaSettingsValues, shouldDisplayFeature } from "../Settings";
 import { UiBuilder } from "./UiBuilder";
+import WailaLogger from "../../utils/Logger";
 
 
 
 //#region UI Controller
 export class UiController {
-	private readonly log = Logger.getLogger("WAILA:UiController");
+	private readonly log = WailaLogger.get("UIController");
 
 	public present(
 		player: Player,
