@@ -25,9 +25,15 @@ export class UiBuilder {
 		settings: WailaSettingsValues,
 		extendedInfoActive: boolean,
 	): { title: RawMessage[]; subtitle: RawMessage[] } {
-		const subtitleParts: RawMessage[] = [
-			{ text: (metadata.renderData as EntityRenderDataInterface).entityId || "" },
-		];
+		const subtitleParts: RawMessage[] = [];
+		if (
+			metadata.type === LookAtObjectType.ENTITY &&
+			!metadata.itemContextIdentifier
+		) {
+			subtitleParts.push({
+				text: (metadata.renderData as EntityRenderDataInterface).entityId || ""
+			});
+		}
 
 		const isSneaking = player.isSneaking;
 
@@ -57,7 +63,7 @@ export class UiBuilder {
 					inventoryOverflow = blockData.inventoryOverflow ?? 0;
 				}
 			} else {
-				finalTagIcons = "zz,f;zz,f:";
+				finalTagIcons = "zz,z;zz,z:";
 			}
 		} else {
 			const entityData = metadata.renderData as EntityRenderDataInterface;

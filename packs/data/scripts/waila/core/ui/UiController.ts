@@ -102,6 +102,11 @@ export class UiController {
 			...(normalizedSubtitle !== undefined && { subtitle: normalizedSubtitle }),
 		};
 
+		this.log.debug(
+			normalizedTitle,
+			normalizedSubtitle,
+		);
+
 		system.run(() => {
 			if (!player.isValid) return;
 			player.onScreenDisplay.setTitle(normalizedTitle, finalOptions);
