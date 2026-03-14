@@ -3,10 +3,10 @@ import {
 	Player,
 } from "@minecraft/server";
 
-import ignoredBlockRender from "../../../data/ignoredBlockRender.json";
+import ignoredBlockRender from "../../datasets/ignoredBlockRender.json";
 import { BlockHandler } from "../BlockHandler";
 import { EntityHandler } from "../EntityHandler";
-import { LookAtObjectInterface } from "../../../types/LookAtObjectInterface";
+import { LookAtObjectInterface } from "../../types/LookAtObjectInterface";
 import WailaLogger from "../../utils/Logger";
 
 

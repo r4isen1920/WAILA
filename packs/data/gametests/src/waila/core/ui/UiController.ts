@@ -8,7 +8,7 @@ import {
 
 import { InventoryMirror } from "../InventoryMirror";
 import { LookResolution } from "../look/LookPipeline";
-import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
+import { LookAtObjectTypeEnum as LookAtObjectType } from "../../types/LookAtObjectTypeEnum";
 import { WailaSettingsValues, shouldDisplayFeature } from "../Settings";
 import { UiBuilder } from "./UiBuilder";
 import WailaLogger from "../../utils/Logger";

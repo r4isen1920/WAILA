@@ -17,16 +17,16 @@ import {
 	Player,
 } from "@minecraft/server";
 
-import { LookAtBlockInterface } from "../../types/LookAtObjectInterface";
+import { LookAtBlockInterface } from "../types/LookAtObjectInterface";
 import {
 	BlockRenderDataInterface,
 	ItemStackWithSlot,
-} from "../../types/LookAtObjectMetadataInterface";
-import { LookAtObjectTypeEnum } from "../../types/LookAtObjectTypeEnum";
-import TagsInterface from "../../types/TagsInterface";
-import { BlockToolsEnum, TagRemarksEnum } from "../../types/TagsEnum";
+} from "../types/LookAtObjectMetadataInterface";
+import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
+import TagsInterface from "../types/TagsInterface";
+import { BlockToolsEnum, TagRemarksEnum } from "../types/TagsEnum";
 
-import blockTools from "../../data/blockTools.json";
+import blockTools from "../datasets/blockTools.json";
 import { RuleMatcher } from "../utils/RuleMatcher";
 import { MainHandContext, getMainHandContext } from "../utils/PlayerEquipment";
 import WailaLogger from "../utils/Logger";

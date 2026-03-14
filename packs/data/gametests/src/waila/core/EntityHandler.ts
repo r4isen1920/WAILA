@@ -22,18 +22,18 @@ import {
 import {
 	LookAtEntityInterface,
 	LookAtItemEntityInterface,
-} from "../../types/LookAtObjectInterface";
+} from "../types/LookAtObjectInterface";
 import {
 	EffectsRendererType,
 	EntityRenderDataInterface,
-} from "../../types/LookAtObjectMetadataInterface";
-import { LookAtObjectTypeEnum } from "../../types/LookAtObjectTypeEnum";
-import { EntityInteractionsEnum, TagRemarksEnum } from "../../types/TagsEnum";
-import TagsInterface from "../../types/TagsInterface";
+} from "../types/LookAtObjectMetadataInterface";
+import { LookAtObjectTypeEnum } from "../types/LookAtObjectTypeEnum";
+import { EntityInteractionsEnum, TagRemarksEnum } from "../types/TagsEnum";
+import TagsInterface from "../types/TagsInterface";
 
-import armor from "../../data/armor.json";
-import entityInteractionsData from "../../data/entityInteractions.json";
-import ignoredEntityRender from "../../data/ignoredEntityRender.json";
+import armor from "../datasets/armor.json";
+import entityInteractionsData from "../datasets/entityInteractions.json";
+import ignoredEntityRender from "../datasets/ignoredEntityRender.json";
 import { RuleMatcher } from "../utils/RuleMatcher";
 import { getMainHandContext } from "../utils/PlayerEquipment";
 import { shouldDisplayFeature, WailaSettingsValues } from "./Settings";

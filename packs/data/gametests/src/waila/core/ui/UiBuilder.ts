@@ -1,13 +1,13 @@
 import { Player, RawMessage } from "@minecraft/server";
 import { Registry } from "@bedrock-oss/add-on-registry";
 
-import inventoryTokens from "../../../data/blockInventoryTokens.json";
+import inventoryTokens from "../../datasets/blockInventoryTokens.json";
 import {
 	BlockRenderDataInterface,
 	EntityRenderDataInterface,
 	LookAtObjectMetadata,
-} from "../../../types/LookAtObjectMetadataInterface";
-import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
+} from "../../types/LookAtObjectMetadataInterface";
+import { LookAtObjectTypeEnum as LookAtObjectType } from "../../types/LookAtObjectTypeEnum";
 import {
 	WailaSettingsValues,
 	shouldDisplayFeature,

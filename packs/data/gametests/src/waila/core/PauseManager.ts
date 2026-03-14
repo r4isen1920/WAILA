@@ -12,7 +12,7 @@
 import { EntityComponentTypes, Player, system, world } from "@minecraft/server";
 import { Vec2, Vec3 } from "@bedrock-oss/bedrock-boost";
 
-import pauseBlocks from "../../data/guiPauseBlocks.json";
+import pauseBlocks from "../datasets/guiPauseBlocks.json";
 import WailaLogger from "../utils/Logger";
 
 

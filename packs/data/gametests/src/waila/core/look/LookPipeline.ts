@@ -1,7 +1,7 @@
 import { ItemStack, Player } from "@minecraft/server";
 
-import frameBlockIds from "../../../data/frameBlockIds.json";
-import nameAliases from "../../../data/nameAliases.json";
+import frameBlockIds from "../../datasets/frameBlockIds.json";
+import nameAliases from "../../datasets/nameAliases.json";
 import { WailaSettingsValues, shouldDisplayFeature } from "../Settings";
 import { InventoryMirror, IconSlotRequest } from "../InventoryMirror";
 import {
@@ -9,13 +9,13 @@ import {
 	LookAtEntityInterface,
 	LookAtItemEntityInterface,
 	LookAtObjectInterface,
-} from "../../../types/LookAtObjectInterface";
+} from "../../types/LookAtObjectInterface";
 import {
 	BlockRenderDataInterface,
 	EntityRenderDataInterface,
 	LookAtObjectMetadata,
-} from "../../../types/LookAtObjectMetadataInterface";
-import { LookAtObjectTypeEnum as LookAtObjectType } from "../../../types/LookAtObjectTypeEnum";
+} from "../../types/LookAtObjectMetadataInterface";
+import { LookAtObjectTypeEnum as LookAtObjectType } from "../../types/LookAtObjectTypeEnum";
 import { BlockHandler } from "../BlockHandler";
 import { EntityHandler } from "../EntityHandler";
 import WailaLogger from "../../utils/Logger";
