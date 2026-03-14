@@ -257,7 +257,7 @@ export class WailaSettings {
 			type: "enum",
 			labelKey: "waila.settings.blockStatesVisibility.label",
 			category: "displayContent",
-			default: "when_not_sneaking",
+			default: "when_sneaking",
 			options: this.WHEN_TO_SHOW_OPTIONS,
 		});
 		this.addSetting("effectiveToolVisibility", {
@@ -272,7 +272,7 @@ export class WailaSettings {
 			labelKey: "waila.settings.containerInventoryVisibility.label",
 			descriptionKey: "waila.settings.containerInventoryVisibility.description",
 			category: "displayContent",
-			default: "when_sneaking",
+			default: "never",
 			options: this.WHEN_TO_SHOW_OPTIONS,
 			experimental: {
 				enabledValues: ["always", "when_not_sneaking", "when_sneaking"],
