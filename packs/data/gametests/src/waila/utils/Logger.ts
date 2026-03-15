@@ -5,20 +5,16 @@ export default class WailaLogger {
 	private constructor() {}
 
 	public static get(whatFor?: string): Log {
-		LOGGING: {
-			const tags = new Set<string>();
-			if (whatFor) {
-				tags.add(whatFor);
-			}
-			return Log.getLogger("WAILA", ...Array.from(tags));
+		const tags = new Set<string>();
+		if (whatFor) {
+			tags.add(whatFor);
 		}
+		return Log.getLogger("WAILA", ...Array.from(tags));
 	}
 
 	@OnWorldLoad
 	public static init() {
-		LOGGING: {
-			Log.setTagsOutputVisibility(true);
-			Log.setLevel(LogLevel.Debug);
-		}
+		Log.setTagsOutputVisibility(true);
+		Log.setLevel(LogLevel.Debug);
 	}
 }
