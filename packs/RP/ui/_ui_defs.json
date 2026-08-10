@@ -5,6 +5,7 @@
 		"ui/r4isen1920/waila/common.r4ui",
 		"ui/r4isen1920/waila/entity.r4ui",
 		"ui/r4isen1920/waila/main.r4ui",
+		"ui/r4isen1920/waila/progress.r4ui",
 		"ui/r4isen1920/waila/tile.r4ui"
 	]
 }

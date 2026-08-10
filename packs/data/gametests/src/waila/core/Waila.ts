@@ -16,6 +16,7 @@ import AfterWorldLoad from "../utils/Init";
 import { WailaSettings } from "./Settings";
 import { PauseManager } from "./PauseManager";
 import { SignatureStore } from "./SignatureStore";
+import { BreakTracker } from "./break/BreakTracker";
 import { LookPipeline, LookAssessment } from "./look/LookPipeline";
 import { LookScanner } from "./look/LookScanner";
 import { UiController } from "./ui/UiController";
@@ -33,11 +34,13 @@ export default class Waila {
 	private readonly lookPipeline = new LookPipeline();
 	private readonly uiController = new UiController();
 	private readonly playerHasTarget: Map<string, boolean> = new Map();
+	private readonly playerWasBreaking: Map<string, boolean> = new Map();
 	private readonly pauseManager: PauseManager;
 
 	private constructor() {
 		this.pauseManager = new PauseManager((player) => this.handleExternalClear(player));
 		this.pauseManager.initialize();
+		BreakTracker.getInstance();
 
 		AfterWorldLoad(() => {
 			world.gameRules.showTags = false;
@@ -74,7 +77,14 @@ export default class Waila {
 			return;
 		}
 
-		if (this.signatureStore.isDuplicate(player, assessment.signature)) return;
+		// The progress bar rides the title payload, so the bar needs exactly one extra
+		// update when a break starts and one when it ends.
+		const isBreaking = BreakTracker.getInstance().getProgress(player) !== undefined;
+		const breakStateChanged = isBreaking !== (this.playerWasBreaking.get(player.id) ?? false);
+		this.playerWasBreaking.set(player.id, isBreaking);
+
+		const isDuplicate = this.signatureStore.isDuplicate(player, assessment.signature);
+		if (isDuplicate && !breakStateChanged) return;
 
 		const resolution = this.lookPipeline.finalize(assessment.context);
 		this.uiController.present(player, resolution, settings);
@@ -96,6 +106,7 @@ export default class Waila {
 		this.uiController.clear(player);
 		this.signatureStore.clear(player);
 		this.playerHasTarget.set(player.id, false);
+		this.playerWasBreaking.set(player.id, false);
 	}
 
 	public clearUI(player: Player): void {

@@ -1,0 +1,68 @@
+{
+	"tiers": [
+		{ "name": "netherite", "speed": 9, "harvestRank": 5, "tags": ["minecraft:netherite_tier"], "idAny": ["netherite_"] },
+		{ "name": "diamond", "speed": 8, "harvestRank": 4, "tags": ["minecraft:diamond_tier"], "idAny": ["diamond_"] },
+		{ "name": "iron", "speed": 6, "harvestRank": 3, "tags": ["minecraft:iron_tier"], "idAny": ["iron_"] },
+		{ "name": "stone", "speed": 4, "harvestRank": 2, "tags": ["minecraft:stone_tier"], "idAny": ["stone_"] },
+		{ "name": "golden", "speed": 12, "harvestRank": 1, "tags": ["minecraft:golden_tier"], "idAny": ["golden_", "gold_"] },
+		{ "name": "wooden", "speed": 2, "harvestRank": 1, "tags": ["minecraft:wooden_tier"], "idAny": ["wooden_", "wood_"] }
+	],
+
+	"classes": [
+		{
+			"name": "pickaxe",
+			"blockTags": ["minecraft:is_pickaxe_item_destructible"],
+			"itemTags": ["minecraft:is_pickaxe"],
+			"idAny": ["pickaxe"]
+		},
+		{
+			"name": "axe",
+			"blockTags": ["minecraft:is_axe_item_destructible"],
+			"itemTags": ["minecraft:is_axe"],
+			"idAny": ["_axe"]
+		},
+		{
+			"name": "shovel",
+			"blockTags": ["minecraft:is_shovel_item_destructible"],
+			"itemTags": ["minecraft:is_shovel"],
+			"idAny": ["shovel"]
+		},
+		{
+			"name": "hoe",
+			"blockTags": ["minecraft:is_hoe_item_destructible"],
+			"itemTags": ["minecraft:is_hoe"],
+			"idAny": ["_hoe"]
+		},
+		{
+			"name": "shears",
+			"blockTags": ["minecraft:is_shears_item_destructible"],
+			"itemTags": [],
+			"idAny": ["shears"]
+		},
+		{
+			"name": "sword",
+			"blockTags": ["minecraft:is_sword_item_destructible"],
+			"itemTags": ["minecraft:is_sword"],
+			"idAny": ["sword"]
+		}
+	],
+
+	"harvestTiers": [
+		{ "blockTags": ["minecraft:diamond_tier_destructible", "diamond_pick_diggable"], "rank": 4 },
+		{ "blockTags": ["minecraft:iron_tier_destructible", "iron_pick_diggable"], "rank": 3 },
+		{ "blockTags": ["minecraft:stone_tier_destructible", "stone_pick_diggable"], "rank": 2 }
+	],
+
+	"overrides": {
+		"shears": [
+			{ "speed": 15, "blockAny": ["web", "_leaves"] },
+			{ "speed": 5, "blockAny": ["_wool"] },
+			{ "speed": 1, "blockAny": ["vine", "glow_lichen"] },
+			{ "speed": 2 }
+		],
+		"sword": [
+			{ "speed": 15, "blockAny": ["web"] },
+			{ "speed": 1.5 }
+		]
+	}
+}

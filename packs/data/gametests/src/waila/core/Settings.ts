@@ -91,6 +91,7 @@ export class WailaSettings {
 	static get(player: Player, key: "entityHealthVisibility"): WailaWhenToShowOption;
 	static get(player: Player, key: "entityEffectsVisibility"): WailaWhenToShowOption;
 	static get(player: Player, key: "packAuthorVisibility"): WailaWhenToShowOption;
+	static get(player: Player, key: "breakProgressVisibility"): WailaWhenToShowOption;
 	static get(player: Player, key: "alwaysDisplayEntityIntHealth"): boolean;
 	static get(player: Player, key: string): WailaSettingPrimitive;
 	static get(player: Player, key: string): WailaSettingPrimitive {
@@ -147,6 +148,7 @@ export class WailaSettings {
 			alwaysDisplayEntityIntHealth: this.get(player, "alwaysDisplayEntityIntHealth") as boolean,
 			entityEffectsVisibility: this.get(player, "entityEffectsVisibility") as WailaWhenToShowOption,
 			packAuthorVisibility: this.get(player, "packAuthorVisibility") as WailaWhenToShowOption,
+			breakProgressVisibility: this.get(player, "breakProgressVisibility") as WailaWhenToShowOption,
 		};
 	}
 
@@ -313,6 +315,14 @@ export class WailaSettings {
 			labelKey: "waila.settings.packAuthorVisibility.label",
 			category: "displayContent",
 			default: "when_sneaking",
+			options: this.WHEN_TO_SHOW_OPTIONS,
+		});
+		this.addSetting("breakProgressVisibility", {
+			type: "enum",
+			labelKey: "waila.settings.breakProgressVisibility.label",
+			descriptionKey: "waila.settings.breakProgressVisibility.description",
+			category: "displayContent",
+			default: "always",
 			options: this.WHEN_TO_SHOW_OPTIONS,
 		});
 	}
@@ -875,6 +885,7 @@ export interface WailaSettingsValues {
 	alwaysDisplayEntityIntHealth: boolean;
 	entityEffectsVisibility: WailaWhenToShowOption;
 	packAuthorVisibility: WailaWhenToShowOption;
+	breakProgressVisibility: WailaWhenToShowOption;
 }
 
 export function shouldDisplayFeature(

@@ -14,6 +14,7 @@ import "./waila/utils/String";
 import "./waila/utils/Version";
 import "./waila/core/Settings";
 import "./waila/core/Waila";
+import "./waila/core/break/BreakDataCommand";
 
 import { init } from "@bedrock-oss/stylish";
 init();

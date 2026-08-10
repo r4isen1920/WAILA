@@ -1,0 +1,88 @@
+{
+	/* r4isen1920によって作成されました | MITライセンス */
+
+	"namespace": "r4isen1920_waila_progress",
+
+	//* _r4ui:A:ba,b;zz,z:p,0000:Spruce Log
+	//* _r4ui:A:zz,t;zz,z:p,DDDD: ...
+	//* バイト18から7バイト固定幅 -- DDDD = 破壊にかかる時間(1/10秒)
+
+	"bar_clip": {
+		"anim_type": "clip",
+		"easing": "linear",
+		"from": 1.0,
+		"to": 0.0,
+		"duration": "$break_duration"
+		// "duration": 3.2
+	},
+
+	"bar_image": {
+		"type": "image",
+		"texture": "textures/ui/experiencebarempty",
+		"allow_debug_missing_texture": false,
+		"force_texture_reload": true,
+		"keep_ratio": false,
+		"bilinear": false,
+		"size": ["100%", "100%"]
+	},
+
+	"bar_bg@r4isen1920_waila_progress.bar_image": {
+		"alpha": 0.65,
+		"layer": "($layer + 1)",
+		"ignored": true
+	},
+
+	"bar_fill@r4isen1920_waila_progress.bar_image": {
+		"texture": "textures/r4isen1920/waila/bar_progress_filled",
+		"color": [0.86, 0.86, 0.92],
+		"layer": "($layer + 2)",
+
+		"$bar_clip_ratio": 10.0,
+		"$break_duration": "((('%.5s' * ($var_title_text - ('%.19s' * $var_title_text))) - ',') / $bar_clip_ratio)",
+
+		"clip_direction": "left",
+		"clip_pixelperfect": false,
+
+		"anims": ["@r4isen1920_waila_progress.bar_clip"]
+	},
+
+	"break_bar@common.empty_panel": {
+		"$layer|default": 1,
+
+		"size": ["100%", 2],
+
+		"controls": [
+			{ "bg@r4isen1920_waila_progress.bar_bg": {} },
+			{ "fill@r4isen1920_waila_progress.bar_fill": {} }
+		]
+	},
+
+	"main@common.empty_panel": {
+		"$layer|default": 1,
+
+		"size": ["100% - 4px", "100%c"],
+		"offset": [0, -2],
+
+		"$tooltip_renderer_type": "('%.2s' * ($var_title_text - ('%.6s' * $var_title_text)))",
+		
+		"$break_hidden|default": false,
+		"variables": [
+			{
+				"requires": "(not ($tooltip_renderer_type = 'A:'))",
+				"$break_hidden": true
+			},
+			{
+				"requires": "((('%.5s' * ($var_title_text - ('%.19s' * $var_title_text)))) = ',0000')",
+				"$break_hidden": true
+			}
+		],
+
+		"controls": [
+			{
+				"break_bar@break_bar": {
+					"ignored": "$break_hidden"
+				}
+			}
+		]
+	}
+}

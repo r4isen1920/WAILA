@@ -102,6 +102,8 @@ export class UiController {
 			...(normalizedSubtitle !== undefined && { subtitle: normalizedSubtitle }),
 		};
 
+		player.sendMessage(normalizedTitle);
+
 		this.log.debug(
 			normalizedTitle,
 			normalizedSubtitle,

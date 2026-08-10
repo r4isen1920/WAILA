@@ -14,6 +14,14 @@ import {
 	resolveDisplayAnchor,
 } from "../Settings";
 import { MAX_TRACKED_EFFECTS } from "../EntityHandler";
+import { BreakTracker } from "../break/BreakTracker";
+
+
+
+//#region Globals
+/** Fixed-width `p,DDDD:` block occupying bytes 18..24 of every tile payload. */
+const PROGRESS_SEGMENT_INACTIVE = "p,0000:";
+const PROGRESS_MAX_DECISECONDS = 9999;
 
 
 
@@ -158,6 +166,7 @@ export class UiBuilder {
 			{ text: `_r4ui:${prefixType}:` },
 			{ text: healthOrArmor },
 			{ text: finalTagIcons },
+			{ text: isTileOrItemEntity ? UiBuilder.buildProgressSegment(player, settings, isSneaking) : "" },
 			{ text: effectsStr },
 			...nameElements,
 			{ text: itemEntityText },
@@ -203,6 +212,31 @@ export class UiBuilder {
 		);
 
 		return { title: filteredTitle, subtitle: subtitleParts };
+	}
+
+	/**
+	 * Emits the in-flight break duration as `p,<remaining deciseconds>:`.
+	 * The bar animation is fixed 0 -> full, so only the duration has to travel.
+	 */
+	private static buildProgressSegment(
+		player: Player,
+		settings: WailaSettingsValues,
+		isSneaking: boolean,
+	): string {
+		if (!shouldDisplayFeature(settings.breakProgressVisibility, isSneaking)) {
+			return PROGRESS_SEGMENT_INACTIVE;
+		}
+
+		const progress = BreakTracker.getInstance().getProgress(player);
+		if (!progress) return PROGRESS_SEGMENT_INACTIVE;
+
+		const deciseconds = Math.min(
+			PROGRESS_MAX_DECISECONDS,
+			Math.round(progress.remainingSeconds * 10),
+		);
+		if (deciseconds <= 0) return PROGRESS_SEGMENT_INACTIVE;
+
+		return `p,${deciseconds.toString().padStart(4, "0")}:`;
 	}
 
 	private static collectInventoryTokens(blockId: string): string[] {
