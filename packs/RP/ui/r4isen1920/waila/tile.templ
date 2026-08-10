@@ -1,0 +1,643 @@
+{
+	/* r4isen1920によって作成されました | MITライセンス */
+
+	"$scope": {
+		"isTile": "(('%.2s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.typeFlag}}s' * {{wailaTitleBinding}}))) = 'A:')",
+		"tileTags": "{{=wailaLayout.tileTags}}",
+		"overflowOffset": "{{=wailaLayout.tileOverflow}}",
+
+		"tagSlots": [
+			{ "n": 0, "hide": ":zz,z;" },
+			{ "n": 1, "hide": ";zz,z" }
+		],
+
+		"chestRow0": [
+			{ "i": 0, "b": "top_left" },
+			{ "i": 1, "b": "top_middle" },
+			{ "i": 2, "b": "top_middle" },
+			{ "i": 3, "b": "top_middle" },
+			{ "i": 4, "b": "top_middle" },
+			{ "i": 5, "b": "top_middle" },
+			{ "i": 6, "b": "top_middle" },
+			{ "i": 7, "b": "top_middle" },
+			{ "i": 9, "b": "top_right" }
+		],
+		"chestRow1": [
+			{ "i": 10, "b": "bottom_left" },
+			{ "i": 11, "b": "bottom_middle" },
+			{ "i": 12, "b": "bottom_middle" },
+			{ "i": 13, "b": "bottom_middle" },
+			{ "i": 14, "b": "bottom_middle" },
+			{ "i": 15, "b": "bottom_middle" },
+			{ "i": 16, "b": "bottom_middle" },
+			{ "i": 17, "b": "bottom_middle" }
+		],
+
+		"dropperRow0": [
+			{ "i": 0, "b": "top_left" },
+			{ "i": 1, "b": "top_middle" },
+			{ "i": 2, "b": "top_right" }
+		],
+		"dropperRow1": [
+			{ "i": 3, "b": "left_middle" },
+			{ "i": 4, "b": "center" },
+			{ "i": 5, "b": "right_middle" }
+		],
+		"dropperRow2": [
+			{ "i": 6, "b": "bottom_left" },
+			{ "i": 7, "b": "bottom_middle" },
+			{ "i": 9, "b": "bottom_right" }
+		],
+
+		"hopperRow0": [
+			{ "i": 0, "b": "leftmost" },
+			{ "i": 1, "b": "middlemost" },
+			{ "i": 2, "b": "middlemost" },
+			{ "i": 3, "b": "middlemost" },
+			{ "i": 4, "b": "rightmost" }
+		]
+	},
+
+	"$template": {
+		"namespace": "r4isen1920_waila_tile",
+
+		//! Deprecated in favor of "item_aux_inv_renderer" !//
+		"item_aux_renderer": {
+			"type": "custom",
+			"renderer": "inventory_item_renderer",
+
+			"layer": "($layer + 1)",
+
+			"property_bag": {
+				"#item_id_aux": "$item_aux"
+			}
+		},
+
+		//* Author: NguyenDuck (https://github.com/NguyenDuck) *//
+		"item_aux_inv_renderer@common.empty_panel": {
+			"$$collection_index": 17,
+			"$$show_item_count": false,
+
+			"controls": [
+				{
+					"inv": {
+						"type": "custom",
+						"renderer": "inventory_item_renderer",
+
+						"anchor_from": "top_left",
+						"anchor_to": "top_left",
+						"size": ["100%", "100%"],
+						"layer": "($layer + 1)",
+
+						"controls": [
+							{
+								"stack": {
+									"type": "stack_panel",
+									"size": [0, 0],
+
+									"$$slot_name": "slot",
+									"$$collection_name": "hotbar_items",
+									"collection_name": "$collection_name",
+
+									"controls": [
+										{
+											"$$slot_name@common.empty_panel": {
+												"collection_index": "$collection_index",
+												"bindings": [
+													{
+														"binding_type": "collection",
+														"binding_name": "#item_id_aux",
+														"binding_collection_name": "$collection_name",
+														"binding_condition": "visibility_changed"
+													},
+													{
+														"binding_type": "collection",
+														"binding_name": "#inventory_stack_count",
+														"binding_collection_name": "$collection_name",
+														"binding_condition": "visibility_changed"
+													}
+												]
+											}
+										}
+									],
+									"bindings": [
+										{
+											"binding_type": "view",
+											"source_control_name": "$slot_name",
+											"resolve_sibling_scope": true,
+											"source_property_name": "#item_id_aux",
+											"target_property_name": "#item_id_aux"
+										},
+										{
+											"binding_type": "view",
+											"source_control_name": "$slot_name",
+											"resolve_sibling_scope": true,
+											"source_property_name": "#inventory_stack_count",
+											"target_property_name": "#inventory_stack_count"
+										}
+									]
+								}
+							},
+
+							{
+								"item_amount@r4isen1920_waila_common.label": {
+									"anchor_from": "bottom_right",
+									"anchor_to": "bottom_right",
+									"offset": [0, 1],
+
+									"text": "#text",
+									"font_scale_factor": 0.75,
+									"shadow": true,
+
+									"ignored": "(not $show_item_count)",
+
+									"bindings": [
+										{
+											"binding_type": "view",
+											"source_control_name": "stack",
+											"resolve_sibling_scope": true,
+											"source_property_name": "#inventory_stack_count",
+											"target_property_name": "#text"
+										}
+									]
+								}
+							}
+						],
+						"bindings": [
+							{
+								"binding_type": "view",
+								"source_control_name": "stack",
+								"resolve_sibling_scope": true,
+								"source_property_name": "#item_id_aux",
+								"target_property_name": "#item_id_aux"
+							}
+						]
+					}
+				}
+			]
+		},
+
+		"item_inventory@item_aux_inv_renderer": {
+			"$$index|default": 0,
+			"$$show_item_count": true,
+			"size": [14, 14],
+
+			"variables": [
+				{
+					"requires": "true",
+					//? player.container is following the 36-slot format (9 hotbar; 27 inventory)
+					"$$collection_index": "(9 + $index)"
+				}
+			]
+		},
+
+		"furnace_inventory": {
+			"type": "stack_panel",
+			"orientation": "horizontal",
+
+			"size": ["100%c", 14],
+
+			"controls": [
+				{
+					"input@r4isen1920_waila_tile.item_inventory": {
+						"$$index": 0
+					}
+				},
+				{
+					"fuel@r4isen1920_waila_tile.item_inventory": {
+						"$$index": 1
+					}
+				},
+				{
+					"arrow_centerer@common.empty_panel": {
+						"size": [21, "100%"], // 15px + 6px (padding)
+						"controls": [
+							{
+								"arrow@r4isen1920_waila_common.image": {
+									"size": [15, 10],
+									"texture": "textures/r4isen1920/waila/arrow"
+								}
+							}
+						]
+					}
+				},
+				{
+					"output@r4isen1920_waila_tile.item_inventory": {
+						"$$index": 2
+					}
+				}
+			]
+		},
+
+		"brewing_stand_inventory": {
+			"type": "stack_panel",
+			"orientation": "horizontal",
+
+			"size": ["100%c", 30],
+
+			"controls": [
+				{
+					"inputs": {
+						"type": "stack_panel",
+						"orientation": "vertical",
+
+						"size": [14, "100%"],
+
+						"controls": [
+							{
+								"reagent@r4isen1920_waila_tile.item_inventory": {
+									"$$index": 0
+								}
+							},
+							{ "padding@common.empty_panel": { "size": [14, 2] } },
+							{
+								"blaze_powder@r4isen1920_waila_tile.item_inventory": {
+									"$$index": 4
+								}
+							}
+						]
+					}
+				},
+				{
+					"bubbles_centerer@common.empty_panel": {
+						"size": [18, "100%"], // 12px + 6px (padding)
+						"controls": [
+							{
+								"bubbles@r4isen1920_waila_common.image": {
+									"size": [12, 30],
+									"texture": "textures/r4isen1920/waila/bubbles"
+								}
+							}
+						]
+					}
+				},
+				{
+					"potion_1_and_3": {
+						"type": "stack_panel",
+						"orientation": "vertical",
+
+						"size": [14, "100%"],
+
+						"controls": [
+							{
+								"potion_1@r4isen1920_waila_tile.item_inventory": {
+									"$$index": 1
+								}
+							},
+							{ "padding@common.empty_panel": { "size": [14, 2] } },
+							{
+								"potion_3@r4isen1920_waila_tile.item_inventory": {
+									"$$index": 3
+								}
+							}
+						]
+					}
+				},
+				{
+					"potion_2_centerer@common.empty_panel": {
+						"size": [14, "100%"],
+
+						"controls": [
+							{
+								"potion_2@r4isen1920_waila_tile.item_inventory": {
+									"$$index": 2
+								}
+							}
+						]
+					}
+				}
+			]
+		},
+
+		"generic_container_inventory_item@common.empty_panel": {
+			"size": ["100%c - 1px", "100%c - 1px"],
+
+			"$$border_type|default": "center",
+
+			"controls": [
+				{
+					"border@r4isen1920_waila_common.image": {
+						"type": "image",
+						"size": ["100%c + 4px", "100%c + 4px"],
+
+						"$$texture": "('textures/r4isen1920/waila/border_' + $border_type)",
+						"texture": "$texture",
+
+						"variables": {
+							"requires": "true",
+							"$$index": "$a_index"
+						},
+
+						"controls": [
+							{
+								"item@r4isen1920_waila_tile.item_inventory": {
+								}
+							}
+						]
+					}
+				}
+			]
+		},
+		"generic_container_inventory_row": {
+			"type": "stack_panel",
+			"orientation": "horizontal",
+			"size": ["100%c", "100%cm"]
+		},
+
+		"chest_inventory": {
+			"type": "stack_panel",
+			"orientation": "vertical",
+
+			"size": ["100%cm", "100%c"],
+
+			"controls": [
+				{
+					"row_0@r4isen1920_waila_tile.generic_container_inventory_row": {
+						"controls": [
+							{
+								"{{#chestRow0}}": {
+									"item_{{index}}@r4isen1920_waila_tile.generic_container_inventory_item": {
+										"$$a_index": "{{=i}}",
+										"$$border_type": "{{b}}"
+									}
+								}
+							}
+						]
+					}
+				},
+				{
+					"row_1@r4isen1920_waila_tile.generic_container_inventory_row": {
+						"controls": [
+							{
+								"{{#chestRow1}}": {
+									"item_{{index}}@r4isen1920_waila_tile.generic_container_inventory_item": {
+										"$$a_index": "{{=i}}",
+										"$$border_type": "{{b}}"
+									}
+								}
+							},
+							{
+								"elipsis_slot@r4isen1920_waila_common.collapsible": {
+									"controls": [
+										{
+											"elipsis_overflow@common.empty_panel": {
+												/* 隣のアイテム枠と同寸 (14px + 枠 4px - 1px) */
+												"size": [17, 17],
+
+												"controls": [
+													{
+														"label@r4isen1920_waila_common.label": {
+															"anchor_from": "center",
+															"anchor_to": "center",
+
+															"text_alignment": "center",
+															"font_scale_factor": 0.75,
+															"text": "#text",
+
+															"bindings": [
+																{
+																	"binding_name": "#hud_title_text_string",
+																	"binding_type": "global"
+																},
+																{
+																	"binding_type": "view",
+																	"source_property_name": "('§o' + ('%.3s' * ({{wailaTitleBinding}} - ('%.{{overflowOffset}}s' * {{wailaTitleBinding}}))))",
+																	"target_property_name": "#text"
+																}
+															]
+														}
+													}
+												],
+
+												"bindings": [
+													{
+														"binding_name": "#hud_title_text_string",
+														"binding_type": "global"
+													},
+													{
+														"binding_type": "view",
+														"source_property_name": "(not (('%.3s' * ({{wailaTitleBinding}} - ('%.{{overflowOffset}}s' * {{wailaTitleBinding}}))) = '+0 '))",
+														"target_property_name": "#visible"
+													}
+												]
+											}
+										}
+									]
+								}
+							}
+						]
+					}
+				}
+			]
+		},
+
+		"dropper_inventory": {
+			"type": "stack_panel",
+			"orientation": "vertical",
+
+			"size": ["100%cm", "100%c"],
+
+			"controls": [
+				{
+					"row_0@r4isen1920_waila_tile.generic_container_inventory_row": {
+						"controls": [
+							{
+								"{{#dropperRow0}}": {
+									"item_{{index}}@r4isen1920_waila_tile.generic_container_inventory_item": {
+										"$$a_index": "{{=i}}",
+										"$$border_type": "{{b}}"
+									}
+								}
+							}
+						]
+					}
+				},
+				{
+					"row_1@r4isen1920_waila_tile.generic_container_inventory_row": {
+						"controls": [
+							{
+								"{{#dropperRow1}}": {
+									"item_{{index}}@r4isen1920_waila_tile.generic_container_inventory_item": {
+										"$$a_index": "{{=i}}",
+										"$$border_type": "{{b}}"
+									}
+								}
+							}
+						]
+					}
+				},
+				{
+					"row_2@r4isen1920_waila_tile.generic_container_inventory_row": {
+						"controls": [
+							{
+								"{{#dropperRow2}}": {
+									"item_{{index}}@r4isen1920_waila_tile.generic_container_inventory_item": {
+										"$$a_index": "{{=i}}",
+										"$$border_type": "{{b}}"
+									}
+								}
+							}
+						]
+					}
+				}
+			]
+		},
+
+		"hopper_inventory": {
+			"type": "stack_panel",
+			"orientation": "vertical",
+
+			"size": ["100%cm", "100%c"],
+
+			"controls": [
+				{
+					"row_0@r4isen1920_waila_tile.generic_container_inventory_row": {
+						"controls": [
+							{
+								"{{#hopperRow0}}": {
+									"item_{{index}}@r4isen1920_waila_tile.generic_container_inventory_item": {
+										"$$a_index": "{{=i}}",
+										"$$border_type": "{{b}}"
+									}
+								}
+							}
+						]
+					}
+				}
+			]
+		},
+
+		"block_tags": {
+			"type": "stack_panel",
+			"orientation": "horizontal",
+
+			"anchor_from": "top_right",
+			"anchor_to": "top_right",
+			"size": ["100%c", 11],
+
+			//* _r4ui:A:zz,t;zz,z: ...
+			//* _r4ui:B:yyyyyyyyyyyyyyyyyyyynnnnnnnnnn:zz,t;zz,z: ...
+
+			"controls": [
+				{
+					"{{#tagSlots}}": {
+						"icon_{{n}}_slot@r4isen1920_waila_common.collapsible": {
+							"controls": [
+								{
+									"tile@r4isen1920_waila_common.image": {
+										"texture": "#texture",
+										"size": [11, 11],
+										"bilinear": true,
+
+										"controls": [
+											{
+												"remarks@r4isen1920_waila_common.image": {
+													"texture": "#texture",
+													"bilinear": true,
+
+													"anchor_from": "bottom_right",
+													"anchor_to": "bottom_right",
+													"size": ["50%", "100%x"],
+
+													"bindings": [
+														{
+															"binding_name": "#hud_title_text_string",
+															"binding_type": "global"
+														},
+														{
+															"binding_type": "view",
+															"source_property_name": "(('textures/r4isen1920/waila/icons/tags/' + ('%.1s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.tileTags + 3 + 5 * n}}s' * {{wailaTitleBinding}})))) - ':')",
+													"target_property_name": "#texture"
+														}
+													]
+												}
+											}
+										],
+
+										"bindings": [
+											{
+												"binding_name": "#hud_title_text_string",
+												"binding_type": "global"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "(('textures/r4isen1920/waila/icons/tags/tile/' + ('%.2s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.tileTags + 5 * n}}s' * {{wailaTitleBinding}})))) - ':')",
+												"target_property_name": "#texture"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "({{isTile}} and (({{wailaTitleBinding}} - '{{hide}}') = {{wailaTitleBinding}}))",
+												"target_property_name": "#visible"
+											}
+										]
+									}
+								},
+								{
+									"entity@r4isen1920_waila_common.image": {
+										"texture": "#texture",
+										"size": [11, 11],
+										"bilinear": true,
+
+										"controls": [
+											{
+												"remarks@r4isen1920_waila_common.image": {
+													"texture": "#texture",
+													"bilinear": true,
+
+													"anchor_from": "bottom_right",
+													"anchor_to": "bottom_right",
+													"size": ["50%", "100%x"],
+
+													"bindings": [
+														{
+															"binding_name": "#hud_title_text_string",
+															"binding_type": "global"
+														},
+														{
+															"binding_type": "view",
+															"source_property_name": "(('textures/r4isen1920/waila/icons/tags/' + ('%.1s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.entityTags + 4 + 5 * n}}s' * {{wailaTitleBinding}})))) - ':')",
+													"target_property_name": "#texture"
+														}
+													]
+												}
+											}
+										],
+
+										"bindings": [
+											{
+												"binding_name": "#hud_title_text_string",
+												"binding_type": "global"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "(('textures/r4isen1920/waila/icons/tags/entity/' + ('%.2s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.entityTags + 1 + 5 * n}}s' * {{wailaTitleBinding}})))) - ':')",
+												"target_property_name": "#texture"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "((not {{isTile}}) and (({{wailaTitleBinding}} - '{{hide}}') = {{wailaTitleBinding}}))",
+												"target_property_name": "#visible"
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				}
+			],
+
+			"bindings": [
+				{
+					"binding_name": "#hud_title_text_string",
+					"binding_type": "global"
+				},
+				{
+					"binding_type": "view",
+					"source_property_name": "(({{wailaTitleBinding}} - ':zz,z;zz,z') = {{wailaTitleBinding}})",
+					"target_property_name": "#visible"
+				}
+			]
+		}
+	}
+}

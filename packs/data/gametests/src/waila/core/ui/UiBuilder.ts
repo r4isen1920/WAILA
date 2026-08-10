@@ -154,11 +154,17 @@ export class UiBuilder {
 			showPackAuthor,
 		);
 
+		/* Fixed 3-byte field so the UI can slice it; only prefix "A" carries it. */
+		const inventoryOverflowField = isTileOrItemEntity
+			? `+${Math.min(99, Math.max(0, inventoryOverflow)).toString().padEnd(2, " ")}`
+			: "";
+
 		const titleParts: RawMessage[] = [
 			{ text: `_r4ui:${prefixType}:` },
 			{ text: healthOrArmor },
 			{ text: finalTagIcons },
 			{ text: effectsStr },
+			{ text: inventoryOverflowField },
 			...nameElements,
 			{ text: itemEntityText },
 			{ text: healthText },
@@ -179,11 +185,6 @@ export class UiBuilder {
 		if (extendedInfoActive && blockStatesText.length > 0) {
 			subtitleParts.push({ text: "__r4ui:block_states__" });
 			subtitleParts.push({ text: blockStatesText });
-		}
-
-		if (shouldDisplayInventory && metadata.type === LookAtObjectType.TILE && inventoryOverflow > 0) {
-			const clampedOverflow = Math.min(99, Math.max(0, inventoryOverflow));
-			titleParts.push({ text: `__r4ui:inv.size_${clampedOverflow}__` });
 		}
 
 		titleParts.push({ text: `__r4ui:anchor.${anchorSetting}__` });

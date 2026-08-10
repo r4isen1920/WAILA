@@ -1,0 +1,526 @@
+{
+	/* r4isen1920によって作成されました | MITライセンス */
+
+	/* JSON UI はバインディング式の中で $変数 を再評価しないため、
+	   ペイロードのバイトオフセットは jsonte がコンパイル時に焼き込む。
+	   インライン展開は {{expr}}、値ごと差し替えるときだけ {{=expr}} を使う */
+	"$scope": {
+		"heartsRow0": "{{=wailaLayout.entityHealth}}",
+		"heartsRow1": "{{=wailaLayout.entityHealth + wailaLayout.iconsPerRow}}",
+		"armorStart": "{{=wailaLayout.entityArmor}}",
+		"effectsLengthOffset": "{{=wailaLayout.effects + wailaLayout.effectStride * wailaEffects.count()}}",
+		"effectsLength": "('%.3s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.effects + wailaLayout.effectStride * wailaEffects.count()}}s' * {{wailaTitleBinding}})))",
+		"isHumanoid": "(not (({{wailaTitleBinding}} - '__r4ui:humanoid.') = {{wailaTitleBinding}}))"
+	},
+
+	"$template": {
+		"namespace": "r4isen1920_waila_entity",
+
+		"portrait": {
+			"type": "custom",
+			"renderer": "live_horse_renderer",
+
+			"size": ["100%", "100%"],
+			"layer": "($layer + 1)",
+
+			"bindings": [
+				{
+					"binding_name": "#hud_subtitle_text_string",
+					"binding_name_override": "#entity_id",
+					"binding_type": "global"
+				}
+			]
+		},
+
+		/* offset は静的プロパティなのでバインドできない -- 2 通り用意して #visible で選ぶ */
+		"entity_portrait_renderer@common.empty_panel": {
+			"controls": [
+				{
+					"mob@common.empty_panel": {
+						"size": ["100%", "100%"],
+
+						"controls": [
+							{
+								"p@r4isen1920_waila_entity.portrait": {
+									"offset": [0, "75%y + 2.5px"]
+								}
+							}
+						],
+
+						"bindings": [
+							{
+								"binding_name": "#hud_title_text_string",
+								"binding_type": "global"
+							},
+							{
+								"binding_type": "view",
+								"source_property_name": "(not {{isHumanoid}})",
+								"target_property_name": "#visible"
+							}
+						]
+					}
+				},
+				{
+					"humanoid@common.empty_panel": {
+						"size": ["100%", "100%"],
+
+						"controls": [
+							{
+								"p@r4isen1920_waila_entity.portrait": {
+									"offset": [0, -2.5]
+								}
+							}
+						],
+
+						"bindings": [
+							{
+								"binding_name": "#hud_title_text_string",
+								"binding_type": "global"
+							},
+							{
+								"binding_type": "view",
+								"source_property_name": "{{isHumanoid}}",
+								"target_property_name": "#visible"
+							}
+						]
+					}
+				}
+			]
+		},
+
+		"health_renderer_0": {
+			"type": "stack_panel",
+			"orientation": "horizontal",
+
+			"size": ["100%c", "100%cm"],
+
+			"controls": [
+				{
+					"{{#0..9}}": {
+						"heart_{{value}}@r4isen1920_waila_common.icon_renderer": {
+							"controls": [
+								{
+									"icon@r4isen1920_waila_common.icon_image": {
+										"bindings": [
+											{
+												"binding_name": "#hud_title_text_string",
+												"binding_type": "global"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "('textures/r4isen1920/waila/icons/' + ('%.1s' * ({{wailaTitleBinding}} - ('%.{{heartsRow0 + value}}s' * {{wailaTitleBinding}}))))",
+												"target_property_name": "#texture"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "((not (('%.1s' * ({{wailaTitleBinding}} - ('%.{{heartsRow0 + value}}s' * {{wailaTitleBinding}}))) = 'x')) and (not (('%.1s' * ({{wailaTitleBinding}} - ('%.{{heartsRow0 + value}}s' * {{wailaTitleBinding}}))) = 'y')))",
+												"target_property_name": "#visible"
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				}
+			],
+
+			"bindings": [
+				{
+					"binding_name": "#hud_title_text_string",
+					"binding_type": "global"
+				},
+				{
+					"binding_type": "view",
+					"source_property_name": "(not (('' + ('%.1s' * ({{wailaTitleBinding}} - ('%.{{heartsRow0}}s' * {{wailaTitleBinding}})))) = 'x'))",
+					"target_property_name": "#visible"
+				}
+			]
+		},
+
+		"health_renderer_1": {
+			"type": "stack_panel",
+			"orientation": "horizontal",
+
+			"size": ["100%c", "100%cm"],
+
+			"controls": [
+				{
+					"{{#0..9}}": {
+						"heart_{{value + 10}}@r4isen1920_waila_common.icon_renderer": {
+							"controls": [
+								{
+									"icon@r4isen1920_waila_common.icon_image": {
+										"bindings": [
+											{
+												"binding_name": "#hud_title_text_string",
+												"binding_type": "global"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "('textures/r4isen1920/waila/icons/' + ('%.1s' * ({{wailaTitleBinding}} - ('%.{{heartsRow1 + value}}s' * {{wailaTitleBinding}}))))",
+												"target_property_name": "#texture"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "((not (('%.1s' * ({{wailaTitleBinding}} - ('%.{{heartsRow1 + value}}s' * {{wailaTitleBinding}}))) = 'x')) and (not (('%.1s' * ({{wailaTitleBinding}} - ('%.{{heartsRow1 + value}}s' * {{wailaTitleBinding}}))) = 'y')))",
+												"target_property_name": "#visible"
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				}
+			],
+
+			"bindings": [
+				{
+					"binding_name": "#hud_title_text_string",
+					"binding_type": "global"
+				},
+				{
+					"binding_type": "view",
+					"source_property_name": "(not (('' + ('%.1s' * ({{wailaTitleBinding}} - ('%.{{heartsRow1}}s' * {{wailaTitleBinding}})))) = 'y'))",
+					"target_property_name": "#visible"
+				}
+			]
+		},
+
+		"armor_renderer": {
+			"type": "stack_panel",
+			"orientation": "horizontal",
+
+			"size": ["100%c", "100%cm"],
+
+			"controls": [
+				{
+					"{{#0..9}}": {
+						"armor_{{value}}@r4isen1920_waila_common.icon_renderer": {
+							"controls": [
+								{
+									"icon@r4isen1920_waila_common.icon_image": {
+										"bindings": [
+											{
+												"binding_name": "#hud_title_text_string",
+												"binding_type": "global"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "('textures/r4isen1920/waila/icons/' + ('%.1s' * ({{wailaTitleBinding}} - ('%.{{armorStart + value}}s' * {{wailaTitleBinding}}))))",
+												"target_property_name": "#texture"
+											},
+											{
+												"binding_type": "view",
+												"source_property_name": "((not (('%.1s' * ({{wailaTitleBinding}} - ('%.{{armorStart + value}}s' * {{wailaTitleBinding}}))) = 'x')) and (not (('%.1s' * ({{wailaTitleBinding}} - ('%.{{armorStart + value}}s' * {{wailaTitleBinding}}))) = 'y')))",
+												"target_property_name": "#visible"
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				}
+			],
+
+			"bindings": [
+				{
+					"binding_name": "#hud_title_text_string",
+					"binding_type": "global"
+				},
+				{
+					"binding_type": "view",
+					"source_property_name": "(not (('' + ('%.1s' * ({{wailaTitleBinding}} - ('%.{{armorStart}}s' * {{wailaTitleBinding}})))) = 'd'))",
+					"target_property_name": "#visible"
+				}
+			]
+		},
+
+		/* 1 エフェクト = 11 バイト: d + MM:SS + p + 4 バイトのローマ数字フィールド */
+		"{{#wailaEffects}}": {
+			"status_effect_{{id}}@common.empty_panel": {
+				"size": ["100%cm", "100%cm"],
+
+				"$$is_expanded|default": true,
+
+				"controls": [
+					{
+						"icon_and_label_expanded": {
+							"type": "stack_panel",
+							"orientation": "horizontal",
+
+							"size": ["100%c", "100%cm + 4px"],
+							"visible": "$is_expanded",
+
+							"controls": [
+								{
+									"icon_panel@common.empty_panel": {
+										"size": ["100%y", "100%sm"],
+
+										"controls": [
+											{
+												"icon@r4isen1920_waila_common.image": {
+													"texture": "textures/ui/{{id}}_effect",
+													"keep_ratio": true,
+
+													"size": ["100% - 4px", "100% - 4px"]
+												}
+											}
+										]
+									}
+								},
+								{ "padding@common.empty_panel": { "size": [2.5, 0] } },
+								{
+									"label_panel": {
+										"type": "stack_panel",
+										"orientation": "vertical",
+
+										"size": ["100%cm + 2px", "100%c"],
+
+										"controls": [
+											{
+												"name_and_amplifier": {
+													"type": "stack_panel",
+													"orientation": "horizontal",
+
+													"size": ["100%c", "100%cm"],
+
+													"controls": [
+														{
+															"name@r4isen1920_waila_common.label": {
+																"text": "{{key}}",
+																"font_scale_factor": 0.75,
+																"localize": true,
+																"color": "{{=negative ? '$c_color_format' : '$f_color_format'}}"
+															}
+														},
+														{
+															"padding@r4isen1920_waila_common.label": {
+																"text": " ",
+																"font_scale_factor": 0.75,
+																"color": "{{=negative ? '$c_color_format' : '$f_color_format'}}"
+															}
+														},
+														{
+															"amplifier@r4isen1920_waila_common.label": {
+																"text": "#text",
+																"font_scale_factor": 0.75,
+																"color": "{{=negative ? '$c_color_format' : '$f_color_format'}}",
+
+																"bindings": [
+																	{
+																		"binding_name": "#hud_title_text_string",
+																		"binding_type": "global"
+																	},
+																	{
+																		"binding_type": "view",
+																		"source_property_name": "('§z' + ('%.4s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.effects + wailaLayout.effectStride * index + 7}}s' * {{wailaTitleBinding}}))))",
+																		"target_property_name": "#text"
+																	}
+																]
+															}
+														}
+													]
+												}
+											},
+											{
+												"duration@r4isen1920_waila_common.label": {
+													"text": "#text",
+													"font_scale_factor": 0.75,
+													"color": "$7_color_format",
+
+													"bindings": [
+														{
+															"binding_name": "#hud_title_text_string",
+															"binding_type": "global"
+														},
+														{
+															"binding_type": "view",
+															"source_property_name": "('§z' + ('%.5s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.effects + wailaLayout.effectStride * index + 1}}s' * {{wailaTitleBinding}}))))",
+														"target_property_name": "#text"
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					},
+					{
+						"icon_and_label_mini@common.empty_panel": {
+							"size": ["100%cm", "100%cm"],
+							"visible": "(not $is_expanded)",
+
+							"controls": [
+								{
+									"icon_panel@common.empty_panel": {
+										"size": ["100%c + 4px", "100%c + 2px"],
+
+										"controls": [
+											{
+												"icon@r4isen1920_waila_common.image": {
+													"texture": "textures/ui/{{id}}_effect",
+													"keep_ratio": true,
+
+													"size": [10, 10],
+
+													"controls": [
+														{
+															"amplifier@r4isen1920_waila_common.label": {
+																"anchor_from": "bottom_right",
+																"anchor_to": "bottom_right",
+																"offset": [0, 1],
+
+																"text": "#text",
+																"font_scale_factor": 0.75,
+																"color": "{{=negative ? '$c_color_format' : '$f_color_format'}}",
+
+																"bindings": [
+																	{
+																		"binding_name": "#hud_title_text_string",
+																		"binding_type": "global"
+																	},
+																	{
+																		"binding_type": "view",
+																		"source_property_name": "('§z' + ('%.4s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.effects + wailaLayout.effectStride * index + 7}}s' * {{wailaTitleBinding}}))))",
+																		"target_property_name": "#text"
+																	}
+																]
+															}
+														}
+													]
+												}
+											}
+										]
+									}
+								}
+							]
+						}
+					}
+				],
+
+				"bindings": [
+					{
+						"binding_name": "#hud_title_text_string",
+						"binding_type": "global"
+					},
+					{
+						"binding_type": "view",
+						"source_property_name": "(not (('%.2s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.effects + wailaLayout.effectStride * index + 6}}s' * {{wailaTitleBinding}}))) = 'p0'))",
+						"target_property_name": "#visible"
+					}
+				]
+			}
+		},
+
+		"effects_renderer@common.empty_panel": {
+			"size": ["100%cm + 3px", "100%cm + 1px"],
+
+			"controls": [
+				{
+					"verti": {
+						"type": "stack_panel",
+						"orientation": "vertical",
+
+						"size": ["100%cm", "100%c"],
+						"offset": [0, 0.5],
+
+						"controls": [
+							{
+								"{{#wailaEffects}}": {
+									"{{id}}_slot@r4isen1920_waila_common.collapsible": {
+										"controls": [
+											{
+												"{{id}}@r4isen1920_waila_entity.status_effect_{{id}}": {
+													"$$is_expanded": true
+												}
+											}
+										]
+									}
+								}
+							}
+						],
+
+						"bindings": [
+							{
+								"binding_name": "#hud_title_text_string",
+								"binding_type": "global"
+							},
+							{
+								"binding_type": "view",
+								"source_property_name": "(not (({{effectsLength}} = 'e03') or ({{effectsLength}} = 'e04')))",
+								"target_property_name": "#visible"
+							}
+						]
+					}
+				},
+				{
+					"hori": {
+						"type": "stack_panel",
+						"orientation": "horizontal",
+
+						"size": ["100%c", "100%cm"],
+						"offset": [0, 0.5],
+
+						"controls": [
+							{
+								"{{#wailaEffects}}": {
+									"{{id}}_slot@r4isen1920_waila_common.collapsible": {
+										"controls": [
+											{
+												"{{id}}@r4isen1920_waila_entity.status_effect_{{id}}": {
+													"$$is_expanded": false
+												}
+											}
+										]
+									}
+								}
+							},
+							{
+								"etc_effects_panel@common.empty_panel": {
+									"size": [16, 16],
+
+									"controls": [
+										{
+											"label@r4isen1920_waila_common.label": {
+												"text": "..."
+											}
+										}
+									]
+								}
+							}
+						],
+
+						"bindings": [
+							{
+								"binding_name": "#hud_title_text_string",
+								"binding_type": "global"
+							},
+							{
+								"binding_type": "view",
+								"source_property_name": "(not (({{effectsLength}} = 'e01') or ({{effectsLength}} = 'e02')))",
+								"target_property_name": "#visible"
+							}
+						]
+					}
+				}
+			],
+
+			"bindings": [
+				{
+					"binding_name": "#hud_title_text_string",
+					"binding_type": "global"
+				},
+				{
+					"binding_type": "view",
+					"source_property_name": "(not ({{effectsLength}} = 'e00'))",
+					"target_property_name": "#visible"
+				}
+			]
+		}
+	}
+}

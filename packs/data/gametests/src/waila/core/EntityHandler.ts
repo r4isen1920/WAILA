@@ -42,6 +42,21 @@ import { shouldDisplayFeature, WailaSettingsValues } from "./Settings";
 
 //#region Globals
 export const MAX_TRACKED_EFFECTS = 4;
+
+/** Fixed 4-byte amplifier field, indexed by amplifier. Index 0 doubles as the "no effect" marker the UI tests for. */
+const EFFECT_AMPLIFIER_FIELD = [
+	"0000",
+	"    ",
+	"II  ",
+	"III ",
+	"IV  ",
+	"V   ",
+	"VI  ",
+	"VII ",
+	"VIII",
+	"IX  ",
+];
+
 const EFFECT_TABLE = [
 	{ name: "speed", id: 1 },
 	{ name: "slowness", id: 2 },
@@ -424,7 +439,7 @@ export class EntityHandler {
 				.toString()
 				.padStart(2, "0")}`;
 
-			effectString += `d${durationStr}p${Math.max(0, amplifier).toString().padStart(1, "0")}`;
+			effectString += `d${durationStr}p${EFFECT_AMPLIFIER_FIELD[Math.max(0, Math.min(9, amplifier))]}`;
 		}
 
 		return {

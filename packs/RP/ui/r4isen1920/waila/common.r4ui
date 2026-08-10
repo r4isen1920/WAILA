@@ -24,23 +24,22 @@
 		"layer": "($layer + 1)"
 	},
 
+	/* 子が非表示になったときに 0 へ折りたたまれるラッパー -- ignored の代替 */
+	"collapsible@common.empty_panel": {
+		"size": ["100%cm", "100%cm"]
+	},
+
+	/* 呼び出し側が icon_image を controls に差し込み、#texture をバインドする */
 	"icon_renderer@common.empty_panel": {
-		// this panel just re-centers the image
-		"size": ["100%c - 0.5px", "100%c - 0.5px"],
+		"size": ["100%c - 0.5px", "100%c - 0.5px"]
+	},
 
-		"controls": [
-			{
-				"icon@image": {
-					"$texture_path": "('textures/r4isen1920/waila/icons/' + $texture)",
-					"texture": "$texture_path",
-					"ignored": "(($texture = 'x') or ($texture = 'y'))",
+	"icon_image@r4isen1920_waila_common.image": {
+		"texture": "#texture",
 
-					"size": [9, 9],
-					"uv_size": [9, 9],
+		"size": [9, 9],
+		"uv_size": [9, 9],
 
-					"layer": 101
-				}
-			}
-		]
+		"layer": 101
 	}
 }

@@ -1,0 +1,77 @@
+{
+	"wailaTitleBinding": "#hud_title_text_string",
+	"wailaSubtitleBinding": "#hud_subtitle_text_string",
+
+	"//": "Byte offsets into the title payload built by UiBuilder.ts. Keep in sync with it.",
+	"wailaLayout": {
+		"typeFlag": 6,
+		"tileTags": 8,
+		"tileOverflow": 18,
+		"tileName": 21,
+		"entityHealth": 8,
+		"entityArmor": 28,
+		"entityTags": 38,
+		"effects": 49,
+		"effectStride": 11,
+		"iconsPerRow": 10
+	},
+
+	"wailaInventories": [
+		{ "id": "furnace_inventory", "token": "furnace" },
+		{ "id": "brewing_stand_inventory", "token": "brewstand" },
+		{ "id": "chest_inventory", "token": "chest" },
+		{ "id": "dropper_inventory", "token": "dropper" },
+		{ "id": "hopper_inventory", "token": "hopper" }
+	],
+
+	"//anchors": "Positioning is fixed to top_middle, but the token is still emitted so it must be stripped from the name.",
+	"wailaAnchorIds": [
+		"top_left",
+		"top_middle",
+		"top_right",
+		"left_middle",
+		"center",
+		"right_middle",
+		"bottom_left",
+		"bottom_middle",
+		"bottom_right"
+	],
+
+	"//effects": "Order must match EFFECT_TABLE in EntityHandler.ts.",
+	"wailaEffects": [
+		{ "id": "speed", "key": "potion.moveSpeed", "negative": false },
+		{ "id": "slowness", "key": "potion.moveSlowdown", "negative": true },
+		{ "id": "haste", "key": "potion.digSpeed", "negative": false },
+		{ "id": "mining_fatigue", "key": "potion.digSlowDown", "negative": true },
+		{ "id": "strength", "key": "potion.damageBoost", "negative": false },
+		{ "id": "instant_health", "key": "potion.heal", "negative": false },
+		{ "id": "instant_damage", "key": "potion.harm", "negative": true },
+		{ "id": "jump_boost", "key": "potion.jump", "negative": false },
+		{ "id": "nausea", "key": "potion.confusion", "negative": true },
+		{ "id": "regeneration", "key": "potion.regeneration", "negative": false },
+		{ "id": "resistance", "key": "potion.resistance", "negative": false },
+		{ "id": "fire_resistance", "key": "potion.fireResistance", "negative": false },
+		{ "id": "water_breathing", "key": "potion.waterBreathing", "negative": false },
+		{ "id": "invisibility", "key": "potion.invisibility", "negative": false },
+		{ "id": "blindness", "key": "potion.blindness", "negative": true },
+		{ "id": "night_vision", "key": "potion.nightVision", "negative": false },
+		{ "id": "hunger", "key": "potion.hunger", "negative": true },
+		{ "id": "weakness", "key": "potion.weakness", "negative": true },
+		{ "id": "poison", "key": "potion.poison", "negative": true },
+		{ "id": "wither", "key": "potion.wither", "negative": true },
+		{ "id": "health_boost", "key": "potion.healthBoost", "negative": false },
+		{ "id": "absorption", "key": "potion.absorption", "negative": false },
+		{ "id": "saturation", "key": "potion.saturation", "negative": false },
+		{ "id": "levitation", "key": "potion.levitation", "negative": true },
+		{ "id": "fatal_poison", "key": "potion.poison", "negative": true },
+		{ "id": "slow_falling", "key": "potion.slowFalling", "negative": false },
+		{ "id": "conduit_power", "key": "potion.conduitPower", "negative": false },
+		{ "id": "bad_omen", "key": "effect.badOmen", "negative": true },
+		{ "id": "village_hero", "key": "effect.villageHero", "negative": false },
+		{ "id": "darkness", "key": "effect.darkness", "negative": true },
+		{ "id": "wind_charged", "key": "effect.wind_charged", "negative": true },
+		{ "id": "weaving", "key": "effect.weaving", "negative": true },
+		{ "id": "oozing", "key": "effect.oozing", "negative": true },
+		{ "id": "infested", "key": "effect.infested", "negative": true }
+	]
+}

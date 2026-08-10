@@ -1,0 +1,559 @@
+{
+	/* r4isen1920によって作成されました | MITライセンス */
+
+	/* JSON UI はバインディング式の中で $変数 を再評価しないため、
+	   式の断片は jsonte がコンパイル時に 1 本の長い文字列へ焼き込む */
+	"$scope": {
+		"isWaila": "(('%.{{wailaLayout.typeFlag}}s' * {{wailaTitleBinding}}) = '_r4ui:')",
+		"isTile": "(('%.2s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.typeFlag}}s' * {{wailaTitleBinding}}))) = 'A:')",
+		"hasBlockIcon": "(not (('%.10s' * ({{wailaTitleBinding}} - ('%.7s' * {{wailaTitleBinding}}))) = ':-00000NaN'))",
+		"hasEntityIcon": "(not ({{wailaSubtitleBinding}} = '0000000000000'))",
+		"hasEffects": "(not (('%.3s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.effects + wailaLayout.effectStride * wailaEffects.count()}}s' * {{wailaTitleBinding}}))) = 'e00'))",
+		"isIntHealth": "(('' + ('%.2s' * ({{wailaTitleBinding}} - ('%.{{wailaLayout.entityHealth}}s' * {{wailaTitleBinding}})))) = 'yx')",
+
+		"tileName": "{{=wailaLayout.tileName}}",
+		"entityName": "{{=wailaLayout.effects + wailaLayout.effectStride * wailaEffects.count() + 3}}",
+
+		/* 表示名から取り除くトークン列 */
+		"anchorStrip": "{{wailaAnchorIds.map(a => \" - '__r4ui:anchor.\" + a + \"__'\").join('')}}",
+		"invStrip": "{{wailaInventories.map(v => \" - '__r4ui:inv.\" + v.token + \"__'\").join('')}}"
+	},
+
+	"$template": {
+		"namespace": "r4isen1920_waila_main",
+
+		"main@common.empty_panel": {
+			"size": ["100%cm", "100%cm"],
+
+			/* 他のすべての上に設定 */
+			"$$layer": 1,
+			"layer": "$layer",
+
+			"controls": [
+				{
+					"bg": {
+						"type": "image",
+						"texture": "textures/ui/purpleBorder",
+
+						"keep_ratio": false,
+						"bilinear": false,
+						"alpha": 0.75,
+
+						"size": ["100%c + 10px", "100%c + 8px"],
+						"layer": "($layer + 1)",
+
+						"controls": [
+							{
+								"hori": {
+									"type": "stack_panel",
+									"orientation": "horizontal",
+
+									"size": ["100%c", "100%cm"],
+									"min_size": ["100%c", 20],
+									"use_child_anchors": true,
+
+									"controls": [
+										{
+											"icon_panel": {
+												"type": "stack_panel",
+												"orientation": "horizontal",
+
+												"anchor_from": "top_left",
+												"anchor_to": "top_left",
+												"size": ["100%c", "100%cm"],
+												"offset": [0, "150%y"],
+												"use_child_anchors": true,
+
+												"controls": [
+													{
+														"left_padding@common.empty_panel": {
+															"size": [0.75, 1],
+
+															/* エンティティ画像テクスチャにのみ表示 */
+															"bindings": [
+																{
+																	"binding_name": "#hud_title_text_string",
+																	"binding_type": "global"
+																},
+																{
+																	"binding_name": "#hud_subtitle_text_string",
+																	"binding_type": "global"
+																},
+																{
+																	"binding_type": "view",
+																	"source_property_name": "((not {{isTile}}) and {{hasEntityIcon}})",
+																	"target_property_name": "#visible"
+																}
+															]
+														}
+													},
+													{
+														"renderer_slot@r4isen1920_waila_common.collapsible": {
+															"controls": [
+																{
+																	"renderer@common.empty_panel": {
+																		"size": [20, 20],
+
+																		"controls": [
+																			{
+																				"block@r4isen1920_waila_tile.item_aux_inv_renderer": {
+																					"size": ["100%", "100%"],
+
+																					"bindings": [
+																						{
+																							"binding_name": "#hud_title_text_string",
+																							"binding_type": "global"
+																						},
+																						{
+																							"binding_type": "view",
+																							"source_property_name": "{{isTile}}",
+																							"target_property_name": "#visible"
+																						}
+																					]
+																				}
+																			},
+																			{
+																				"entity@r4isen1920_waila_entity.entity_portrait_renderer": {
+																					"size": ["100% - 5px", "100%x"],
+
+																					"bindings": [
+																						{
+																							"binding_name": "#hud_title_text_string",
+																							"binding_type": "global"
+																						},
+																						{
+																							"binding_name": "#hud_subtitle_text_string",
+																							"binding_type": "global"
+																						},
+																						{
+																							"binding_type": "view",
+																							"source_property_name": "((not {{isTile}}) and {{hasEntityIcon}})",
+																							"target_property_name": "#visible"
+																						}
+																					]
+																				}
+																			}
+																		],
+
+																		"bindings": [
+																			{
+																				"binding_name": "#hud_title_text_string",
+																				"binding_type": "global"
+																			},
+																			{
+																				"binding_name": "#hud_subtitle_text_string",
+																				"binding_type": "global"
+																			},
+																			{
+																				"binding_type": "view",
+																				"source_property_name": "(({{isTile}} and {{hasBlockIcon}}) or ((not {{isTile}}) and {{hasEntityIcon}}))",
+																				"target_property_name": "#visible"
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													},
+													{
+														"right_padding_slot@r4isen1920_waila_common.collapsible": {
+															"controls": [
+																{
+																	"right_padding@common.empty_panel": {
+																		"size": [5.25, 1],
+
+																		"bindings": [
+																			{
+																				"binding_name": "#hud_title_text_string",
+																				"binding_type": "global"
+																			},
+																			{
+																				"binding_name": "#hud_subtitle_text_string",
+																				"binding_type": "global"
+																			},
+																			{
+																				"binding_type": "view",
+																				"source_property_name": "(({{isTile}} and {{hasBlockIcon}}) or ((not {{isTile}}) and {{hasEntityIcon}}))",
+																				"target_property_name": "#visible"
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													},
+
+													{
+														/* 内部エラーを避けるためにダミー要素を追加し、このスタックパネルを満たしたままにする */
+														"empty_slot@r4isen1920_waila_common.collapsible": {
+															"controls": [
+																{
+																	"empty@common.empty_panel": {
+																		"size": [1, 1],
+
+																		"bindings": [
+																			{
+																				"binding_name": "#hud_title_text_string",
+																				"binding_type": "global"
+																			},
+																			{
+																				"binding_name": "#hud_subtitle_text_string",
+																				"binding_type": "global"
+																			},
+																			{
+																				"binding_type": "view",
+																				"source_property_name": "(not (({{isTile}} and {{hasBlockIcon}}) or ((not {{isTile}}) and {{hasEntityIcon}})))",
+																				"target_property_name": "#visible"
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										{
+											"information_panel@common.empty_panel": {
+												"anchor_from": "top_left",
+												"anchor_to": "top_left",
+												"size": ["100%cm", "100%cm"],
+												"offset": [1, 0],
+
+												"controls": [
+													{
+														"label_stack": {
+															"type": "stack_panel",
+															"orientation": "vertical",
+
+															"anchor_from": "top_left",
+															"anchor_to": "top_left",
+															"size": ["100%cm", "100%c"],
+
+															"controls": [
+																//* _r4ui:A:zz,t;zz,z: ...
+																{
+																	"hover_name_and_namespace@r4isen1920_waila_common.collapsible": {
+																		"controls": [
+																			{
+																				"tile_name@r4isen1920_waila_common.label": {
+																					"min_size": ["default", 20],
+																					"text": "#text",
+
+																					"bindings": [
+																						{
+																							"binding_name": "#hud_title_text_string",
+																							"binding_type": "global"
+																						},
+																						{
+																							"binding_type": "view",
+																							"source_property_name": "{{isTile}}",
+																							"target_property_name": "#visible"
+																						},
+																						{
+																							"binding_type": "view",
+																							"source_property_name": "('' + ({{wailaTitleBinding}} - ('%.{{tileName}}s' * {{wailaTitleBinding}})) - 'tile.' - 'entity.' - '.name'{{invStrip}}{{anchorStrip}})",
+																									"target_property_name": "#text"
+																						}
+																					]
+																				}
+																			},
+																			{
+																				"entity_name@r4isen1920_waila_common.label": {
+																					"min_size": ["default", 20],
+																					"text": "#text",
+
+																					"bindings": [
+																						{
+																							"binding_name": "#hud_title_text_string",
+																							"binding_type": "global"
+																						},
+																						{
+																							"binding_type": "view",
+																							"source_property_name": "(not {{isTile}})",
+																							"target_property_name": "#visible"
+																						},
+																						{
+																							"binding_type": "view",
+																							"source_property_name": "('' + ({{wailaTitleBinding}} - ('%.{{entityName}}s' * {{wailaTitleBinding}})) - 'tile.' - 'entity.' - '.name' - '__r4ui:humanoid.'{{anchorStrip}})",
+																									"target_property_name": "#text"
+																						}
+																					]
+																				}
+																			}
+																		]
+																	}
+																},
+
+																{
+																	"inventory_items@r4isen1920_waila_common.collapsible": {
+																		"controls": [
+																			{
+																				"inventory_slots@common.empty_panel": {
+																					/* 相互排他なので 100%cm -- 表示中の 1 つだけが幅を決める */
+																					"size": ["100%cm", "100%cm + 3px"],
+
+																					"controls": [
+																						{
+																							"{{#wailaInventories}}": {
+																								"{{id}}@r4isen1920_waila_tile.{{id}}": {
+																									"bindings": [
+																										{
+																											"binding_name": "#hud_title_text_string",
+																											"binding_type": "global"
+																										},
+																										{
+																											"binding_type": "view",
+																											"source_property_name": "(not (({{wailaTitleBinding}} - '__r4ui:inv.{{token}}__') = {{wailaTitleBinding}}))",
+																											"target_property_name": "#visible"
+																										}
+																									]
+																								}
+																							}
+																						}
+																					],
+
+																					"bindings": [
+																						{
+																							"binding_name": "#hud_title_text_string",
+																							"binding_type": "global"
+																						},
+																						{
+																							"binding_type": "view",
+																							"source_property_name": "(not (({{wailaTitleBinding}} - '__r4ui:inv.') = {{wailaTitleBinding}}))",
+																							"target_property_name": "#visible"
+																						}
+																					]
+																				}
+																			}
+																		]
+																	}
+																},
+
+																{
+																	"block_states@common.empty_panel": {
+																		"size": ["100%cm", "100%cm"],
+																		"controls": [
+																			{
+																				"border@r4isen1920_waila_common.image": {
+																					"size": ["100%c + 4px", "100%c + 4px"],
+																					"texture": "textures/r4isen1920/waila/border_center",
+
+																					"controls": [
+																						{
+																							"list@r4isen1920_waila_common.label": {
+																								"text": "#text",
+																								"font_scale_factor": 0.75,
+
+																								"bindings": [
+																									{
+																										"binding_name": "#hud_subtitle_text_string",
+																										"binding_type": "global"
+																									},
+																									{
+																										"binding_type": "view",
+																										"source_property_name": "({{wailaSubtitleBinding}} - '__r4ui:block_states__')",
+																												"target_property_name": "#text"
+																									}
+																								]
+																							}
+																						}
+																					],
+
+																					"bindings": [
+																						{
+																							"binding_name": "#hud_title_text_string",
+																							"binding_type": "global"
+																						},
+																						{
+																							"binding_name": "#hud_subtitle_text_string",
+																							"binding_type": "global"
+																						},
+																						{
+																							"binding_type": "view",
+																							"source_property_name": "({{isTile}} and (not (({{wailaSubtitleBinding}} - '__r4ui:block_states__') = {{wailaSubtitleBinding}})))",
+																							"target_property_name": "#visible"
+																						}
+																					]
+																				}
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													},
+
+													//* _r4ui:B:yyyyyyyyyyyyyyyyyyyydddddddddd ...
+													{
+														"entity_metadatas@common.empty_panel": {
+															"anchor_from": "top_left",
+															"anchor_to": "top_left",
+															"size": ["100%c", "100%c - 10px"],
+															"offset": [0, 11],
+
+															/* エンティティをレンダリングしていない場合は非表示 */
+															"bindings": [
+																{
+																	"binding_name": "#hud_title_text_string",
+																	"binding_type": "global"
+																},
+																{
+																	"binding_type": "view",
+																	"source_property_name": "(not {{isTile}})",
+																	"target_property_name": "#visible"
+																}
+															],
+
+															"controls": [
+																{
+																	"verti": {
+																		"type": "stack_panel",
+																		"orientation": "vertical",
+
+																		"anchor_from": "top_left",
+																		"anchor_to": "top_left",
+																		"size": ["100%cm", "100%c"],
+
+																		"controls": [
+																			{
+																				"top_padding@common.empty_panel": {
+																					"size": [1, 0.5]
+																				}
+																			},
+
+																			{
+																				"health_0_slot@r4isen1920_waila_common.collapsible": {
+																					"controls": [
+																						{ "health_0@r4isen1920_waila_entity.health_renderer_0": {} }
+																					]
+																				}
+																			},
+																			{
+																				"health_1_slot@r4isen1920_waila_common.collapsible": {
+																					"controls": [
+																						{ "health_1@r4isen1920_waila_entity.health_renderer_1": {} }
+																					]
+																				}
+																			},
+
+																			{
+																				"armor_slot@r4isen1920_waila_common.collapsible": {
+																					"controls": [
+																						{ "armor@r4isen1920_waila_entity.armor_renderer": {} }
+																					]
+																				}
+																			},
+
+																			{
+																				"effects_padding_top@r4isen1920_waila_common.collapsible": {
+																					"controls": [
+																						{
+																							"pad_short@common.empty_panel": {
+																								"size": [0, 0.5],
+
+																								"bindings": [
+																									{
+																										"binding_name": "#hud_title_text_string",
+																										"binding_type": "global"
+																									},
+																									{
+																										"binding_type": "view",
+																										"source_property_name": "({{hasEffects}} and (not {{isIntHealth}}))",
+																										"target_property_name": "#visible"
+																									}
+																								]
+																							}
+																						},
+																						{
+																							"pad_tall@common.empty_panel": {
+																								"size": [0, 8.5],
+
+																								"bindings": [
+																									{
+																										"binding_name": "#hud_title_text_string",
+																										"binding_type": "global"
+																									},
+																									{
+																										"binding_type": "view",
+																										"source_property_name": "({{hasEffects}} and {{isIntHealth}})",
+																										"target_property_name": "#visible"
+																									}
+																								]
+																							}
+																						}
+																					]
+																				}
+																			},
+																			{
+																				"effects_slot@r4isen1920_waila_common.collapsible": {
+																					"controls": [
+																						{ "effects@r4isen1920_waila_entity.effects_renderer": {} }
+																					]
+																				}
+																			}
+																		]
+																	}
+																}
+															]
+														}
+													}
+												]
+											}
+										},
+										{
+											"tags_slot@r4isen1920_waila_common.collapsible": {
+												/* hori は use_child_anchors なのでラッパー側にアンカーが要る */
+												"anchor_from": "top_right",
+												"anchor_to": "top_right",
+
+												"controls": [
+													{ "tags_panel@r4isen1920_waila_tile.block_tags": {} }
+												]
+											}
+										}
+									]
+								}
+							}
+						]
+					}
+				}
+			]
+		},
+
+		"centerer@common.empty_panel": {
+			"size": ["100%", "100%"],
+
+			"controls": [
+				{
+					"main@r4isen1920_waila_main.main": {
+						"anchor_from": "top_middle",
+						"anchor_to": "top_middle",
+
+						"$$offset": [0, 0],
+						"offset": "$offset",
+
+						// keeps the WAILA clear of the pause menu buttons on touch
+						"variables": {
+							"requires": "$touch",
+							"$$offset": [0, 20]
+						},
+
+						"bindings": [
+							{
+								"binding_name": "#hud_title_text_string",
+								"binding_type": "global"
+							},
+							{
+								"binding_type": "view",
+								"source_property_name": "{{isWaila}}",
+								"target_property_name": "#visible"
+							}
+						]
+					}
+				}
+			]
+		}
+	}
+}
