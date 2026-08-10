@@ -35,10 +35,7 @@
 				"filters": [
 					{
 						"arguments": [
-							"--cache-all",
-							"--include",
-							"data/jsonte/soundDurations.templ",
-							"data/jsonte"
+							"--cache-all"
 						],
 						"filter": "jsonte"
 					},
